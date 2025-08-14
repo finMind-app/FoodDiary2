@@ -346,7 +346,7 @@ struct SettingsView: View {
             Text("Profile")
                 .font(PlumpyTheme.Typography.headline)
                 .fontWeight(.semibold)
-                .foregroundColor(PlumpyTheme.Typography.headline)
+                .foregroundColor(PlumpyTheme.textPrimary)
                 .frame(maxWidth: .infinity, alignment: .leading)
             
             HStack(spacing: PlumpyTheme.Spacing.medium) {

@@ -244,8 +244,8 @@ struct HomeView: View {
                         }
                         .padding(PlumpyTheme.Spacing.small)
                         .plumpyCard(
-                            backgroundColor: PlumpyTheme.surfaceSecondary,
-                            cornerRadius: PlumpyTheme.Radius.small
+                            cornerRadius: PlumpyTheme.Radius.small,
+                            backgroundColor: PlumpyTheme.surfaceSecondary
                         )
                     }
                 }
@@ -272,8 +272,8 @@ struct HomeView: View {
                     }
                     .padding(PlumpyTheme.Spacing.small)
                     .plumpyCard(
-                        backgroundColor: PlumpyTheme.warning.opacity(0.1),
-                        cornerRadius: PlumpyTheme.Radius.small
+                        cornerRadius: PlumpyTheme.Radius.small,
+                        backgroundColor: PlumpyTheme.warning.opacity(0.1)
                     )
                 }
             }
@@ -303,8 +303,8 @@ struct QuickActionButton: View {
             .frame(maxWidth: .infinity)
             .padding(.vertical, PlumpyTheme.Spacing.medium)
             .plumpyCard(
-                backgroundColor: PlumpyTheme.surfaceSecondary,
-                cornerRadius: PlumpyTheme.Radius.medium
+                cornerRadius: PlumpyTheme.Radius.medium,
+                backgroundColor: PlumpyTheme.surfaceSecondary
             )
         }
         .buttonStyle(PlainButtonStyle())

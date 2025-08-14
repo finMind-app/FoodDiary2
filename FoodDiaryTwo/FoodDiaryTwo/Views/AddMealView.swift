@@ -115,8 +115,8 @@ struct AddMealView: View {
                     .labelsHidden()
                     .padding(PlumpyTheme.Spacing.medium)
                     .plumpyCard(
-                        backgroundColor: PlumpyTheme.surfaceSecondary,
-                        cornerRadius: PlumpyTheme.Radius.medium
+                        cornerRadius: PlumpyTheme.Radius.medium,
+                        backgroundColor: PlumpyTheme.surfaceSecondary
                     )
             }
             
@@ -196,10 +196,10 @@ struct AddMealView: View {
                     .frame(maxWidth: .infinity)
                     .padding(PlumpyTheme.Spacing.extraLarge)
                     .plumpyCard(
+                        cornerRadius: PlumpyTheme.Radius.large,
                         backgroundColor: PlumpyTheme.primary.opacity(0.1),
                         borderColor: PlumpyTheme.primaryAccent,
-                        borderWidth: 2,
-                        cornerRadius: PlumpyTheme.Radius.large
+                        borderWidth: 2
                     )
                 }
                 .buttonStyle(PlainButtonStyle())
