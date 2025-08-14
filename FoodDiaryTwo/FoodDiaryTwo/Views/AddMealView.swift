@@ -18,43 +18,7 @@ struct AddMealView: View {
     @State private var showingImagePicker = false
     @State private var selectedImage: UIImage?
     
-    enum MealType: String, CaseIterable {
-        case breakfast = "breakfast"
-        case lunch = "lunch"
-        case dinner = "dinner"
-        case snack = "snack"
-        case other = "other"
-        
-        var displayName: String {
-            switch self {
-            case .breakfast: return "Breakfast"
-            case .lunch: return "Lunch"
-            case .dinner: return "Dinner"
-            case .snack: return "Snack"
-            case .other: return "Other"
-            }
-        }
-        
-        var icon: String {
-            switch self {
-            case .breakfast: return "sunrise.fill"
-            case .lunch: return "sun.max.fill"
-            case .dinner: return "moon.fill"
-            case .snack: return "leaf.fill"
-            case .other: return "circle.fill"
-            }
-        }
-        
-        var color: Color {
-            switch self {
-            case .breakfast: return PlumpyTheme.warning
-            case .lunch: return PlumpyTheme.info
-            case .dinner: return PlumpyTheme.tertiaryAccent
-            case .snack: return PlumpyTheme.success
-            case .other: return PlumpyTheme.textTertiary
-            }
-        }
-    }
+    // MealType is defined in FoodEntry.swift
     
     var body: some View {
         ZStack {

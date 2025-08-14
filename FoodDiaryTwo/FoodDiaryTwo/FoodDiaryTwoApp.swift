@@ -12,7 +12,8 @@ import SwiftData
 struct FoodDiaryTwoApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
-            Meal.self,
+            FoodEntry.self,
+            FoodProduct.self,
             UserProfile.self,
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
