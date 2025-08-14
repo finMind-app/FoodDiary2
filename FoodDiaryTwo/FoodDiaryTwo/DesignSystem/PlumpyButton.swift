@@ -244,9 +244,9 @@ struct PlumpyFloatingButton: View {
 #Preview {
     VStack(spacing: PlumpyTheme.Spacing.large) {
         PlumpyButton(title: "Primary Button", icon: "plus") {}
-        PlumpyButton(title: "Secondary Button", style: .secondary, icon: "heart") {}
-        PlumpyButton(title: "Accent Button", style: .accent, icon: "star") {}
-        PlumpyButton(title: "Outline Button", style: .outline, icon: "arrow.right") {}
+        PlumpyButton(title: "Secondary Button", icon: "heart", style: .secondary) {}
+        PlumpyButton(title: "Accent Button", icon: "star", style: .accent) {}
+        PlumpyButton(title: "Outline Button", icon: "arrow.right", style: .outline) {}
         PlumpyButton(title: "Loading Button", isLoading: true) {}
         PlumpyButton(title: "Disabled Button", isEnabled: false) {}
         
