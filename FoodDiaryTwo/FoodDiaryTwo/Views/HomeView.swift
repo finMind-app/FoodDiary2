@@ -228,11 +228,11 @@ struct HomeView: View {
                     
                     ForEach(similarEntries.prefix(3), id: \.id) { entry in
                         HStack {
-                            Image(systemName: entry.mealType?.icon ?? "questionmark.circle")
+                            Image(systemName: entry.mealType.icon)
                                 .foregroundColor(PlumpyTheme.primaryAccent)
                                 .frame(width: 20)
                             
-                            Text(entry.name ?? "Unknown")
+                            Text(entry.displayName)
                                 .font(PlumpyTheme.Typography.caption1)
                                 .foregroundColor(PlumpyTheme.textPrimary)
                             
@@ -324,7 +324,7 @@ struct FoodEntryCard: View {
             VStack(spacing: PlumpyTheme.Spacing.medium) {
                 HStack {
                     HStack(spacing: PlumpyTheme.Spacing.small) {
-                        Image(systemName: entry.mealType?.icon ?? "questionmark.circle")
+                        Image(systemName: entry.mealType.icon)
                             .foregroundColor(PlumpyTheme.primaryAccent)
                             .frame(width: 20)
                         
@@ -386,8 +386,8 @@ struct FoodEntryCard: View {
         }
         .buttonStyle(PlainButtonStyle())
         .plumpyCard(
-            backgroundColor: PlumpyTheme.surfaceSecondary,
-            cornerRadius: PlumpyTheme.Radius.medium
+            cornerRadius: PlumpyTheme.Radius.medium,
+            backgroundColor: PlumpyTheme.surfaceSecondary
         )
     }
 }

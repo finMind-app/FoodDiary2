@@ -195,6 +195,85 @@ class FoodDiaryViewModel: ObservableObject {
         }
     }
     
+    // MARK: - History & Suggestions
+    
+    /// Returns all `FoodEntry` items for the last `days` days including today, sorted by most recent first.
+    func getFoodEntriesForLastDays(_ days: Int) -> [FoodEntry] {
+        let calendar = Calendar.current
+        let endOfToday = calendar.date(byAdding: .day, value: 1, to: calendar.startOfDay(for: Date()))!
+        let startDate = calendar.date(byAdding: .day, value: -max(0, days - 1), to: calendar.startOfDay(for: Date())) ?? Date()
+        
+        let descriptor = FetchDescriptor<FoodEntry>(
+            predicate: #Predicate<FoodEntry> { entry in
+                entry.date >= startDate && entry.date < endOfToday
+            },
+            sortBy: [SortDescriptor(\.date, order: .reverse)]
+        )
+        
+        do {
+            return try modelContext.fetch(descriptor)
+        } catch {
+            print("Error fetching recent food entries: \(error)")
+            return []
+        }
+    }
+    
+    /// Returns entries from the last 30 days that are similar by time-of-day to the provided `date`.
+    /// Similarity is defined as within ±60 minutes from the provided time.
+    func getSimilarFoodEntries(for date: Date) -> [FoodEntry] {
+        let calendar = Calendar.current
+        let thirtyDaysAgo = calendar.date(byAdding: .day, value: -30, to: Date()) ?? Date()
+        
+        let descriptor = FetchDescriptor<FoodEntry>(
+            predicate: #Predicate<FoodEntry> { entry in
+                entry.date >= thirtyDaysAgo
+            },
+            sortBy: [SortDescriptor(\.date, order: .reverse)]
+        )
+        
+        do {
+            let all = try modelContext.fetch(descriptor)
+            let targetComponents = calendar.dateComponents([.hour, .minute], from: date)
+            let targetMinutes = (targetComponents.hour ?? 0) * 60 + (targetComponents.minute ?? 0)
+            
+            return all.filter { entry in
+                let comps = calendar.dateComponents([.hour, .minute], from: entry.date)
+                let minutes = (comps.hour ?? 0) * 60 + (comps.minute ?? 0)
+                return abs(minutes - targetMinutes) <= 60
+            }
+        } catch {
+            print("Error fetching similar entries: \(error)")
+            return []
+        }
+    }
+    
+    /// Very simple heuristic suggestions based on remaining calories for the day.
+    func getAIFoodSuggestions(for date: Date) -> [String] {
+        let consumed = getTotalCaloriesForDate(date)
+        let goal = getDailyCalorieGoal()
+        let remaining = max(0, goal - consumed)
+        
+        if remaining <= 150 {
+            return [
+                "Light yogurt or cottage cheese",
+                "A handful of berries",
+                "Cucumber and tomato salad"
+            ]
+        } else if remaining <= 400 {
+            return [
+                "Chicken breast with veggies",
+                "Omelet with spinach",
+                "Greek salad with feta"
+            ]
+        } else {
+            return [
+                "Grilled salmon with rice",
+                "Turkey wrap with whole grain tortilla",
+                "Quinoa bowl with chicken and avocado"
+            ]
+        }
+    }
+    
     // MARK: - Private Methods
     
     private func saveContext() {
