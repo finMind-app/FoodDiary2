@@ -18,6 +18,7 @@ final class UserProfile {
     var weight: Double // в кг
     var activityLevel: ActivityLevel
     var goal: Goal
+    var email: String // Added for profile view
     var dailyCalorieGoal: Int
     var dailyProteinGoal: Double
     var dailyCarbsGoal: Double

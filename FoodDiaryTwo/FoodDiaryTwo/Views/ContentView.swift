@@ -23,10 +23,10 @@ struct ContentView: View {
                     HomeView(modelContext: modelContext)
                         .tag(0)
                     
-                    HistoryStatsSettings()
+                    HistoryStatsSettings(modelContext: modelContext)
                         .tag(1)
                     
-                    ProfileView()
+                    ProfileView(modelContext: modelContext)
                         .tag(2)
                 }
                 .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))

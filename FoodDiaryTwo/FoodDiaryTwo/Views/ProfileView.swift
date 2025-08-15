@@ -14,6 +14,8 @@ struct ProfileView: View {
     @State private var showingEditProfile = false
     @State private var showingSettings = false
     
+    @Query private var users: [UserProfile] // Using @Query to fetch user profiles
+
     var body: some View {
         ZStack {
             PlumpyBackground(style: .secondaryGradient)
@@ -96,12 +98,12 @@ struct ProfileView: View {
                 
                 // Имя и email
                 VStack(spacing: PlumpyTheme.Spacing.tiny) {
-                    Text(currentUser?.name ?? "Your Name")
+                    Text(users.first?.name ?? "Your Name") // Updated to use users.first
                         .font(PlumpyTheme.Typography.title1)
                         .fontWeight(.bold)
                         .foregroundColor(PlumpyTheme.textPrimary)
                     
-                    Text(userEmail)
+                    Text(users.first?.email ?? "No Email") // Updated to use users.first?.email
                         .font(PlumpyTheme.Typography.subheadline)
                         .foregroundColor(PlumpyTheme.textSecondary)
                 }
@@ -484,15 +486,6 @@ struct EditProfileView: View {
         dismiss()
     }
 
-    private var currentUser: UserProfile? {
-        let descriptor = FetchDescriptor<UserProfile>()
-        return try? modelContext.fetch(descriptor).first
-    }
-    
-    private var userEmail: String {
-        // В текущей модели `UserProfile` нет email — оставляем плейсхолдер до расширения модели
-        return "user@example.com"
-    }
 }
 
 #Preview {
