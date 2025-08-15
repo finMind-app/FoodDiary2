@@ -32,11 +32,11 @@ struct HomeView: View {
                 // Navigation Bar
                 PlumpyNavigationBar(
                     title: "Food Diary",
-                    subtitle: "Track your nutrition journey"
+                    subtitle: nil
                 )
                 
                 ScrollView {
-                    VStack(spacing: PlumpyTheme.Spacing.large) {
+                    VStack(spacing: PlumpyTheme.Spacing.medium) {
                         // Заголовок с датой и поиском
                         headerSection
                         
@@ -52,7 +52,7 @@ struct HomeView: View {
                         // История и рекомендации
                         historySection
                         
-                        PlumpySpacer(size: .huge)
+                        PlumpySpacer(size: .large)
                     }
                     .padding(.horizontal, PlumpyTheme.Spacing.large)
                     .padding(.top, PlumpyTheme.Spacing.large)
@@ -88,7 +88,7 @@ struct HomeView: View {
                     }
                 }
             )
-            .frame(maxWidth: 100)
+            .frame(maxWidth: 88)
         }
         .plumpyCard()
     }
@@ -105,8 +105,8 @@ struct HomeView: View {
                 PlumpyCircularProgressBar(
                     value: Double(viewModel.getTotalCaloriesForDate(viewModel.selectedDate)),
                     maxValue: Double(viewModel.getDailyCalorieGoal()),
-                    size: 120,
-                    lineWidth: 12,
+                    size: 108,
+                    lineWidth: 10,
                     style: .primary
                 )
                 
@@ -127,7 +127,7 @@ struct HomeView: View {
             PlumpyProgressBar(
                 value: Double(viewModel.getTotalCaloriesForDate(viewModel.selectedDate)),
                 maxValue: Double(viewModel.getDailyCalorieGoal()),
-                title: "Goal: \(viewModel.getDailyCalorieGoal()) calories",
+                title: "Goal: \(viewModel.getDailyCalorieGoal()) cal",
                 showPercentage: true,
                 style: .primary
             )
@@ -142,7 +142,7 @@ struct HomeView: View {
                 .fontWeight(.semibold)
                 .foregroundColor(PlumpyTheme.textPrimary)
             
-            HStack(spacing: PlumpyTheme.Spacing.medium) {
+            HStack(spacing: PlumpyTheme.Spacing.small) {
                 PlumpyActionIconButton(
                     systemImageName: "plus.circle.fill",
                     title: "Add Meal",

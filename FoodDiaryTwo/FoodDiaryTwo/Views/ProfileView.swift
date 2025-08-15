@@ -7,7 +7,10 @@
 
 import SwiftUI
 
+import SwiftData
+
 struct ProfileView: View {
+    @Environment(\.modelContext) private var modelContext
     @State private var showingEditProfile = false
     @State private var showingSettings = false
     
@@ -93,12 +96,12 @@ struct ProfileView: View {
                 
                 // Имя и email
                 VStack(spacing: PlumpyTheme.Spacing.tiny) {
-                    Text("John Doe")
+                    Text(currentUser?.name ?? "Your Name")
                         .font(PlumpyTheme.Typography.title1)
                         .fontWeight(.bold)
                         .foregroundColor(PlumpyTheme.textPrimary)
                     
-                    Text("john.doe@example.com")
+                    Text(userEmail)
                         .font(PlumpyTheme.Typography.subheadline)
                         .foregroundColor(PlumpyTheme.textSecondary)
                 }
@@ -478,8 +481,17 @@ struct EditProfileView: View {
     }
     
     private func saveProfile() {
-        // Здесь будет логика сохранения профиля
         dismiss()
+    }
+
+    private var currentUser: UserProfile? {
+        let descriptor = FetchDescriptor<UserProfile>()
+        return (try? modelContext.fetch(descriptor))?.first
+    }
+    
+    private var userEmail: String {
+        // В текущей модели `UserProfile` нет email — оставляем плейсхолдер до расширения модели
+        return ""
     }
 }
 

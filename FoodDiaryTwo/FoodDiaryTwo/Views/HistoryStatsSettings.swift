@@ -6,8 +6,10 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct HistoryStatsSettings: View {
+    @Environment(\.modelContext) private var modelContext
     @State private var selectedTab = 0
     
     var body: some View {
@@ -54,6 +56,7 @@ struct HistoryStatsSettings: View {
 // MARK: - History View
 
 struct HistoryView: View {
+    @Environment(\.modelContext) private var modelContext
     @State private var selectedPeriod: HistoryPeriod = .week
     @State private var searchText = ""
     
@@ -130,23 +133,54 @@ struct HistoryView: View {
                 .foregroundColor(PlumpyTheme.textPrimary)
                 .frame(maxWidth: .infinity, alignment: .leading)
             
-            // Заглушка для списка
-            PlumpyEmptyState(
-                icon: "clock",
-                title: "No history yet",
-                subtitle: "Your meal history will appear here once you start tracking",
-                actionTitle: "Add First Meal"
-            ) {
-                // Действие добавления
+            let entries = recentEntries
+            if entries.isEmpty {
+                PlumpyEmptyState(
+                    icon: "clock",
+                    title: "No history yet",
+                    subtitle: "Your meal history will appear here once you start tracking",
+                    actionTitle: "Add First Meal"
+                ) {}
+            } else {
+                LazyVStack(spacing: PlumpyTheme.Spacing.small) {
+                    ForEach(entries) { entry in
+                        HStack(spacing: PlumpyTheme.Spacing.medium) {
+                            Image(systemName: entry.mealType.icon)
+                                .foregroundColor(PlumpyTheme.primaryAccent)
+                                .frame(width: 24)
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(entry.displayName)
+                                    .font(PlumpyTheme.Typography.subheadline)
+                                    .foregroundColor(PlumpyTheme.textPrimary)
+                                Text(entry.formattedDate)
+                                    .font(PlumpyTheme.Typography.caption2)
+                                    .foregroundColor(PlumpyTheme.textSecondary)
+                            }
+                            Spacer()
+                            Text("\(entry.totalCalories) cal")
+                                .font(PlumpyTheme.Typography.caption1)
+                                .foregroundColor(PlumpyTheme.textSecondary)
+                        }
+                        .plumpyCard(backgroundColor: PlumpyTheme.surfaceSecondary)
+                    }
+                }
             }
         }
         .plumpyCard()
+    }
+
+    private var recentEntries: [FoodEntry] {
+        let descriptor = FetchDescriptor<FoodEntry>(
+            sortBy: [SortDescriptor(\.date, order: .reverse)]
+        )
+        return (try? modelContext.fetch(descriptor)) ?? []
     }
 }
 
 // MARK: - Statistics View
 
 struct StatisticsView: View {
+    @Environment(\.modelContext) private var modelContext
     @State private var selectedPeriod: StatisticsPeriod = .week
     
     enum StatisticsPeriod: String, CaseIterable {
@@ -211,7 +245,7 @@ struct StatisticsView: View {
         LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: PlumpyTheme.Spacing.medium) {
             PlumpyStatsCard(
                 title: "Total Calories",
-                value: "8,450",
+                value: String(totalCalories),
                 subtitle: "This period",
                 icon: "flame.fill",
                 iconColor: PlumpyTheme.warning,
@@ -220,7 +254,7 @@ struct StatisticsView: View {
             
             PlumpyStatsCard(
                 title: "Meals",
-                value: "42",
+                value: String(totalMeals),
                 subtitle: "This period",
                 icon: "fork.knife",
                 iconColor: PlumpyTheme.primaryAccent,
@@ -229,7 +263,7 @@ struct StatisticsView: View {
             
             PlumpyStatsCard(
                 title: "Avg. Daily",
-                value: "1,208",
+                value: String(averageDailyCalories),
                 subtitle: "Calories",
                 icon: "chart.line.uptrend.xyaxis",
                 iconColor: PlumpyTheme.secondaryAccent,
@@ -245,6 +279,41 @@ struct StatisticsView: View {
                 trend: .up
             )
         }
+    }
+
+    private var totalMeals: Int {
+        periodEntries.count
+    }
+    private var totalCalories: Int {
+        periodEntries.reduce(0) { $0 + $1.totalCalories }
+    }
+    private var averageDailyCalories: Int {
+        let days = max(1, uniqueDayCount)
+        return totalCalories / days
+    }
+    private var uniqueDayCount: Int {
+        let calendar = Calendar.current
+        let days = Set(periodEntries.map { calendar.startOfDay(for: $0.date) })
+        return days.count
+    }
+    private var periodEntries: [FoodEntry] {
+        let calendar = Calendar.current
+        let startDate: Date
+        switch selectedPeriod {
+        case .week:
+            startDate = calendar.date(byAdding: .day, value: -7, to: Date()) ?? Date()
+        case .month:
+            startDate = calendar.date(byAdding: .month, value: -1, to: Date()) ?? Date()
+        case .year:
+            startDate = calendar.date(byAdding: .year, value: -1, to: Date()) ?? Date()
+        }
+        let descriptor = FetchDescriptor<FoodEntry>(
+            predicate: #Predicate<FoodEntry> { entry in
+                entry.date >= startDate
+            },
+            sortBy: [SortDescriptor(\.date, order: .reverse)]
+        )
+        return (try? modelContext.fetch(descriptor)) ?? []
     }
     
     private var caloriesChart: some View {
