@@ -165,7 +165,7 @@ struct PlumpyProgressBar: View {
                 }
             }
         }
-        .onChange(of: value) { _, newValue in
+        .onChange(of: value) { newValue in
             if animated {
                 withAnimation(PlumpyTheme.Animation.smooth) {
                     animatedValue = newValue
@@ -267,7 +267,7 @@ struct PlumpyCircularProgressBar: View {
                 }
             }
         }
-        .onChange(of: value) { _, newValue in
+        .onChange(of: value) { newValue in
             if animated {
                 withAnimation(PlumpyTheme.Animation.smooth) {
                     animatedValue = newValue
