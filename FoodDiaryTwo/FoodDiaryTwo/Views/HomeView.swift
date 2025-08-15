@@ -393,5 +393,5 @@ struct FoodEntryCard: View {
 }
 
 #Preview {
-    HomeView(modelContext: try! ModelContainer(for: FoodEntry.self, FoodProduct.self).mainContext)
+    HomeView(modelContext: try! ModelContainer(for: FoodEntry.self, FoodProduct.self, UserProfile.self).mainContext)
 }

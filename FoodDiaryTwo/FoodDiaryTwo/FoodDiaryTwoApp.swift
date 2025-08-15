@@ -16,12 +16,20 @@ struct FoodDiaryTwoApp: App {
             FoodProduct.self,
             UserProfile.self,
         ])
-        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
-
+        let persistentConfig = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+        let inMemoryConfig = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
+        
         do {
-            return try ModelContainer(for: schema, configurations: [modelConfiguration])
+            // Try persistent container first
+            return try ModelContainer(for: schema, configurations: [persistentConfig])
         } catch {
-            fatalError("Could not create ModelContainer: \(error)")
+            // Fallback to in-memory to avoid crash and print a clear log
+            print("SwiftData persistent container failed to load: \(error). Falling back to in-memory store.")
+            do {
+                return try ModelContainer(for: schema, configurations: [inMemoryConfig])
+            } catch {
+                fatalError("Could not create any ModelContainer (including in-memory): \(error)")
+            }
         }
     }()
 
