@@ -33,7 +33,8 @@ final class UserProfile {
         height: Double,
         weight: Double,
         activityLevel: ActivityLevel = .moderate,
-        goal: Goal = .maintain
+        goal: Goal = .maintain,
+        email: String = ""
     ) {
         self.id = UUID()
         self.name = name
@@ -43,6 +44,7 @@ final class UserProfile {
         self.weight = weight
         self.activityLevel = activityLevel
         self.goal = goal
+        self.email = email
         
         // Calculate goals based on BMR and activity level
         let bmr = Self.calculateBMR(weight: weight, height: height, age: age, gender: gender)
