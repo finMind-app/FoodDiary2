@@ -13,8 +13,6 @@ struct HomeView: View {
     @StateObject private var viewModel: FoodDiaryViewModel
     @StateObject private var localizationManager = LocalizationManager.shared
     
-    @Query private var foodEntries: [FoodEntry]
-    
     @State private var showingSearch = false
     @State private var showingAchievements = false
     @State private var showingHistory = false

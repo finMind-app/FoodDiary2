@@ -486,12 +486,12 @@ struct EditProfileView: View {
 
     private var currentUser: UserProfile? {
         let descriptor = FetchDescriptor<UserProfile>()
-        return (try? modelContext.fetch(descriptor))?.first
+        return try? modelContext.fetch(descriptor).first
     }
     
     private var userEmail: String {
         // В текущей модели `UserProfile` нет email — оставляем плейсхолдер до расширения модели
-        return ""
+        return "user@example.com"
     }
 }
 
