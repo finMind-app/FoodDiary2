@@ -82,7 +82,7 @@ struct PlumpyField: View {
                 .keyboardType(keyboardType)
                 .textContentType(textContentType)
                 .focused($isFocused)
-                .onChange(of: isFocused) { _, newValue in
+                .onChange(of: isFocused) { newValue in
                     withAnimation(PlumpyTheme.Animation.smooth) {
                         isEditing = newValue
                     }

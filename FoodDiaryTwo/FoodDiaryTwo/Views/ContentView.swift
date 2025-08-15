@@ -9,6 +9,7 @@ import SwiftUI
 import SwiftData
 
 struct ContentView: View {
+    @Environment(\.modelContext) private var modelContext
     @State private var selectedTab = 0
     
     var body: some View {
@@ -19,7 +20,7 @@ struct ContentView: View {
             VStack(spacing: 0) {
                 // Tab Content
                 TabView(selection: $selectedTab) {
-                    HomeView(modelContext: try! ModelContainer(for: FoodEntry.self, FoodProduct.self, UserProfile.self).mainContext)
+                    HomeView(modelContext: modelContext)
                         .tag(0)
                     
                     HistoryStatsSettings()

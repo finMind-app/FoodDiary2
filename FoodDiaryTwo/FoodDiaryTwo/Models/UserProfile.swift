@@ -43,22 +43,24 @@ final class UserProfile {
         self.activityLevel = activityLevel
         self.goal = goal
         
-        // Рассчитываем цели на основе BMR и активности
-        let bmr = calculateBMR()
-        let tdee = calculateTDEE(bmr: bmr)
-        self.dailyCalorieGoal = calculateCalorieGoal(tdee: tdee)
+        // Calculate goals based on BMR and activity level
+        let bmr = Self.calculateBMR(weight: weight, height: height, age: age, gender: gender)
+        let tdee = Self.calculateTDEE(bmr: bmr, activityLevel: activityLevel)
+        let calorieGoal = Self.calculateCalorieGoal(tdee: tdee, goal: goal)
         
-        // Рассчитываем макронутриенты (25% белки, 45% углеводы, 30% жиры)
-        self.dailyProteinGoal = Double(dailyCalorieGoal) * 0.25 / 4.0 // 4 калории на грамм белка
-        self.dailyCarbsGoal = Double(dailyCalorieGoal) * 0.45 / 4.0 // 4 калории на грамм углеводов
-        self.dailyFatGoal = Double(dailyCalorieGoal) * 0.30 / 9.0 // 9 калорий на грамм жира
+        self.dailyCalorieGoal = calorieGoal
+        
+        // Calculate macronutrients (25% protein, 45% carbs, 30% fat)
+        self.dailyProteinGoal = Double(calorieGoal) * 0.25 / 4.0 // 4 calories per gram of protein
+        self.dailyCarbsGoal = Double(calorieGoal) * 0.45 / 4.0 // 4 calories per gram of carbs
+        self.dailyFatGoal = Double(calorieGoal) * 0.30 / 9.0 // 9 calories per gram of fat
         
         self.createdAt = Date()
         self.updatedAt = Date()
     }
     
-    private func calculateBMR() -> Double {
-        // Формула Миффлина-Сан Жеора
+    private static func calculateBMR(weight: Double, height: Double, age: Int, gender: Gender) -> Double {
+        // Mifflin-St Jeor Formula
         let bmr: Double
         if gender == .male {
             bmr = 10 * weight + 6.25 * height - 5 * Double(age) + 5
@@ -68,7 +70,7 @@ final class UserProfile {
         return bmr
     }
     
-    private func calculateTDEE(bmr: Double) -> Double {
+    private static func calculateTDEE(bmr: Double, activityLevel: ActivityLevel) -> Double {
         let multiplier: Double
         switch activityLevel {
         case .sedentary:
@@ -85,15 +87,15 @@ final class UserProfile {
         return bmr * multiplier
     }
     
-    private func calculateCalorieGoal(tdee: Double) -> Int {
+    private static func calculateCalorieGoal(tdee: Double, goal: Goal) -> Int {
         let adjustment: Double
         switch goal {
         case .lose:
-            adjustment = 0.85 // Дефицит 15%
+            adjustment = 0.85 // 15% deficit
         case .maintain:
-            adjustment = 1.0 // Поддержание веса
+            adjustment = 1.0 // Weight maintenance
         case .gain:
-            adjustment = 1.15 // Профицит 15%
+            adjustment = 1.15 // 15% surplus
         }
         return Int(tdee * adjustment)
     }
