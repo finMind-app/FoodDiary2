@@ -11,12 +11,16 @@ struct AddMealView: View {
     @Environment(\.dismiss) private var dismiss
     
     @State private var mealName = ""
-    @State private var selectedMealType: MealType = .breakfast
+    @State private var selectedMealType: MealType
     @State private var selectedTime = Date()
     @State private var calories = ""
     @State private var notes = ""
     @State private var showingImagePicker = false
     @State private var selectedImage: UIImage?
+    
+    init(mealType: MealType = .breakfast) {
+        self._selectedMealType = State(initialValue: mealType)
+    }
     
     // MealType is defined in FoodEntry.swift
     
@@ -232,5 +236,5 @@ struct AddMealView: View {
 }
 
 #Preview {
-    AddMealView()
+    AddMealView(mealType: .lunch)
 }

@@ -14,6 +14,7 @@ struct HomeView: View {
     
     @State private var selectedDate: Date = Date()
     @State private var showingAddFoodEntry: Bool = false
+    @State private var selectedMealType: MealType = .breakfast
     @State private var showingSearch = false
     @State private var showingAchievements = false
     @State private var showingHistory = false
@@ -54,7 +55,7 @@ struct HomeView: View {
             }
         }
         .sheet(isPresented: $showingAddFoodEntry) {
-            AddMealView()
+            AddMealView(mealType: selectedMealType)
         }
     }
     
@@ -189,38 +190,35 @@ struct HomeView: View {
     
     private var quickActionsSection: some View {
         VStack(spacing: PlumpyTheme.Spacing.large) {
-            Text("Quick Actions")
+            Text("Meal Types")
                 .font(PlumpyTheme.Typography.subheadline)
                 .fontWeight(.semibold)
                 .foregroundColor(PlumpyTheme.textPrimary)
             
-            HStack(spacing: PlumpyTheme.Spacing.extraLarge) {
-                PlumpyActionIconButton(
-                    systemImageName: "plus.circle.fill",
-                    title: "Add Meal",
-                    color: PlumpyTheme.primary
-                ) {
-                    showingAddFoodEntry = true
-                }
-
-                Spacer()
-
-                PlumpyActionIconButton(
-                    systemImageName: "camera.fill",
-                    title: "Photo",
-                    color: PlumpyTheme.secondary
-                ) {
-                    // Camera action
-                }
-                Spacer()
-
-
-                PlumpyActionIconButton(
-                    systemImageName: "chart.bar.fill",
-                    title: "Stats",
-                    color: PlumpyTheme.tertiary
-                ) {
-                    // Stats action
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: PlumpyTheme.Spacing.medium) {
+                ForEach(MealType.allCases, id: \.self) { mealType in
+                    Button(action: {
+                        selectedMealType = mealType
+                        showingAddFoodEntry = true
+                    }) {
+                        VStack(spacing: PlumpyTheme.Spacing.small) {
+                            Image(systemName: mealType.icon)
+                                .font(.title2)
+                                .foregroundColor(PlumpyTheme.primary)
+                            
+                            Text(mealType.displayName)
+                                .font(PlumpyTheme.Typography.caption1)
+                                .fontWeight(.medium)
+                                .foregroundColor(PlumpyTheme.textPrimary)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, PlumpyTheme.Spacing.large)
+                        .plumpyCard(
+                            cornerRadius: PlumpyTheme.Radius.medium,
+                            backgroundColor: PlumpyTheme.neutral50
+                        )
+                    }
+                    .buttonStyle(PlainButtonStyle())
                 }
             }
         }
@@ -253,6 +251,7 @@ struct HomeView: View {
                     subtitle: "Start tracking your nutrition by adding your first meal",
                     actionTitle: "Add Meal"
                 ) {
+                    selectedMealType = .breakfast
                     showingAddFoodEntry = true
                 }
             } else {
