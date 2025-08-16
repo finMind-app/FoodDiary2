@@ -24,7 +24,6 @@ struct HomeView: View {
                 .ignoresSafeArea()
             
             VStack(spacing: 0) {
-                // Navigation Bar
                 PlumpyNavigationBar(
                     title: "Food Diary",
                     subtitle: nil
@@ -154,7 +153,7 @@ struct HomeView: View {
                     }
                 }
             )
-            .frame(maxWidth: 70)
+            .frame(maxWidth: 100)
         }
         .plumpyCard()
     }
@@ -175,21 +174,8 @@ struct HomeView: View {
                     lineWidth: 10,
                     style: .primary
                 )
-                
-                // Центральная информация
-                VStack(spacing: PlumpyTheme.Spacing.tiny) {
-                    Text("\(getTotalCaloriesForDate(selectedDate))")
-                        .font(PlumpyTheme.Typography.title1)
-                        .fontWeight(.bold)
-                        .foregroundColor(PlumpyTheme.primary)
-                    
-                    Text("calories")
-                        .font(PlumpyTheme.Typography.caption1)
-                        .foregroundColor(PlumpyTheme.textSecondary)
-                }
             }
             
-            // Прогресс-бар
             PlumpyProgressBar(
                 value: Double(getTotalCaloriesForDate(selectedDate)),
                 maxValue: Double(getDailyCalorieGoal()),
@@ -208,7 +194,7 @@ struct HomeView: View {
                 .fontWeight(.semibold)
                 .foregroundColor(PlumpyTheme.textPrimary)
             
-            HStack(spacing: PlumpyTheme.Spacing.large) {
+            HStack(spacing: PlumpyTheme.Spacing.extraLarge) {
                 PlumpyActionIconButton(
                     systemImageName: "plus.circle.fill",
                     title: "Add Meal",
@@ -216,7 +202,9 @@ struct HomeView: View {
                 ) {
                     showingAddFoodEntry = true
                 }
-                
+
+                Spacer()
+
                 PlumpyActionIconButton(
                     systemImageName: "camera.fill",
                     title: "Photo",
@@ -224,7 +212,9 @@ struct HomeView: View {
                 ) {
                     // Camera action
                 }
-                
+                Spacer()
+
+
                 PlumpyActionIconButton(
                     systemImageName: "chart.bar.fill",
                     title: "Stats",

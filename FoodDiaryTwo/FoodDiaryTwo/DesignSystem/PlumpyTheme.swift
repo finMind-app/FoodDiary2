@@ -11,12 +11,12 @@ enum PlumpyTheme {
     
     // MARK: - Colors
     
-    // Основная цветовая палитра (современные, гармоничные цвета)
+    // Основная цветовая палитра
     static let primary = Color(hex: "#6366F1")      // Индиго
     static let secondary = Color(hex: "#10B981")    // Изумрудный
     static let tertiary = Color(hex: "#F59E0B")     // Янтарный
     
-    // Акцентные цвета (более насыщенные версии)
+    // Акцентные цвета
     static let primaryAccent = Color(hex: "#4F46E5")   // Насыщенный индиго
     static let secondaryAccent = Color(hex: "#059669") // Насыщенный изумрудный
     static let tertiaryAccent = Color(hex: "#D97706")  // Насыщенный янтарный
@@ -61,12 +61,12 @@ enum PlumpyTheme {
     // MARK: - Typography
     
     enum Typography {
-        // Заголовки (более современные размеры)
+        // Заголовки
         static let largeTitle = Font.system(size: 32, weight: .bold, design: .default)
         static let title1 = Font.system(size: 28, weight: .bold, design: .default)
         static let title2 = Font.system(size: 24, weight: .semibold, design: .default)
-        static let title3 = Font.system(size: 20, weight: .semibold, design: .default)
-        
+        static let title3 = Font.system(size: 18, weight: .semibold, design: .default)
+
         // Основной текст
         static let headline = Font.system(size: 17, weight: .semibold, design: .default)
         static let body = Font.system(size: 16, weight: .regular, design: .default)
@@ -79,7 +79,7 @@ enum PlumpyTheme {
         static let caption2 = Font.system(size: 11, weight: .regular, design: .default)
     }
     
-    // MARK: - Spacing (8pt grid system)
+    // MARK: - Spacing
     
     enum Spacing {
         static let tiny: CGFloat = 4
@@ -90,7 +90,7 @@ enum PlumpyTheme {
         static let huge: CGFloat = 48
     }
     
-    // MARK: - Radius (современные скругления)
+    // MARK: - Radius
     
     enum Radius {
         static let small: CGFloat = 6
@@ -100,7 +100,7 @@ enum PlumpyTheme {
         static let round: CGFloat = 50
     }
     
-    // MARK: - Shadows (современные тени)
+    // MARK: - Shadows 
     
     struct ShadowStyle {
         let color: Color

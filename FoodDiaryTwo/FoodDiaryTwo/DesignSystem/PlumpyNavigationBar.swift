@@ -37,10 +37,10 @@ struct PlumpyNavigationBar: View {
                 // Левая кнопка
                 if let leftButton = leftButton {
                     leftButton
-                        .frame(width: 44, height: 44)
+                        .frame(width: 32, height: 32)
                 } else {
                     Spacer()
-                        .frame(width: 44, height: 44)
+                        .frame(width: 32, height: 32)
                 }
                 
                 // Заголовок
@@ -65,10 +65,10 @@ struct PlumpyNavigationBar: View {
                 // Правая кнопка
                 if let rightButton = rightButton {
                     rightButton
-                        .frame(width: 44, height: 44)
+                        .frame(width: 32, height: 32)
                 } else {
                     Spacer()
-                        .frame(width: 44, height: 44)
+                        .frame(width: 32, height: 32)
                 }
             }
             .padding(.horizontal, PlumpyTheme.Spacing.large)
@@ -164,7 +164,7 @@ struct PlumpyNavigationButton: View {
             Image(systemName: icon)
                 .font(.title3)
                 .foregroundColor(style.foregroundColor)
-                .frame(width: 44, height: 44)
+                .frame(width: 32, height: 32)
                 .background(
                     RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
                         .fill(style.backgroundColor)
@@ -185,9 +185,6 @@ struct PlumpyNavigationButton: View {
         .animation(PlumpyTheme.Animation.spring, value: true)
     }
 }
-
-// MARK: - Tab Bar
-// PlumpyTabBar moved to separate file PlumpyTabBar.swift
 
 // MARK: - Breadcrumb Navigation
 

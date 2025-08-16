@@ -17,7 +17,6 @@ struct ContentView: View {
                 .ignoresSafeArea()
             
             VStack(spacing: 0) {
-                // Основной контент
                 TabView(selection: $selectedTab) {
                     HomeView()
                         .tag(0)
@@ -30,7 +29,6 @@ struct ContentView: View {
                 }
                 .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
                 
-                // Custom Tab Bar
                 PlumpyTabBar(
                     selectedTab: $selectedTab,
                     tabs: [

@@ -43,12 +43,12 @@ struct PlumpyTabBar: View {
         .background(PlumpyTheme.surface)
         .overlay(
             Rectangle()
-                .fill(PlumpyTheme.neutral200)
+                .fill(PlumpyTheme.neutral100)
                 .frame(height: 1),
             alignment: .top
         )
         .shadow(
-            color: PlumpyTheme.shadow.opacity(0.05),
+            color: PlumpyTheme.shadow.opacity(0.03),
             radius: PlumpyTheme.Shadow.small.radius,
             x: PlumpyTheme.Shadow.small.x,
             y: PlumpyTheme.Shadow.small.y
