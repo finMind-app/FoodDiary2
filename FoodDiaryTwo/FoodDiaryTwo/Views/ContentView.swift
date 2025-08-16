@@ -19,7 +19,7 @@ struct ContentView: View {
             VStack(spacing: 0) {
                 // Основной контент
                 TabView(selection: $selectedTab) {
-                    HomeView(modelContext: try! ModelContainer(for: FoodEntry.self, FoodProduct.self, UserProfile.self).mainContext)
+                    HomeView()
                         .tag(0)
                     
                     HistoryStatsSettings()

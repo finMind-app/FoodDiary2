@@ -10,16 +10,13 @@ import SwiftData
 
 struct HomeView: View {
     @Environment(\.modelContext) private var modelContext
-    @StateObject private var viewModel: FoodDiaryViewModel
     @StateObject private var localizationManager = LocalizationManager.shared
     
+    @State private var selectedDate: Date = Date()
+    @State private var showingAddFoodEntry: Bool = false
     @State private var showingSearch = false
     @State private var showingAchievements = false
     @State private var showingHistory = false
-    
-    init(modelContext: ModelContext) {
-        self._viewModel = StateObject(wrappedValue: FoodDiaryViewModel(modelContext: modelContext))
-    }
     
     var body: some View {
         ZStack {
@@ -57,15 +54,86 @@ struct HomeView: View {
                 }
             }
         }
-        .sheet(isPresented: $viewModel.showingAddFoodEntry) {
+        .sheet(isPresented: $showingAddFoodEntry) {
             AddMealView()
         }
+    }
+    
+    // MARK: - Helper Methods
+    
+    private func formatDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        return formatter.string(from: date)
+    }
+    
+    private func getFoodEntriesForDate(_ date: Date) -> [FoodEntry] {
+        let calendar = Calendar.current
+        let startOfDay = calendar.startOfDay(for: date)
+        let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay)!
+        
+        let descriptor = FetchDescriptor<FoodEntry>(
+            predicate: #Predicate<FoodEntry> { entry in
+                entry.date >= startOfDay && entry.date < endOfDay
+            },
+            sortBy: [SortDescriptor(\.date, order: .reverse)]
+        )
+        
+        do {
+            return try modelContext.fetch(descriptor)
+        } catch {
+            print("Error fetching food entries: \(error)")
+            return []
+        }
+    }
+    
+    private func getTotalCaloriesForDate(_ date: Date) -> Int {
+        let entries = getFoodEntriesForDate(date)
+        return entries.reduce(0) { $0 + $1.totalCalories }
+    }
+    
+    private func getDailyCalorieGoal() -> Int {
+        // Default goal, can be enhanced to fetch from user profile
+        return 2000
+    }
+    
+    private func getFoodEntriesForLastDays(_ days: Int) -> [FoodEntry] {
+        let calendar = Calendar.current
+        let startDate = calendar.date(byAdding: .day, value: -days, to: Date()) ?? Date()
+        
+        let descriptor = FetchDescriptor<FoodEntry>(
+            predicate: #Predicate<FoodEntry> { entry in
+                entry.date >= startDate
+            },
+            sortBy: [SortDescriptor(\.date, order: .reverse)]
+        )
+        
+        do {
+            return try modelContext.fetch(descriptor)
+        } catch {
+            print("Error fetching recent entries: \(error)")
+            return []
+        }
+    }
+    
+    private func getSimilarFoodEntries(for date: Date) -> [FoodEntry] {
+        // Simple implementation - return recent entries
+        return getFoodEntriesForLastDays(7)
+    }
+    
+    private func getAIFoodSuggestions(for date: Date) -> [String] {
+        // Simple implementation - return some suggestions
+        return [
+            "Try adding more vegetables to your meals",
+            "Consider having a protein-rich snack",
+            "Stay hydrated throughout the day"
+        ]
     }
     
     private var headerSection: some View {
         HStack {
             VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.tiny) {
-                Text(viewModel.formatDate(viewModel.selectedDate))
+                Text(formatDate(selectedDate))
                     .font(PlumpyTheme.Typography.title2)
                     .fontWeight(.semibold)
                     .foregroundColor(PlumpyTheme.textPrimary)
@@ -82,7 +150,7 @@ struct HomeView: View {
                 style: .outline,
                 action: {
                     withAnimation(PlumpyTheme.Animation.spring) {
-                        viewModel.selectedDate = Date()
+                        selectedDate = Date()
                     }
                 }
             )
@@ -101,8 +169,8 @@ struct HomeView: View {
             ZStack {
                 // Кольцевая диаграмма
                 PlumpyCircularProgressBar(
-                    value: Double(viewModel.getTotalCaloriesForDate(viewModel.selectedDate)),
-                    maxValue: Double(viewModel.getDailyCalorieGoal()),
+                    value: Double(getTotalCaloriesForDate(selectedDate)),
+                    maxValue: Double(getDailyCalorieGoal()),
                     size: 120,
                     lineWidth: 10,
                     style: .primary
@@ -110,7 +178,7 @@ struct HomeView: View {
                 
                 // Центральная информация
                 VStack(spacing: PlumpyTheme.Spacing.tiny) {
-                    Text("\(viewModel.getTotalCaloriesForDate(viewModel.selectedDate))")
+                    Text("\(getTotalCaloriesForDate(selectedDate))")
                         .font(PlumpyTheme.Typography.title1)
                         .fontWeight(.bold)
                         .foregroundColor(PlumpyTheme.primary)
@@ -123,9 +191,9 @@ struct HomeView: View {
             
             // Прогресс-бар
             PlumpyProgressBar(
-                value: Double(viewModel.getTotalCaloriesForDate(viewModel.selectedDate)),
-                maxValue: Double(viewModel.getDailyCalorieGoal()),
-                title: "Goal: \(viewModel.getDailyCalorieGoal()) cal",
+                value: Double(getTotalCaloriesForDate(selectedDate)),
+                maxValue: Double(getDailyCalorieGoal()),
+                title: "Goal: \(getDailyCalorieGoal()) cal",
                 showPercentage: true,
                 style: .primary
             )
@@ -146,7 +214,7 @@ struct HomeView: View {
                     title: "Add Meal",
                     color: PlumpyTheme.primary
                 ) {
-                    viewModel.showingAddFoodEntry = true
+                    showingAddFoodEntry = true
                 }
                 
                 PlumpyActionIconButton(
@@ -170,7 +238,7 @@ struct HomeView: View {
     }
     
     private var foodEntriesList: some View {
-        let entries = viewModel.getFoodEntriesForDate(viewModel.selectedDate)
+        let entries = getFoodEntriesForDate(selectedDate)
         
         return VStack(spacing: PlumpyTheme.Spacing.large) {
             HStack {
@@ -195,12 +263,12 @@ struct HomeView: View {
                     subtitle: "Start tracking your nutrition by adding your first meal",
                     actionTitle: "Add Meal"
                 ) {
-                    viewModel.showingAddFoodEntry = true
+                    showingAddFoodEntry = true
                 }
             } else {
                 LazyVStack(spacing: PlumpyTheme.Spacing.medium) {
                     ForEach(entries) { entry in
-                        FoodEntryCard(entry: entry, viewModel: viewModel)
+                        FoodEntryCard(entry: entry)
                     }
                 }
             }
@@ -209,8 +277,8 @@ struct HomeView: View {
     }
     
     private var historySection: some View {
-        let recentEntries = viewModel.getFoodEntriesForLastDays(7)
-        let similarEntries = viewModel.getSimilarFoodEntries(for: viewModel.selectedDate)
+        let recentEntries = getFoodEntriesForLastDays(7)
+        let similarEntries = getSimilarFoodEntries(for: selectedDate)
         
         return VStack(spacing: PlumpyTheme.Spacing.large) {
             Text("History & Recommendations")
@@ -255,7 +323,7 @@ struct HomeView: View {
                     .font(PlumpyTheme.Typography.caption1)
                     .foregroundColor(PlumpyTheme.textSecondary)
                 
-                let suggestions = viewModel.getAIFoodSuggestions(for: Date())
+                let suggestions = getAIFoodSuggestions(for: Date())
                 ForEach(suggestions.prefix(3), id: \.self) { suggestion in
                     HStack {
                         Image(systemName: "lightbulb.fill")
@@ -311,7 +379,6 @@ struct QuickActionButton: View {
 
 struct FoodEntryCard: View {
     let entry: FoodEntry
-    let viewModel: FoodDiaryViewModel
     @StateObject private var localizationManager = LocalizationManager.shared
     @State private var showingDetail = false
     
@@ -391,5 +458,6 @@ struct FoodEntryCard: View {
 }
 
 #Preview {
-    HomeView(modelContext: try! ModelContainer(for: FoodEntry.self, FoodProduct.self, UserProfile.self).mainContext)
+    HomeView()
+        .modelContainer(for: [FoodEntry.self, FoodProduct.self, UserProfile.self], inMemory: true)
 }
