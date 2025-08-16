@@ -405,21 +405,24 @@ struct StatisticsView: View {
                     title: "Most Common Meal",
                     subtitle: "Breakfast - 15 times",
                     icon: "sunrise.fill",
-                    iconColor: PlumpyTheme.warning
+                    iconColor: PlumpyTheme.warning,
+                    action: {}
                 )
                 
                 PlumpyInfoCard(
                     title: "Best Day",
                     subtitle: "Wednesday - 1,450 cal",
                     icon: "star.fill",
-                    iconColor: PlumpyTheme.warning
+                    iconColor: PlumpyTheme.warning,
+                    action: {}
                 )
                 
                 PlumpyInfoCard(
                     title: "Streak",
                     subtitle: "7 days in a row",
                     icon: "flame.fill",
-                    iconColor: PlumpyTheme.error
+                    iconColor: PlumpyTheme.error,
+                    action: {}
                 )
             }
         }
@@ -601,33 +604,37 @@ struct SettingsView: View {
                     title: "Version",
                     subtitle: "1.0.0",
                     icon: "info.circle",
-                    iconColor: PlumpyTheme.info
+                    iconColor: PlumpyTheme.info,
+                    action: {}
                 )
                 
                 PlumpyInfoCard(
                     title: "Developer",
                     subtitle: "Food Diary Team",
                     icon: "person.2.fill",
-                    iconColor: PlumpyTheme.primaryAccent
+                    iconColor: PlumpyTheme.primaryAccent,
+                    action: {}
                 )
                 
                 PlumpyInfoCard(
                     title: "Privacy Policy",
                     subtitle: "Read our privacy policy",
                     icon: "hand.raised.fill",
-                    iconColor: PlumpyTheme.secondaryAccent
-                ) {
-                    // Открытие политики конфиденциальности
-                }
+                    iconColor: PlumpyTheme.secondaryAccent,
+                    action: {
+                        // Открытие политики конфиденциальности
+                    }
+                )
                 
                 PlumpyInfoCard(
                     title: "Terms of Service",
                     subtitle: "Read our terms of service",
                     icon: "doc.text.fill",
-                    iconColor: PlumpyTheme.tertiaryAccent
-                ) {
-                    // Открытие условий использования
-                }
+                    iconColor: PlumpyTheme.tertiaryAccent,
+                    action: {
+                        // Открытие условий использования
+                    }
+                )
             }
         }
         .plumpyCard()

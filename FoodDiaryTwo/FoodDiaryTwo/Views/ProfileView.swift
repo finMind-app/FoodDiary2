@@ -18,7 +18,7 @@ struct ProfileView: View {
 
     var body: some View {
         ZStack {
-            PlumpyBackground(style: .secondaryGradient)
+            PlumpyBackground(style: .gradient)
                 .ignoresSafeArea()
             
             VStack(spacing: 0) {
