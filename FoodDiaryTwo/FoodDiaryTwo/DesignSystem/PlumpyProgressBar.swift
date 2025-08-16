@@ -56,11 +56,11 @@ struct PlumpyProgressBar: View {
         var height: CGFloat {
             switch self {
             case .small:
-                return 8
+                return 6
             case .medium:
-                return 12
+                return 8
             case .large:
-                return 16
+                return 12
             }
         }
         
@@ -97,7 +97,7 @@ struct PlumpyProgressBar: View {
     }
     
     var body: some View {
-        VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.small) {
+        VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.tiny) {
             // Заголовок и процент
             if title != nil || showPercentage {
                 HStack {
@@ -196,8 +196,8 @@ struct PlumpyCircularProgressBar: View {
     init(
         value: Double,
         maxValue: Double = 100,
-        size: CGFloat = 100,
-        lineWidth: CGFloat = 8,
+        size: CGFloat = 80,
+        lineWidth: CGFloat = 6,
         style: PlumpyProgressBar.PlumpyProgressBarStyle = .primary,
         showPercentage: Bool = true,
         animated: Bool = true
@@ -251,11 +251,11 @@ struct PlumpyCircularProgressBar: View {
             if showPercentage {
                 VStack(spacing: 2) {
                     Text("\(Int(progress * 100))")
-                        .font(.system(size: size * 0.3, weight: .bold, design: .rounded))
+                        .font(.system(size: size * 0.25, weight: .bold, design: .rounded))
                         .foregroundColor(style.color)
                     
                     Text("%")
-                        .font(.system(size: size * 0.15, weight: .medium, design: .rounded))
+                        .font(.system(size: size * 0.12, weight: .medium, design: .rounded))
                         .foregroundColor(PlumpyTheme.textSecondary)
                 }
             }

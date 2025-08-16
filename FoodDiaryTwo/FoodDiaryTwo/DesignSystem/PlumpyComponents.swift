@@ -35,9 +35,9 @@ struct PlumpyActionIconButton: View {
         }) {
             VStack(spacing: PlumpyTheme.Spacing.small) {
                 Image(systemName: systemImageName)
-                    .font(.title2)
+                    .font(.title3)
                     .foregroundColor(PlumpyTheme.textInverse)
-                    .frame(width: 44, height: 44)
+                    .frame(width: 36, height: 36)
                     .background(
                         Circle()
                             .fill(color)
@@ -140,8 +140,8 @@ struct PlumpyChip: View {
                     .fontWeight(.medium)
             }
             .foregroundColor(isSelected ? style.foregroundColor : PlumpyTheme.textSecondary)
-            .padding(.horizontal, PlumpyTheme.Spacing.medium)
-            .padding(.vertical, PlumpyTheme.Spacing.small)
+            .padding(.horizontal, PlumpyTheme.Spacing.small)
+            .padding(.vertical, PlumpyTheme.Spacing.tiny)
             .background(
                 RoundedRectangle(cornerRadius: PlumpyTheme.Radius.round)
                     .fill(isSelected ? style.backgroundColor : PlumpyTheme.surfaceSecondary)
@@ -207,9 +207,9 @@ struct PlumpyBadge: View {
             case .small:
                 return PlumpyTheme.Spacing.tiny
             case .medium:
-                return PlumpyTheme.Spacing.small
+                return PlumpyTheme.Spacing.tiny
             case .large:
-                return PlumpyTheme.Spacing.medium
+                return PlumpyTheme.Spacing.small
             }
         }
         
@@ -218,9 +218,9 @@ struct PlumpyBadge: View {
             case .small:
                 return PlumpyTheme.Typography.caption2
             case .medium:
-                return PlumpyTheme.Typography.caption1
+                return PlumpyTheme.Typography.caption2
             case .large:
-                return PlumpyTheme.Typography.footnote
+                return PlumpyTheme.Typography.caption1
             }
         }
     }
@@ -228,7 +228,7 @@ struct PlumpyBadge: View {
     init(
         text: String,
         style: PlumpyBadgeStyle = .primary,
-        size: PlumpyBadgeSize = .medium
+        size: PlumpyBadgeSize = .small
     ) {
         self.text = text
         self.style = style
@@ -278,7 +278,7 @@ struct PlumpyDivider: View {
         }
     }
     
-    init(style: PlumpyDividerStyle = .solid, spacing: CGFloat = PlumpyTheme.Spacing.medium) {
+    init(style: PlumpyDividerStyle = .solid, spacing: CGFloat = PlumpyTheme.Spacing.small) {
         self.style = style
         self.spacing = spacing
     }
@@ -352,7 +352,7 @@ struct PlumpyLoadingIndicator: View {
     
     init(
         style: PlumpyLoadingIndicatorStyle = .spinner,
-        size: CGFloat = 40,
+        size: CGFloat = 32,
         color: Color = PlumpyTheme.primaryAccent
     ) {
         self.style = style
@@ -424,9 +424,9 @@ struct PlumpyEmptyState: View {
     }
     
     var body: some View {
-        VStack(spacing: PlumpyTheme.Spacing.large) {
+        VStack(spacing: PlumpyTheme.Spacing.medium) {
             Image(systemName: icon)
-                .font(.system(size: 60))
+                .font(.system(size: 48))
                 .foregroundColor(PlumpyTheme.textTertiary)
             
             VStack(spacing: PlumpyTheme.Spacing.small) {
@@ -452,10 +452,10 @@ struct PlumpyEmptyState: View {
                     style: .primary,
                     action: action
                 )
-                .frame(maxWidth: 200)
+                .frame(maxWidth: 160)
             }
         }
-        .padding(PlumpyTheme.Spacing.extraLarge)
+        .padding(PlumpyTheme.Spacing.large)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }

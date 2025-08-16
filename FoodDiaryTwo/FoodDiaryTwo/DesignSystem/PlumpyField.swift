@@ -88,8 +88,8 @@ struct PlumpyField: View {
                     }
                 }
             }
-            .padding(.horizontal, PlumpyTheme.Spacing.medium)
-            .padding(.vertical, PlumpyTheme.Spacing.medium)
+            .padding(.horizontal, PlumpyTheme.Spacing.small)
+            .padding(.vertical, PlumpyTheme.Spacing.small)
             .background(
                 RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
                     .fill(backgroundColor)
@@ -196,8 +196,8 @@ struct PlumpySearchField: View {
                 .transition(.scale.combined(with: .opacity))
             }
         }
-        .padding(.horizontal, PlumpyTheme.Spacing.medium)
-        .padding(.vertical, PlumpyTheme.Spacing.medium)
+        .padding(.horizontal, PlumpyTheme.Spacing.small)
+        .padding(.vertical, PlumpyTheme.Spacing.small)
         .background(
             RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
                 .fill(PlumpyTheme.surface)
@@ -230,8 +230,8 @@ struct PlumpyTextArea: View {
         title: String,
         placeholder: String,
         text: Binding<String>,
-        minHeight: CGFloat = 80,
-        maxHeight: CGFloat = 200
+        minHeight: CGFloat = 60,
+        maxHeight: CGFloat = 150
     ) {
         self.title = title
         self.placeholder = placeholder
@@ -251,8 +251,8 @@ struct PlumpyTextArea: View {
                 .font(PlumpyTheme.Typography.body)
                 .focused($isFocused)
                 .frame(minHeight: minHeight, maxHeight: maxHeight)
-                .padding(.horizontal, PlumpyTheme.Spacing.medium)
-                .padding(.vertical, PlumpyTheme.Spacing.medium)
+                .padding(.horizontal, PlumpyTheme.Spacing.small)
+                .padding(.vertical, PlumpyTheme.Spacing.small)
                 .background(
                     RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
                         .fill(PlumpyTheme.surface)

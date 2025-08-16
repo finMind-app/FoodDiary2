@@ -40,8 +40,8 @@ struct ContentView: View {
                         PlumpyTabItem(icon: "person.fill", title: "Profile", color: PlumpyTheme.tertiaryAccent)
                     ]
                 )
-                .padding(.horizontal, PlumpyTheme.Spacing.large)
-                .padding(.bottom, PlumpyTheme.Spacing.small)
+                .padding(.horizontal, PlumpyTheme.Spacing.medium)
+                .padding(.bottom, PlumpyTheme.Spacing.tiny)
             }
         }
     }

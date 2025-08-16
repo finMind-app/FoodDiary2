@@ -34,7 +34,7 @@ struct HomeView: View {
                 )
                 
                 ScrollView {
-                    VStack(spacing: PlumpyTheme.Spacing.medium) {
+                    VStack(spacing: PlumpyTheme.Spacing.small) {
                         // Заголовок с датой и поиском
                         headerSection
                         
@@ -52,8 +52,8 @@ struct HomeView: View {
                         
                         PlumpySpacer(size: .large)
                     }
-                    .padding(.horizontal, PlumpyTheme.Spacing.large)
-                    .padding(.top, PlumpyTheme.Spacing.large)
+                    .padding(.horizontal, PlumpyTheme.Spacing.medium)
+                    .padding(.top, PlumpyTheme.Spacing.medium)
                 }
             }
         }
@@ -86,7 +86,7 @@ struct HomeView: View {
                     }
                 }
             )
-            .frame(maxWidth: 88)
+            .frame(maxWidth: 70)
         }
         .plumpyCard()
     }
@@ -103,8 +103,8 @@ struct HomeView: View {
                 PlumpyCircularProgressBar(
                     value: Double(viewModel.getTotalCaloriesForDate(viewModel.selectedDate)),
                     maxValue: Double(viewModel.getDailyCalorieGoal()),
-                    size: 108,
-                    lineWidth: 10,
+                    size: 90,
+                    lineWidth: 8,
                     style: .primary
                 )
                 

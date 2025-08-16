@@ -37,10 +37,10 @@ struct PlumpyNavigationBar: View {
                 // Левая кнопка
                 if let leftButton = leftButton {
                     leftButton
-                        .frame(width: 44, height: 44)
+                        .frame(width: 36, height: 36)
                 } else {
                     Spacer()
-                        .frame(width: 44, height: 44)
+                        .frame(width: 36, height: 36)
                 }
                 
                 // Заголовок
@@ -65,14 +65,14 @@ struct PlumpyNavigationBar: View {
                 // Правая кнопка
                 if let rightButton = rightButton {
                     rightButton
-                        .frame(width: 44, height: 44)
+                        .frame(width: 36, height: 36)
                 } else {
                     Spacer()
-                        .frame(width: 44, height: 44)
+                        .frame(width: 36, height: 36)
                 }
             }
-            .padding(.horizontal, PlumpyTheme.Spacing.large)
-            .padding(.vertical, PlumpyTheme.Spacing.medium)
+            .padding(.horizontal, PlumpyTheme.Spacing.medium)
+            .padding(.vertical, PlumpyTheme.Spacing.small)
             .background(
                 Rectangle()
                     .fill(backgroundColor)
@@ -159,9 +159,9 @@ struct PlumpyNavigationButton: View {
             }
         }) {
             Image(systemName: icon)
-                .font(.title2)
+                .font(.title3)
                 .foregroundColor(style.foregroundColor)
-                .frame(width: 44, height: 44)
+                .frame(width: 36, height: 36)
                 .background(
                     Circle()
                         .fill(style.backgroundColor)

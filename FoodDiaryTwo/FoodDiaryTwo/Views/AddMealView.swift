@@ -46,7 +46,7 @@ struct AddMealView: View {
                 )
                 
                 ScrollView {
-                    VStack(spacing: PlumpyTheme.Spacing.large) {
+                    VStack(spacing: PlumpyTheme.Spacing.medium) {
                         // Основная информация
                         basicInfoSection
                         
@@ -56,10 +56,10 @@ struct AddMealView: View {
                         // Заметки
                         notesSection
                         
-                        PlumpySpacer(size: .huge)
+                        PlumpySpacer(size: .large)
                     }
-                    .padding(.horizontal, PlumpyTheme.Spacing.large)
-                    .padding(.top, PlumpyTheme.Spacing.large)
+                    .padding(.horizontal, PlumpyTheme.Spacing.medium)
+                    .padding(.top, PlumpyTheme.Spacing.medium)
                 }
             }
         }

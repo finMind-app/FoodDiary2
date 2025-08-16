@@ -43,15 +43,15 @@ struct PlumpyTabBar: View {
                     }) {
                         VStack(spacing: PlumpyTheme.Spacing.tiny) {
                             Image(systemName: tabs[index].icon)
-                                .font(.title2)
+                                .font(.title3)
                                 .foregroundColor(selectedTab == index ? tabs[index].color : PlumpyTheme.textTertiary)
                             
                             Text(tabs[index].title)
-                                .font(PlumpyTheme.Typography.caption1)
+                                .font(PlumpyTheme.Typography.caption2)
                                 .foregroundColor(selectedTab == index ? tabs[index].color : PlumpyTheme.textTertiary)
                         }
                         .frame(maxWidth: .infinity)
-                        .padding(.vertical, PlumpyTheme.Spacing.medium)
+                        .padding(.vertical, PlumpyTheme.Spacing.small)
                         .background(
                             Group {
                                 if selectedTab == index {
@@ -64,8 +64,8 @@ struct PlumpyTabBar: View {
                     .buttonStyle(PlainButtonStyle())
                 }
             }
-            .padding(.horizontal, PlumpyTheme.Spacing.medium)
-            .padding(.vertical, PlumpyTheme.Spacing.small)
+            .padding(.horizontal, PlumpyTheme.Spacing.small)
+            .padding(.vertical, PlumpyTheme.Spacing.tiny)
             .background(
                 RoundedRectangle(cornerRadius: PlumpyTheme.Radius.large)
                     .fill(backgroundColor)

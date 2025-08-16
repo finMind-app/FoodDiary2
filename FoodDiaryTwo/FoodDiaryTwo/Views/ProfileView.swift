@@ -35,7 +35,7 @@ struct ProfileView: View {
                 )
                 
                 ScrollView {
-                    VStack(spacing: PlumpyTheme.Spacing.large) {
+                    VStack(spacing: PlumpyTheme.Spacing.medium) {
                         // Основная информация профиля
                         profileHeader
                         
@@ -51,10 +51,10 @@ struct ProfileView: View {
                         // Настройки профиля
                         profileSettingsSection
                         
-                        PlumpySpacer(size: .huge)
+                        PlumpySpacer(size: .large)
                     }
-                    .padding(.horizontal, PlumpyTheme.Spacing.large)
-                    .padding(.top, PlumpyTheme.Spacing.large)
+                    .padding(.horizontal, PlumpyTheme.Spacing.medium)
+                    .padding(.top, PlumpyTheme.Spacing.medium)
                 }
             }
         }
@@ -77,7 +77,7 @@ struct ProfileView: View {
                     ZStack {
                         Circle()
                             .fill(PlumpyTheme.primaryAccent)
-                            .frame(width: 100, height: 100)
+                            .frame(width: 80, height: 80)
                             .shadow(
                                 color: PlumpyTheme.primaryAccent.opacity(0.3),
                                 radius: PlumpyTheme.Shadow.large.radius,
@@ -86,14 +86,14 @@ struct ProfileView: View {
                             )
                         
                         Image(systemName: "person.fill")
-                            .font(.system(size: 50))
+                            .font(.system(size: 40))
                             .foregroundColor(PlumpyTheme.textInverse)
                     }
                 }
                 .overlay(
                     Circle()
-                        .stroke(PlumpyTheme.surface, lineWidth: 4)
-                        .frame(width: 108, height: 108)
+                        .stroke(PlumpyTheme.surface, lineWidth: 3)
+                        .frame(width: 86, height: 86)
                 )
                 
                 // Имя и email

@@ -93,7 +93,7 @@ struct PlumpyButton: View {
                         .scaleEffect(0.8)
                 } else if let icon = icon {
                     Image(systemName: icon)
-                        .font(PlumpyTheme.Typography.headline)
+                        .font(PlumpyTheme.Typography.subheadline)
                 }
                 
                 Text(title)
@@ -101,8 +101,8 @@ struct PlumpyButton: View {
                     .fontWeight(.semibold)
             }
             .foregroundColor(isEnabled ? style.foregroundColor : PlumpyTheme.textTertiary)
-            .padding(.horizontal, PlumpyTheme.Spacing.large)
-            .padding(.vertical, PlumpyTheme.Spacing.medium)
+            .padding(.horizontal, PlumpyTheme.Spacing.medium)
+            .padding(.vertical, PlumpyTheme.Spacing.small)
             .frame(maxWidth: .infinity)
             .background(
                 RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
@@ -168,7 +168,7 @@ struct PlumpyIconButton: View {
         systemImageName: String,
         title: String,
         style: PlumpyButtonStyle = .primary,
-        size: CGFloat = 44,
+        size: CGFloat = 36,
         action: @escaping () -> Void
     ) {
         self.systemImageName = systemImageName
@@ -185,7 +185,7 @@ struct PlumpyIconButton: View {
             }
         }) {
             Image(systemName: systemImageName)
-                .font(.title2)
+                .font(.title3)
                 .foregroundColor(style.foregroundColor)
                 .frame(width: size, height: size)
                 .background(
@@ -222,9 +222,9 @@ struct PlumpyFloatingButton: View {
             }
         }) {
             Image(systemName: icon)
-                .font(.title2)
+                .font(.title3)
                 .foregroundColor(PlumpyTheme.textInverse)
-                .frame(width: 56, height: 56)
+                .frame(width: 48, height: 48)
                 .background(
                     Circle()
                         .fill(PlumpyTheme.primaryAccent)

@@ -64,8 +64,8 @@ struct PlumpyBackground: View {
             case .dots:
                 return AnyView(
                     Canvas { context, size in
-                        let dotSize: CGFloat = 4
-                        let spacing: CGFloat = 20
+                        let dotSize: CGFloat = 2
+                        let spacing: CGFloat = 16
                         
                         for x in stride(from: 0, to: size.width, by: spacing) {
                             for y in stride(from: 0, to: size.height, by: spacing) {
@@ -87,7 +87,7 @@ struct PlumpyBackground: View {
                 return AnyView(
                     Canvas { context, size in
                         let lineWidth: CGFloat = 1
-                        let spacing: CGFloat = 30
+                        let spacing: CGFloat = 24
                         
                         for x in stride(from: 0, to: size.width, by: spacing) {
                             let path = Path { path in

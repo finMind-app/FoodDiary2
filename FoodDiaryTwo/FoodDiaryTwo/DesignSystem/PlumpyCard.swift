@@ -33,8 +33,8 @@ struct PlumpyCard<Content: View>: View {
     
     var body: some View {
         content
-            .padding(.horizontal, PlumpyTheme.Spacing.large)
-            .padding(.vertical, PlumpyTheme.Spacing.medium)
+            .padding(.horizontal, PlumpyTheme.Spacing.medium)
+            .padding(.vertical, PlumpyTheme.Spacing.small)
             .background(backgroundColor)
             .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
             .overlay(
@@ -79,8 +79,8 @@ struct PlumpyCardModifier: ViewModifier {
     
     func body(content: Content) -> some View {
         content
-            .padding(.horizontal, PlumpyTheme.Spacing.large)
-            .padding(.vertical, PlumpyTheme.Spacing.medium)
+            .padding(.horizontal, PlumpyTheme.Spacing.medium)
+            .padding(.vertical, PlumpyTheme.Spacing.small)
             .background(backgroundColor)
             .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
             .overlay(

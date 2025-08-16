@@ -24,6 +24,11 @@ struct HistoryStatsSettings: View {
                     subtitle: "History, Stats & Settings"
                 )
                 
+                // Segmented Control
+                segmentedControl
+                    .padding(.horizontal, PlumpyTheme.Spacing.large)
+                    .padding(.top, PlumpyTheme.Spacing.medium)
+                
                 // Tab Content
                 TabView(selection: $selectedTab) {
                     HistoryView()
@@ -36,20 +41,64 @@ struct HistoryStatsSettings: View {
                         .tag(2)
                 }
                 .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
-                
-                // Custom Tab Bar
-                PlumpyTabBar(
-                    selectedTab: $selectedTab,
-                    tabs: [
-                        PlumpyTabItem(icon: "clock.fill", title: "History", color: PlumpyTheme.primaryAccent),
-                        PlumpyTabItem(icon: "chart.bar.fill", title: "Stats", color: PlumpyTheme.secondaryAccent),
-                        PlumpyTabItem(icon: "gear", title: "Settings", color: PlumpyTheme.tertiaryAccent)
-                    ]
-                )
-                .padding(.horizontal, PlumpyTheme.Spacing.large)
-                .padding(.bottom, PlumpyTheme.Spacing.small)
             }
         }
+    }
+    
+    private var segmentedControl: some View {
+        HStack(spacing: 0) {
+            ForEach(0..<3, id: \.self) { index in
+                Button(action: {
+                    withAnimation(PlumpyTheme.Animation.spring) {
+                        selectedTab = index
+                    }
+                }) {
+                    VStack(spacing: PlumpyTheme.Spacing.tiny) {
+                        Image(systemName: tabIcons[index])
+                            .font(.title3)
+                            .foregroundColor(selectedTab == index ? tabColors[index] : PlumpyTheme.textTertiary)
+                        
+                        Text(tabTitles[index])
+                            .font(PlumpyTheme.Typography.caption2)
+                            .foregroundColor(selectedTab == index ? tabColors[index] : PlumpyTheme.textTertiary)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, PlumpyTheme.Spacing.small)
+                    .background(
+                        RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
+                            .fill(selectedTab == index ? tabColors[index].opacity(0.15) : Color.clear)
+                    )
+                }
+                .buttonStyle(PlainButtonStyle())
+            }
+        }
+        .padding(PlumpyTheme.Spacing.tiny)
+        .background(
+            RoundedRectangle(cornerRadius: PlumpyTheme.Radius.large)
+                .fill(PlumpyTheme.surface)
+                .overlay(
+                    RoundedRectangle(cornerRadius: PlumpyTheme.Radius.large)
+                        .stroke(PlumpyTheme.border, lineWidth: 1)
+                )
+        )
+        .shadow(
+            color: PlumpyTheme.shadow.opacity(0.05),
+            radius: PlumpyTheme.Shadow.small.radius,
+            x: PlumpyTheme.Shadow.small.x,
+            y: PlumpyTheme.Shadow.small.y
+        )
+    }
+    
+    private var tabIcons: [String] {
+        ["clock.fill", "chart.bar.fill", "gear"]
+    }
+    
+    private var tabTitles: [String] {
+        ["History", "Stats", "Settings"]
+    }
+    
+    private var tabColors: [Color] {
+        [PlumpyTheme.primaryAccent, PlumpyTheme.secondaryAccent, PlumpyTheme.tertiaryAccent]
     }
 }
 
