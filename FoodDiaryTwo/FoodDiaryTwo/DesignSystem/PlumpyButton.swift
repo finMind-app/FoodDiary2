@@ -23,22 +23,23 @@ struct PlumpyButton: View {
         case warning
         case error
         case outline
+        case ghost
         
         var backgroundColor: Color {
             switch self {
             case .primary:
-                return PlumpyTheme.primaryAccent
+                return PlumpyTheme.primary
             case .secondary:
-                return PlumpyTheme.secondaryAccent
+                return PlumpyTheme.secondary
             case .accent:
-                return PlumpyTheme.tertiaryAccent
+                return PlumpyTheme.tertiary
             case .success:
                 return PlumpyTheme.success
             case .warning:
                 return PlumpyTheme.warning
             case .error:
                 return PlumpyTheme.error
-            case .outline:
+            case .outline, .ghost:
                 return Color.clear
             }
         }
@@ -48,16 +49,29 @@ struct PlumpyButton: View {
             case .primary, .secondary, .accent, .success, .warning, .error:
                 return PlumpyTheme.textInverse
             case .outline:
-                return PlumpyTheme.primaryAccent
+                return PlumpyTheme.primary
+            case .ghost:
+                return PlumpyTheme.textPrimary
             }
         }
         
         var borderColor: Color {
             switch self {
             case .outline:
-                return PlumpyTheme.primaryAccent
+                return PlumpyTheme.primary
+            case .ghost:
+                return Color.clear
             default:
                 return Color.clear
+            }
+        }
+        
+        var borderWidth: CGFloat {
+            switch self {
+            case .outline:
+                return 1.5
+            default:
+                return 0
             }
         }
     }
@@ -97,26 +111,26 @@ struct PlumpyButton: View {
                 }
                 
                 Text(title)
-                    .font(PlumpyTheme.Typography.headline)
+                    .font(PlumpyTheme.Typography.subheadline)
                     .fontWeight(.semibold)
             }
             .foregroundColor(isEnabled ? style.foregroundColor : PlumpyTheme.textTertiary)
-            .padding(.horizontal, PlumpyTheme.Spacing.medium)
-            .padding(.vertical, PlumpyTheme.Spacing.small)
+            .padding(.horizontal, PlumpyTheme.Spacing.large)
+            .padding(.vertical, PlumpyTheme.Spacing.medium)
             .frame(maxWidth: .infinity)
             .background(
                 RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
-                    .fill(isEnabled ? style.backgroundColor : PlumpyTheme.surfaceTertiary)
+                    .fill(isEnabled ? style.backgroundColor : PlumpyTheme.neutral200)
                     .overlay(
                         RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
-                            .stroke(style.borderColor, lineWidth: style == .outline ? 2 : 0)
+                            .stroke(style.borderColor, lineWidth: style.borderWidth)
                     )
             )
             .shadow(
-                color: isEnabled ? style.backgroundColor.opacity(0.3) : Color.clear,
-                radius: PlumpyTheme.Shadow.medium.radius,
-                x: PlumpyTheme.Shadow.medium.x,
-                y: PlumpyTheme.Shadow.medium.y
+                color: isEnabled && style != .ghost ? style.backgroundColor.opacity(0.2) : Color.clear,
+                radius: PlumpyTheme.Shadow.small.radius,
+                x: PlumpyTheme.Shadow.small.x,
+                y: PlumpyTheme.Shadow.small.y
             )
         }
         .disabled(!isEnabled || isLoading)
@@ -140,16 +154,17 @@ struct PlumpyIconButton: View {
         case secondary
         case accent
         case outline
+        case ghost
         
         var backgroundColor: Color {
             switch self {
             case .primary:
-                return PlumpyTheme.primaryAccent
+                return PlumpyTheme.primary
             case .secondary:
-                return PlumpyTheme.secondaryAccent
+                return PlumpyTheme.secondary
             case .accent:
-                return PlumpyTheme.tertiaryAccent
-            case .outline:
+                return PlumpyTheme.tertiary
+            case .outline, .ghost:
                 return Color.clear
             }
         }
@@ -159,7 +174,18 @@ struct PlumpyIconButton: View {
             case .primary, .secondary, .accent:
                 return PlumpyTheme.textInverse
             case .outline:
-                return PlumpyTheme.primaryAccent
+                return PlumpyTheme.primary
+            case .ghost:
+                return PlumpyTheme.textPrimary
+            }
+        }
+        
+        var borderColor: Color {
+            switch self {
+            case .outline:
+                return PlumpyTheme.primary
+            default:
+                return Color.clear
             }
         }
     }
@@ -168,7 +194,7 @@ struct PlumpyIconButton: View {
         systemImageName: String,
         title: String,
         style: PlumpyButtonStyle = .primary,
-        size: CGFloat = 36,
+        size: CGFloat = 44,
         action: @escaping () -> Void
     ) {
         self.systemImageName = systemImageName
@@ -189,15 +215,15 @@ struct PlumpyIconButton: View {
                 .foregroundColor(style.foregroundColor)
                 .frame(width: size, height: size)
                 .background(
-                    Circle()
+                    RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
                         .fill(style.backgroundColor)
                         .overlay(
-                            Circle()
-                                .stroke(style == .outline ? PlumpyTheme.primaryAccent : Color.clear, lineWidth: 2)
+                            RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
+                                .stroke(style.borderColor, lineWidth: style == .outline ? 1.5 : 0)
                         )
                 )
                 .shadow(
-                    color: style.backgroundColor.opacity(0.3),
+                    color: style.backgroundColor.opacity(0.2),
                     radius: PlumpyTheme.Shadow.small.radius,
                     x: PlumpyTheme.Shadow.small.x,
                     y: PlumpyTheme.Shadow.small.y
@@ -222,14 +248,14 @@ struct PlumpyFloatingButton: View {
             }
         }) {
             Image(systemName: icon)
-                .font(.title3)
+                .font(.title2)
                 .foregroundColor(PlumpyTheme.textInverse)
-                .frame(width: 48, height: 48)
+                .frame(width: 56, height: 56)
                 .background(
                     Circle()
-                        .fill(PlumpyTheme.primaryAccent)
+                        .fill(PlumpyTheme.primary)
                         .shadow(
-                            color: PlumpyTheme.primaryAccent.opacity(0.4),
+                            color: PlumpyTheme.primary.opacity(0.3),
                             radius: PlumpyTheme.Shadow.large.radius,
                             x: PlumpyTheme.Shadow.large.x,
                             y: PlumpyTheme.Shadow.large.y
@@ -247,6 +273,7 @@ struct PlumpyFloatingButton: View {
         PlumpyButton(title: "Secondary Button", icon: "heart", style: .secondary) {}
         PlumpyButton(title: "Accent Button", icon: "star", style: .accent) {}
         PlumpyButton(title: "Outline Button", icon: "arrow.right", style: .outline) {}
+        PlumpyButton(title: "Ghost Button", icon: "settings", style: .ghost) {}
         PlumpyButton(title: "Loading Button", isLoading: true) {}
         PlumpyButton(title: "Disabled Button", isEnabled: false) {}
         
@@ -254,6 +281,7 @@ struct PlumpyFloatingButton: View {
             PlumpyIconButton(systemImageName: "plus", title: "Add") {}
             PlumpyIconButton(systemImageName: "heart", title: "Like", style: .secondary) {}
             PlumpyIconButton(systemImageName: "star", title: "Favorite", style: .accent) {}
+            PlumpyIconButton(systemImageName: "settings", title: "Settings", style: .ghost) {}
         }
         
         PlumpyFloatingButton(icon: "plus") {}

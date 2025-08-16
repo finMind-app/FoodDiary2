@@ -37,10 +37,10 @@ struct PlumpyNavigationBar: View {
                 // Левая кнопка
                 if let leftButton = leftButton {
                     leftButton
-                        .frame(width: 36, height: 36)
+                        .frame(width: 44, height: 44)
                 } else {
                     Spacer()
-                        .frame(width: 36, height: 36)
+                        .frame(width: 44, height: 44)
                 }
                 
                 // Заголовок
@@ -65,29 +65,29 @@ struct PlumpyNavigationBar: View {
                 // Правая кнопка
                 if let rightButton = rightButton {
                     rightButton
-                        .frame(width: 36, height: 36)
+                        .frame(width: 44, height: 44)
                 } else {
                     Spacer()
-                        .frame(width: 36, height: 36)
+                        .frame(width: 44, height: 44)
                 }
             }
-            .padding(.horizontal, PlumpyTheme.Spacing.medium)
-            .padding(.vertical, PlumpyTheme.Spacing.small)
+            .padding(.horizontal, PlumpyTheme.Spacing.large)
+            .padding(.vertical, PlumpyTheme.Spacing.medium)
             .background(
                 Rectangle()
                     .fill(backgroundColor)
                     .shadow(
-                        color: PlumpyTheme.shadow.opacity(0.1),
-                        radius: PlumpyTheme.Shadow.medium.radius,
-                        x: PlumpyTheme.Shadow.medium.x,
-                        y: PlumpyTheme.Shadow.medium.y
+                        color: PlumpyTheme.shadow.opacity(0.05),
+                        radius: PlumpyTheme.Shadow.small.radius,
+                        x: PlumpyTheme.Shadow.small.x,
+                        y: PlumpyTheme.Shadow.small.y
                     )
             )
             
             // Нижняя граница
             if showBorder {
                 Rectangle()
-                    .fill(PlumpyTheme.border)
+                    .fill(PlumpyTheme.neutral200)
                     .frame(height: 1)
             }
         }
@@ -107,16 +107,17 @@ struct PlumpyNavigationButton: View {
         case secondary
         case accent
         case outline
+        case ghost
         
         var backgroundColor: Color {
             switch self {
             case .primary:
-                return PlumpyTheme.primaryAccent
+                return PlumpyTheme.primary
             case .secondary:
-                return PlumpyTheme.secondaryAccent
+                return PlumpyTheme.secondary
             case .accent:
-                return PlumpyTheme.tertiaryAccent
-            case .outline:
+                return PlumpyTheme.tertiary
+            case .outline, .ghost:
                 return Color.clear
             }
         }
@@ -126,14 +127,16 @@ struct PlumpyNavigationButton: View {
             case .primary, .secondary, .accent:
                 return PlumpyTheme.textInverse
             case .outline:
-                return PlumpyTheme.primaryAccent
+                return PlumpyTheme.primary
+            case .ghost:
+                return PlumpyTheme.textPrimary
             }
         }
         
         var borderColor: Color {
             switch self {
             case .outline:
-                return PlumpyTheme.primaryAccent
+                return PlumpyTheme.primary
             default:
                 return Color.clear
             }
@@ -161,17 +164,17 @@ struct PlumpyNavigationButton: View {
             Image(systemName: icon)
                 .font(.title3)
                 .foregroundColor(style.foregroundColor)
-                .frame(width: 36, height: 36)
+                .frame(width: 44, height: 44)
                 .background(
-                    Circle()
+                    RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
                         .fill(style.backgroundColor)
                         .overlay(
-                            Circle()
-                                .stroke(style.borderColor, lineWidth: style == .outline ? 2 : 0)
+                            RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
+                                .stroke(style.borderColor, lineWidth: style == .outline ? 1.5 : 0)
                         )
                 )
                 .shadow(
-                    color: style.backgroundColor.opacity(0.3),
+                    color: style.backgroundColor.opacity(0.2),
                     radius: PlumpyTheme.Shadow.small.radius,
                     x: PlumpyTheme.Shadow.small.x,
                     y: PlumpyTheme.Shadow.small.y
@@ -218,11 +221,11 @@ struct PlumpyBreadcrumb: View {
                 }
             }
         }
-        .padding(.horizontal, PlumpyTheme.Spacing.medium)
-        .padding(.vertical, PlumpyTheme.Spacing.small)
+        .padding(.horizontal, PlumpyTheme.Spacing.large)
+        .padding(.vertical, PlumpyTheme.Spacing.medium)
         .background(
             RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
-                .fill(PlumpyTheme.surfaceSecondary)
+                .fill(PlumpyTheme.neutral50)
         )
     }
 }

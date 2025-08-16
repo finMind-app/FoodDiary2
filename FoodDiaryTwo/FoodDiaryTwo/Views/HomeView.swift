@@ -23,7 +23,7 @@ struct HomeView: View {
     
     var body: some View {
         ZStack {
-            PlumpyBackground(style: .warmGradient)
+            PlumpyBackground(style: .gradient)
                 .ignoresSafeArea()
             
             VStack(spacing: 0) {
@@ -34,7 +34,7 @@ struct HomeView: View {
                 )
                 
                 ScrollView {
-                    VStack(spacing: PlumpyTheme.Spacing.small) {
+                    VStack(spacing: PlumpyTheme.Spacing.large) {
                         // Заголовок с датой и поиском
                         headerSection
                         
@@ -52,8 +52,8 @@ struct HomeView: View {
                         
                         PlumpySpacer(size: .large)
                     }
-                    .padding(.horizontal, PlumpyTheme.Spacing.medium)
-                    .padding(.top, PlumpyTheme.Spacing.medium)
+                    .padding(.horizontal, PlumpyTheme.Spacing.large)
+                    .padding(.top, PlumpyTheme.Spacing.large)
                 }
             }
         }
@@ -86,15 +86,15 @@ struct HomeView: View {
                     }
                 }
             )
-            .frame(maxWidth: 70)
+            .frame(maxWidth: 80)
         }
         .plumpyCard()
     }
     
     private var calorieRingChart: some View {
-        VStack(spacing: PlumpyTheme.Spacing.medium) {
+        VStack(spacing: PlumpyTheme.Spacing.large) {
             Text("Daily Progress")
-                .font(PlumpyTheme.Typography.headline)
+                .font(PlumpyTheme.Typography.title3)
                 .fontWeight(.semibold)
                 .foregroundColor(PlumpyTheme.textPrimary)
             
@@ -103,8 +103,8 @@ struct HomeView: View {
                 PlumpyCircularProgressBar(
                     value: Double(viewModel.getTotalCaloriesForDate(viewModel.selectedDate)),
                     maxValue: Double(viewModel.getDailyCalorieGoal()),
-                    size: 90,
-                    lineWidth: 8,
+                    size: 120,
+                    lineWidth: 10,
                     style: .primary
                 )
                 
@@ -113,7 +113,7 @@ struct HomeView: View {
                     Text("\(viewModel.getTotalCaloriesForDate(viewModel.selectedDate))")
                         .font(PlumpyTheme.Typography.title1)
                         .fontWeight(.bold)
-                        .foregroundColor(PlumpyTheme.primaryAccent)
+                        .foregroundColor(PlumpyTheme.primary)
                     
                     Text("calories")
                         .font(PlumpyTheme.Typography.caption1)
@@ -134,17 +134,17 @@ struct HomeView: View {
     }
     
     private var quickActionsSection: some View {
-        VStack(spacing: PlumpyTheme.Spacing.medium) {
+        VStack(spacing: PlumpyTheme.Spacing.large) {
             Text("Quick Actions")
-                .font(PlumpyTheme.Typography.headline)
+                .font(PlumpyTheme.Typography.title3)
                 .fontWeight(.semibold)
                 .foregroundColor(PlumpyTheme.textPrimary)
             
-            HStack(spacing: PlumpyTheme.Spacing.small) {
+            HStack(spacing: PlumpyTheme.Spacing.large) {
                 PlumpyActionIconButton(
                     systemImageName: "plus.circle.fill",
                     title: "Add Meal",
-                    color: PlumpyTheme.primaryAccent
+                    color: PlumpyTheme.primary
                 ) {
                     viewModel.showingAddFoodEntry = true
                 }
@@ -152,7 +152,7 @@ struct HomeView: View {
                 PlumpyActionIconButton(
                     systemImageName: "camera.fill",
                     title: "Photo",
-                    color: PlumpyTheme.secondaryAccent
+                    color: PlumpyTheme.secondary
                 ) {
                     // Camera action
                 }
@@ -160,7 +160,7 @@ struct HomeView: View {
                 PlumpyActionIconButton(
                     systemImageName: "chart.bar.fill",
                     title: "Stats",
-                    color: PlumpyTheme.tertiaryAccent
+                    color: PlumpyTheme.tertiary
                 ) {
                     // Stats action
                 }
@@ -172,10 +172,10 @@ struct HomeView: View {
     private var foodEntriesList: some View {
         let entries = viewModel.getFoodEntriesForDate(viewModel.selectedDate)
         
-        return VStack(spacing: PlumpyTheme.Spacing.medium) {
+        return VStack(spacing: PlumpyTheme.Spacing.large) {
             HStack {
                 Text("Today's Meals")
-                    .font(PlumpyTheme.Typography.headline)
+                    .font(PlumpyTheme.Typography.title3)
                     .fontWeight(.semibold)
                     .foregroundColor(PlumpyTheme.textPrimary)
                 
@@ -198,7 +198,7 @@ struct HomeView: View {
                     viewModel.showingAddFoodEntry = true
                 }
             } else {
-                LazyVStack(spacing: PlumpyTheme.Spacing.small) {
+                LazyVStack(spacing: PlumpyTheme.Spacing.medium) {
                     ForEach(entries) { entry in
                         FoodEntryCard(entry: entry, viewModel: viewModel)
                     }
@@ -212,14 +212,14 @@ struct HomeView: View {
         let recentEntries = viewModel.getFoodEntriesForLastDays(7)
         let similarEntries = viewModel.getSimilarFoodEntries(for: viewModel.selectedDate)
         
-        return VStack(spacing: PlumpyTheme.Spacing.medium) {
+        return VStack(spacing: PlumpyTheme.Spacing.large) {
             Text("History & Recommendations")
-                .font(PlumpyTheme.Typography.headline)
+                .font(PlumpyTheme.Typography.title3)
                 .fontWeight(.semibold)
                 .foregroundColor(PlumpyTheme.textPrimary)
             
             if !recentEntries.isEmpty {
-                VStack(spacing: PlumpyTheme.Spacing.small) {
+                VStack(spacing: PlumpyTheme.Spacing.medium) {
                     Text("A week ago at this time you ate:")
                         .font(PlumpyTheme.Typography.caption1)
                         .foregroundColor(PlumpyTheme.textSecondary)
@@ -227,7 +227,7 @@ struct HomeView: View {
                     ForEach(similarEntries.prefix(3), id: \.id) { entry in
                         HStack {
                             Image(systemName: entry.mealType.icon)
-                                .foregroundColor(PlumpyTheme.primaryAccent)
+                                .foregroundColor(PlumpyTheme.primary)
                                 .frame(width: 20)
                             
                             Text(entry.displayName)
@@ -240,17 +240,17 @@ struct HomeView: View {
                                 .font(PlumpyTheme.Typography.caption1)
                                 .foregroundColor(PlumpyTheme.textSecondary)
                         }
-                        .padding(PlumpyTheme.Spacing.small)
+                        .padding(PlumpyTheme.Spacing.medium)
                         .plumpyCard(
                             cornerRadius: PlumpyTheme.Radius.small,
-                            backgroundColor: PlumpyTheme.surfaceSecondary
+                            backgroundColor: PlumpyTheme.neutral50
                         )
                     }
                 }
             }
             
             // AI рекомендации
-            VStack(spacing: PlumpyTheme.Spacing.small) {
+            VStack(spacing: PlumpyTheme.Spacing.medium) {
                 Text("AI recommends:")
                     .font(PlumpyTheme.Typography.caption1)
                     .foregroundColor(PlumpyTheme.textSecondary)
@@ -268,7 +268,7 @@ struct HomeView: View {
                         
                         Spacer()
                     }
-                    .padding(PlumpyTheme.Spacing.small)
+                    .padding(PlumpyTheme.Spacing.medium)
                     .plumpyCard(
                         cornerRadius: PlumpyTheme.Radius.small,
                         backgroundColor: PlumpyTheme.warning.opacity(0.1)
@@ -299,10 +299,10 @@ struct QuickActionButton: View {
                     .foregroundColor(PlumpyTheme.textPrimary)
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, PlumpyTheme.Spacing.medium)
+            .padding(.vertical, PlumpyTheme.Spacing.large)
             .plumpyCard(
                 cornerRadius: PlumpyTheme.Radius.medium,
-                backgroundColor: PlumpyTheme.surfaceSecondary
+                backgroundColor: PlumpyTheme.neutral50
             )
         }
         .buttonStyle(PlainButtonStyle())
@@ -319,11 +319,11 @@ struct FoodEntryCard: View {
         Button(action: {
             showingDetail = true
         }) {
-            VStack(spacing: PlumpyTheme.Spacing.medium) {
+            VStack(spacing: PlumpyTheme.Spacing.large) {
                 HStack {
-                    HStack(spacing: PlumpyTheme.Spacing.small) {
+                    HStack(spacing: PlumpyTheme.Spacing.medium) {
                         Image(systemName: entry.mealType.icon)
-                            .foregroundColor(PlumpyTheme.primaryAccent)
+                            .foregroundColor(PlumpyTheme.primary)
                             .frame(width: 20)
                         
                         VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.tiny) {
@@ -344,7 +344,7 @@ struct FoodEntryCard: View {
                         Text("\(entry.totalCalories)")
                             .font(PlumpyTheme.Typography.title3)
                             .fontWeight(.bold)
-                            .foregroundColor(PlumpyTheme.primaryAccent)
+                            .foregroundColor(PlumpyTheme.primary)
                         
                         Text("calories")
                             .font(PlumpyTheme.Typography.caption2)
@@ -353,7 +353,7 @@ struct FoodEntryCard: View {
                 }
                 
                 if !entry.products.isEmpty {
-                    VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.small) {
+                    VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.medium) {
                         Text("Products")
                             .font(PlumpyTheme.Typography.caption1)
                             .fontWeight(.medium)
@@ -385,7 +385,7 @@ struct FoodEntryCard: View {
         .buttonStyle(PlainButtonStyle())
         .plumpyCard(
             cornerRadius: PlumpyTheme.Radius.medium,
-            backgroundColor: PlumpyTheme.surfaceSecondary
+            backgroundColor: PlumpyTheme.neutral50
         )
     }
 }

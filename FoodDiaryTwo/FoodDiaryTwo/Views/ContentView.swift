@@ -9,7 +9,6 @@ import SwiftUI
 import SwiftData
 
 struct ContentView: View {
-    @Environment(\.modelContext) private var modelContext
     @State private var selectedTab = 0
     
     var body: some View {
@@ -18,9 +17,9 @@ struct ContentView: View {
                 .ignoresSafeArea()
             
             VStack(spacing: 0) {
-                // Tab Content
+                // Основной контент
                 TabView(selection: $selectedTab) {
-                    HomeView(modelContext: modelContext)
+                    HomeView(modelContext: try! ModelContainer(for: FoodEntry.self, FoodProduct.self, UserProfile.self).mainContext)
                         .tag(0)
                     
                     HistoryStatsSettings()
@@ -35,13 +34,13 @@ struct ContentView: View {
                 PlumpyTabBar(
                     selectedTab: $selectedTab,
                     tabs: [
-                        PlumpyTabItem(icon: "house.fill", title: "Home", color: PlumpyTheme.primaryAccent),
-                        PlumpyTabItem(icon: "chart.bar.fill", title: "Stats", color: PlumpyTheme.secondaryAccent),
-                        PlumpyTabItem(icon: "person.fill", title: "Profile", color: PlumpyTheme.tertiaryAccent)
+                        PlumpyTabItem(icon: "house.fill", title: "Home", color: PlumpyTheme.primary),
+                        PlumpyTabItem(icon: "chart.bar.fill", title: "Stats", color: PlumpyTheme.secondary),
+                        PlumpyTabItem(icon: "person.fill", title: "Profile", color: PlumpyTheme.tertiary)
                     ]
                 )
-                .padding(.horizontal, PlumpyTheme.Spacing.medium)
-                .padding(.bottom, PlumpyTheme.Spacing.tiny)
+                .padding(.horizontal, PlumpyTheme.Spacing.large)
+                .padding(.bottom, PlumpyTheme.Spacing.small)
             }
         }
     }

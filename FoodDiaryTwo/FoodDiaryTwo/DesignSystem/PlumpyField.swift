@@ -30,7 +30,7 @@ struct PlumpyField: View {
         textContentType: UITextContentType? = nil,
         isSecure: Bool = false,
         icon: String? = nil,
-        iconColor: Color = PlumpyTheme.primaryAccent,
+        iconColor: Color = PlumpyTheme.primary,
         errorMessage: String? = nil,
         isRequired: Bool = false
     ) {
@@ -51,19 +51,19 @@ struct PlumpyField: View {
             // Заголовок поля
             HStack(spacing: PlumpyTheme.Spacing.tiny) {
                 Text(title)
-                    .font(PlumpyTheme.Typography.subheadline)
+                    .font(PlumpyTheme.Typography.caption1)
                     .fontWeight(.medium)
                     .foregroundColor(PlumpyTheme.textSecondary)
                 
                 if isRequired {
                     Text("*")
-                        .font(PlumpyTheme.Typography.subheadline)
+                        .font(PlumpyTheme.Typography.caption1)
                         .foregroundColor(PlumpyTheme.error)
                 }
             }
             
             // Поле ввода
-            HStack(spacing: PlumpyTheme.Spacing.small) {
+            HStack(spacing: PlumpyTheme.Spacing.medium) {
                 if let icon = icon {
                     Image(systemName: icon)
                         .font(.body)
@@ -88,8 +88,8 @@ struct PlumpyField: View {
                     }
                 }
             }
-            .padding(.horizontal, PlumpyTheme.Spacing.small)
-            .padding(.vertical, PlumpyTheme.Spacing.small)
+            .padding(.horizontal, PlumpyTheme.Spacing.medium)
+            .padding(.vertical, PlumpyTheme.Spacing.medium)
             .background(
                 RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
                     .fill(backgroundColor)
@@ -131,23 +131,23 @@ struct PlumpyField: View {
         } else if errorMessage != nil {
             return PlumpyTheme.error.opacity(0.05)
         } else {
-            return PlumpyTheme.surfaceSecondary
+            return PlumpyTheme.neutral50
         }
     }
     
     private var borderColor: Color {
         if isEditing {
-            return PlumpyTheme.primaryAccent
+            return PlumpyTheme.primary
         } else if errorMessage != nil {
             return PlumpyTheme.error
         } else {
-            return PlumpyTheme.border
+            return PlumpyTheme.neutral200
         }
     }
     
     private var borderWidth: CGFloat {
         if isEditing || errorMessage != nil {
-            return 2
+            return 1.5
         } else {
             return 1
         }
@@ -155,9 +155,9 @@ struct PlumpyField: View {
     
     private var shadowColor: Color {
         if isEditing {
-            return PlumpyTheme.primaryAccent.opacity(0.2)
+            return PlumpyTheme.primary.opacity(0.1)
         } else {
-            return PlumpyTheme.shadow.opacity(0.05)
+            return PlumpyTheme.shadow.opacity(0.02)
         }
     }
 }
@@ -172,7 +172,7 @@ struct PlumpySearchField: View {
     @FocusState private var isFocused: Bool
     
     var body: some View {
-        HStack(spacing: PlumpyTheme.Spacing.small) {
+        HStack(spacing: PlumpyTheme.Spacing.medium) {
             Image(systemName: "magnifyingglass")
                 .font(.body)
                 .foregroundColor(PlumpyTheme.textSecondary)
@@ -196,18 +196,18 @@ struct PlumpySearchField: View {
                 .transition(.scale.combined(with: .opacity))
             }
         }
-        .padding(.horizontal, PlumpyTheme.Spacing.small)
-        .padding(.vertical, PlumpyTheme.Spacing.small)
+        .padding(.horizontal, PlumpyTheme.Spacing.medium)
+        .padding(.vertical, PlumpyTheme.Spacing.medium)
         .background(
             RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
-                .fill(PlumpyTheme.surface)
+                .fill(PlumpyTheme.neutral50)
                 .overlay(
                     RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
-                        .stroke(isFocused ? PlumpyTheme.primaryAccent : PlumpyTheme.border, lineWidth: isFocused ? 2 : 1)
+                        .stroke(isFocused ? PlumpyTheme.primary : PlumpyTheme.neutral200, lineWidth: isFocused ? 1.5 : 1)
                 )
         )
         .shadow(
-            color: isFocused ? PlumpyTheme.primaryAccent.opacity(0.2) : PlumpyTheme.shadow.opacity(0.05),
+            color: isFocused ? PlumpyTheme.primary.opacity(0.1) : PlumpyTheme.shadow.opacity(0.02),
             radius: PlumpyTheme.Shadow.small.radius,
             x: PlumpyTheme.Shadow.small.x,
             y: PlumpyTheme.Shadow.small.y
@@ -230,8 +230,8 @@ struct PlumpyTextArea: View {
         title: String,
         placeholder: String,
         text: Binding<String>,
-        minHeight: CGFloat = 60,
-        maxHeight: CGFloat = 150
+        minHeight: CGFloat = 80,
+        maxHeight: CGFloat = 200
     ) {
         self.title = title
         self.placeholder = placeholder
@@ -243,7 +243,7 @@ struct PlumpyTextArea: View {
     var body: some View {
         VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.small) {
             Text(title)
-                .font(PlumpyTheme.Typography.subheadline)
+                .font(PlumpyTheme.Typography.caption1)
                 .fontWeight(.medium)
                 .foregroundColor(PlumpyTheme.textSecondary)
             
@@ -251,18 +251,18 @@ struct PlumpyTextArea: View {
                 .font(PlumpyTheme.Typography.body)
                 .focused($isFocused)
                 .frame(minHeight: minHeight, maxHeight: maxHeight)
-                .padding(.horizontal, PlumpyTheme.Spacing.small)
-                .padding(.vertical, PlumpyTheme.Spacing.small)
+                .padding(.horizontal, PlumpyTheme.Spacing.medium)
+                .padding(.vertical, PlumpyTheme.Spacing.medium)
                 .background(
                     RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
-                        .fill(PlumpyTheme.surface)
+                        .fill(PlumpyTheme.neutral50)
                         .overlay(
                             RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
-                                .stroke(isFocused ? PlumpyTheme.primaryAccent : PlumpyTheme.border, lineWidth: isFocused ? 2 : 1)
+                                .stroke(isFocused ? PlumpyTheme.primary : PlumpyTheme.neutral200, lineWidth: isFocused ? 1.5 : 1)
                         )
                 )
                 .shadow(
-                    color: isFocused ? PlumpyTheme.primaryAccent.opacity(0.2) : PlumpyTheme.shadow.opacity(0.05),
+                    color: isFocused ? PlumpyTheme.primary.opacity(0.1) : PlumpyTheme.shadow.opacity(0.02),
                     radius: PlumpyTheme.Shadow.small.radius,
                     x: PlumpyTheme.Shadow.small.x,
                     y: PlumpyTheme.Shadow.small.y
@@ -303,7 +303,7 @@ struct PlumpyTextArea: View {
             text: .constant(""),
             isSecure: true,
             icon: "lock",
-            iconColor: PlumpyTheme.secondaryAccent
+            iconColor: PlumpyTheme.secondary
         )
         
         PlumpyField(

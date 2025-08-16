@@ -18,7 +18,7 @@ struct PlumpyActionIconButton: View {
     init(
         systemImageName: String,
         title: String,
-        color: Color = PlumpyTheme.primaryAccent,
+        color: Color = PlumpyTheme.primary,
         action: @escaping () -> Void
     ) {
         self.systemImageName = systemImageName
@@ -35,14 +35,14 @@ struct PlumpyActionIconButton: View {
         }) {
             VStack(spacing: PlumpyTheme.Spacing.small) {
                 Image(systemName: systemImageName)
-                    .font(.title3)
+                    .font(.title2)
                     .foregroundColor(PlumpyTheme.textInverse)
-                    .frame(width: 36, height: 36)
+                    .frame(width: 48, height: 48)
                     .background(
-                        Circle()
+                        RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
                             .fill(color)
                             .shadow(
-                                color: color.opacity(0.3),
+                                color: color.opacity(0.2),
                                 radius: PlumpyTheme.Shadow.small.radius,
                                 x: PlumpyTheme.Shadow.small.x,
                                 y: PlumpyTheme.Shadow.small.y
@@ -76,16 +76,17 @@ struct PlumpyChip: View {
         case secondary
         case accent
         case outline
+        case ghost
         
         var backgroundColor: Color {
             switch self {
             case .primary:
-                return PlumpyTheme.primaryAccent
+                return PlumpyTheme.primary
             case .secondary:
-                return PlumpyTheme.secondaryAccent
+                return PlumpyTheme.secondary
             case .accent:
-                return PlumpyTheme.tertiaryAccent
-            case .outline:
+                return PlumpyTheme.tertiary
+            case .outline, .ghost:
                 return Color.clear
             }
         }
@@ -95,14 +96,16 @@ struct PlumpyChip: View {
             case .primary, .secondary, .accent:
                 return PlumpyTheme.textInverse
             case .outline:
-                return PlumpyTheme.primaryAccent
+                return PlumpyTheme.primary
+            case .ghost:
+                return PlumpyTheme.textPrimary
             }
         }
         
         var borderColor: Color {
             switch self {
             case .outline:
-                return PlumpyTheme.primaryAccent
+                return PlumpyTheme.primary
             default:
                 return Color.clear
             }
@@ -140,22 +143,22 @@ struct PlumpyChip: View {
                     .fontWeight(.medium)
             }
             .foregroundColor(isSelected ? style.foregroundColor : PlumpyTheme.textSecondary)
-            .padding(.horizontal, PlumpyTheme.Spacing.small)
-            .padding(.vertical, PlumpyTheme.Spacing.tiny)
+            .padding(.horizontal, PlumpyTheme.Spacing.medium)
+            .padding(.vertical, PlumpyTheme.Spacing.small)
             .background(
                 RoundedRectangle(cornerRadius: PlumpyTheme.Radius.round)
-                    .fill(isSelected ? style.backgroundColor : PlumpyTheme.surfaceSecondary)
+                    .fill(isSelected ? style.backgroundColor : PlumpyTheme.neutral100)
                     .overlay(
                         RoundedRectangle(cornerRadius: PlumpyTheme.Radius.round)
                             .stroke(
-                                isSelected ? style.borderColor : PlumpyTheme.border,
-                                lineWidth: isSelected ? 2 : 1
+                                isSelected ? style.borderColor : PlumpyTheme.neutral200,
+                                lineWidth: isSelected ? 1.5 : 1
                             )
                     )
             )
         }
         .buttonStyle(PlainButtonStyle())
-        .scaleEffect(isSelected ? 1.05 : 1.0)
+        .scaleEffect(isSelected ? 1.02 : 1.0)
         .animation(PlumpyTheme.Animation.spring, value: isSelected)
     }
 }
@@ -178,11 +181,11 @@ struct PlumpyBadge: View {
         var backgroundColor: Color {
             switch self {
             case .primary:
-                return PlumpyTheme.primaryAccent
+                return PlumpyTheme.primary
             case .secondary:
-                return PlumpyTheme.secondaryAccent
+                return PlumpyTheme.secondary
             case .accent:
-                return PlumpyTheme.tertiaryAccent
+                return PlumpyTheme.tertiary
             case .success:
                 return PlumpyTheme.success
             case .warning:
@@ -207,9 +210,9 @@ struct PlumpyBadge: View {
             case .small:
                 return PlumpyTheme.Spacing.tiny
             case .medium:
-                return PlumpyTheme.Spacing.tiny
-            case .large:
                 return PlumpyTheme.Spacing.small
+            case .large:
+                return PlumpyTheme.Spacing.medium
             }
         }
         
@@ -218,9 +221,9 @@ struct PlumpyBadge: View {
             case .small:
                 return PlumpyTheme.Typography.caption2
             case .medium:
-                return PlumpyTheme.Typography.caption2
-            case .large:
                 return PlumpyTheme.Typography.caption1
+            case .large:
+                return PlumpyTheme.Typography.footnote
             }
         }
     }
@@ -228,7 +231,7 @@ struct PlumpyBadge: View {
     init(
         text: String,
         style: PlumpyBadgeStyle = .primary,
-        size: PlumpyBadgeSize = .small
+        size: PlumpyBadgeSize = .medium
     ) {
         self.text = text
         self.style = style
@@ -246,7 +249,7 @@ struct PlumpyBadge: View {
                 Capsule()
                     .fill(style.backgroundColor)
                     .shadow(
-                        color: style.backgroundColor.opacity(0.3),
+                        color: style.backgroundColor.opacity(0.2),
                         radius: PlumpyTheme.Shadow.small.radius,
                         x: PlumpyTheme.Shadow.small.x,
                         y: PlumpyTheme.Shadow.small.y
@@ -271,14 +274,14 @@ struct PlumpyDivider: View {
             case .solid:
                 return StrokeStyle(lineWidth: 1)
             case .dashed:
-                return StrokeStyle(lineWidth: 1, dash: [5, 5])
+                return StrokeStyle(lineWidth: 1, dash: [4, 4])
             case .dotted:
                 return StrokeStyle(lineWidth: 1, dash: [2, 2])
             }
         }
     }
     
-    init(style: PlumpyDividerStyle = .solid, spacing: CGFloat = PlumpyTheme.Spacing.small) {
+    init(style: PlumpyDividerStyle = .solid, spacing: CGFloat = PlumpyTheme.Spacing.medium) {
         self.style = style
         self.spacing = spacing
     }
@@ -286,11 +289,11 @@ struct PlumpyDivider: View {
     var body: some View {
         HStack(spacing: spacing) {
             Rectangle()
-                .fill(PlumpyTheme.border)
+                .fill(PlumpyTheme.neutral200)
                 .frame(height: 1)
                 .overlay(
                     Rectangle()
-                        .stroke(PlumpyTheme.border, style: style.strokeStyle)
+                        .stroke(PlumpyTheme.neutral200, style: style.strokeStyle)
                 )
         }
     }
@@ -352,8 +355,8 @@ struct PlumpyLoadingIndicator: View {
     
     init(
         style: PlumpyLoadingIndicatorStyle = .spinner,
-        size: CGFloat = 32,
-        color: Color = PlumpyTheme.primaryAccent
+        size: CGFloat = 40,
+        color: Color = PlumpyTheme.primary
     ) {
         self.style = style
         self.size = size
@@ -424,12 +427,12 @@ struct PlumpyEmptyState: View {
     }
     
     var body: some View {
-        VStack(spacing: PlumpyTheme.Spacing.medium) {
+        VStack(spacing: PlumpyTheme.Spacing.large) {
             Image(systemName: icon)
-                .font(.system(size: 48))
+                .font(.system(size: 56))
                 .foregroundColor(PlumpyTheme.textTertiary)
             
-            VStack(spacing: PlumpyTheme.Spacing.small) {
+            VStack(spacing: PlumpyTheme.Spacing.medium) {
                 Text(title)
                     .font(PlumpyTheme.Typography.title3)
                     .fontWeight(.semibold)
@@ -452,10 +455,10 @@ struct PlumpyEmptyState: View {
                     style: .primary,
                     action: action
                 )
-                .frame(maxWidth: 160)
+                .frame(maxWidth: 200)
             }
         }
-        .padding(PlumpyTheme.Spacing.large)
+        .padding(PlumpyTheme.Spacing.extraLarge)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
@@ -468,19 +471,19 @@ struct PlumpyEmptyState: View {
                 PlumpyActionIconButton(
                     systemImageName: "plus",
                     title: "Add",
-                    color: PlumpyTheme.primaryAccent
+                    color: PlumpyTheme.primary
                 ) {}
                 
                 PlumpyActionIconButton(
                     systemImageName: "heart",
                     title: "Like",
-                    color: PlumpyTheme.secondaryAccent
+                    color: PlumpyTheme.secondary
                 ) {}
                 
                 PlumpyActionIconButton(
                     systemImageName: "star",
                     title: "Favorite",
-                    color: PlumpyTheme.tertiaryAccent
+                    color: PlumpyTheme.tertiary
                 ) {}
             }
             
@@ -493,6 +496,7 @@ struct PlumpyEmptyState: View {
                     PlumpyChip(title: "Primary", style: .primary, isSelected: true) {}
                     PlumpyChip(title: "Secondary", style: .secondary) {}
                     PlumpyChip(title: "Outline", style: .outline) {}
+                    PlumpyChip(title: "Ghost", style: .ghost) {}
                 }
             }
             
@@ -530,5 +534,5 @@ struct PlumpyEmptyState: View {
         }
         .padding()
     }
-    .plumpyBackground(style: .primary)
+    .background(PlumpyTheme.background)
 }

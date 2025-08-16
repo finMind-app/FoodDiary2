@@ -31,11 +31,11 @@ struct PlumpyProgressBar: View {
         var color: Color {
             switch self {
             case .primary:
-                return PlumpyTheme.primaryAccent
+                return PlumpyTheme.primary
             case .secondary:
-                return PlumpyTheme.secondaryAccent
+                return PlumpyTheme.secondary
             case .accent:
-                return PlumpyTheme.tertiaryAccent
+                return PlumpyTheme.tertiary
             case .success:
                 return PlumpyTheme.success
             case .warning:
@@ -56,11 +56,11 @@ struct PlumpyProgressBar: View {
         var height: CGFloat {
             switch self {
             case .small:
-                return 6
+                return 4
             case .medium:
-                return 8
+                return 6
             case .large:
-                return 12
+                return 8
             }
         }
         
@@ -97,13 +97,13 @@ struct PlumpyProgressBar: View {
     }
     
     var body: some View {
-        VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.tiny) {
+        VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.small) {
             // Заголовок и процент
             if title != nil || showPercentage {
                 HStack {
                     if let title = title {
                         Text(title)
-                            .font(PlumpyTheme.Typography.subheadline)
+                            .font(PlumpyTheme.Typography.caption1)
                             .fontWeight(.medium)
                             .foregroundColor(PlumpyTheme.textSecondary)
                     }
@@ -124,7 +124,7 @@ struct PlumpyProgressBar: View {
                 ZStack(alignment: .leading) {
                     // Фон
                     RoundedRectangle(cornerRadius: size.cornerRadius)
-                        .fill(PlumpyTheme.surfaceTertiary)
+                        .fill(PlumpyTheme.neutral200)
                         .frame(height: size.height)
                     
                     // Прогресс
@@ -154,7 +154,7 @@ struct PlumpyProgressBar: View {
             // Подзаголовок
             if let subtitle = subtitle {
                 Text(subtitle)
-                    .font(PlumpyTheme.Typography.caption1)
+                    .font(PlumpyTheme.Typography.caption2)
                     .foregroundColor(PlumpyTheme.textTertiary)
             }
         }
@@ -196,8 +196,8 @@ struct PlumpyCircularProgressBar: View {
     init(
         value: Double,
         maxValue: Double = 100,
-        size: CGFloat = 80,
-        lineWidth: CGFloat = 6,
+        size: CGFloat = 100,
+        lineWidth: CGFloat = 8,
         style: PlumpyProgressBar.PlumpyProgressBarStyle = .primary,
         showPercentage: Bool = true,
         animated: Bool = true
@@ -216,7 +216,7 @@ struct PlumpyCircularProgressBar: View {
             // Фоновая окружность
             Circle()
                 .stroke(
-                    PlumpyTheme.surfaceTertiary,
+                    PlumpyTheme.neutral200,
                     lineWidth: lineWidth
                 )
                 .frame(width: size, height: size)
@@ -251,11 +251,11 @@ struct PlumpyCircularProgressBar: View {
             if showPercentage {
                 VStack(spacing: 2) {
                     Text("\(Int(progress * 100))")
-                        .font(.system(size: size * 0.25, weight: .bold, design: .rounded))
+                        .font(.system(size: size * 0.3, weight: .bold, design: .default))
                         .foregroundColor(style.color)
                     
                     Text("%")
-                        .font(.system(size: size * 0.12, weight: .medium, design: .rounded))
+                        .font(.system(size: size * 0.15, weight: .medium, design: .default))
                         .foregroundColor(PlumpyTheme.textSecondary)
                 }
             }
@@ -311,12 +311,12 @@ struct PlumpyStepProgressBar: View {
                         // Круг шага
                         Circle()
                             .fill(stepColor(for: step))
-                            .frame(width: 24, height: 24)
+                            .frame(width: 28, height: 28)
                             .overlay(
                                 Circle()
                                     .stroke(
-                                        step == currentStep ? style.color : PlumpyTheme.border,
-                                        lineWidth: step == currentStep ? 3 : 1
+                                        step == currentStep ? style.color : PlumpyTheme.neutral200,
+                                        lineWidth: step == currentStep ? 2 : 1
                                     )
                             )
                             .overlay(
@@ -338,7 +338,7 @@ struct PlumpyStepProgressBar: View {
                         // Линия между шагами
                         if step < totalSteps - 1 {
                             Rectangle()
-                                .fill(step < currentStep ? style.color : PlumpyTheme.border)
+                                .fill(step < currentStep ? style.color : PlumpyTheme.neutral200)
                                 .frame(height: 2)
                                 .frame(maxWidth: .infinity)
                         }
@@ -366,7 +366,7 @@ struct PlumpyStepProgressBar: View {
         } else if step == currentStep {
             return style.color.opacity(0.3)
         } else {
-            return PlumpyTheme.surfaceTertiary
+            return PlumpyTheme.neutral200
         }
     }
     
@@ -406,13 +406,13 @@ struct PlumpyStepProgressBar: View {
         HStack(spacing: PlumpyTheme.Spacing.large) {
             PlumpyCircularProgressBar(
                 value: 75,
-                size: 80,
+                size: 100,
                 style: .primary
             )
             
             PlumpyCircularProgressBar(
                 value: 60,
-                size: 100,
+                size: 120,
                 style: .secondary
             )
         }

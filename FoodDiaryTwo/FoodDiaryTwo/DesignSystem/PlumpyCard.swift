@@ -17,7 +17,7 @@ struct PlumpyCard<Content: View>: View {
     
     init(
         cornerRadius: CGFloat = PlumpyTheme.Radius.medium,
-        shadowStyle: PlumpyTheme.ShadowStyle = PlumpyTheme.Shadow.medium,
+        shadowStyle: PlumpyTheme.ShadowStyle = PlumpyTheme.Shadow.small,
         backgroundColor: Color = PlumpyTheme.surface,
         borderColor: Color? = nil,
         borderWidth: CGFloat = 0,
@@ -33,8 +33,8 @@ struct PlumpyCard<Content: View>: View {
     
     var body: some View {
         content
-            .padding(.horizontal, PlumpyTheme.Spacing.medium)
-            .padding(.vertical, PlumpyTheme.Spacing.small)
+            .padding(.horizontal, PlumpyTheme.Spacing.large)
+            .padding(.vertical, PlumpyTheme.Spacing.large)
             .background(backgroundColor)
             .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
             .overlay(
@@ -65,7 +65,7 @@ struct PlumpyCardModifier: ViewModifier {
     
     init(
         cornerRadius: CGFloat = PlumpyTheme.Radius.medium,
-        shadowStyle: PlumpyTheme.ShadowStyle = PlumpyTheme.Shadow.medium,
+        shadowStyle: PlumpyTheme.ShadowStyle = PlumpyTheme.Shadow.small,
         backgroundColor: Color = PlumpyTheme.surface,
         borderColor: Color? = nil,
         borderWidth: CGFloat = 0
@@ -79,8 +79,8 @@ struct PlumpyCardModifier: ViewModifier {
     
     func body(content: Content) -> some View {
         content
-            .padding(.horizontal, PlumpyTheme.Spacing.medium)
-            .padding(.vertical, PlumpyTheme.Spacing.small)
+            .padding(.horizontal, PlumpyTheme.Spacing.large)
+            .padding(.vertical, PlumpyTheme.Spacing.large)
             .background(backgroundColor)
             .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
             .overlay(
@@ -100,12 +100,12 @@ struct PlumpyCardModifier: ViewModifier {
     }
 }
 
-// MARK: - View Extension
+// MARK: - View Extensions
 
 extension View {
     func plumpyCard(
         cornerRadius: CGFloat = PlumpyTheme.Radius.medium,
-        shadowStyle: PlumpyTheme.ShadowStyle = PlumpyTheme.Shadow.medium,
+        shadowStyle: PlumpyTheme.ShadowStyle = PlumpyTheme.Shadow.small,
         backgroundColor: Color = PlumpyTheme.surface,
         borderColor: Color? = nil,
         borderWidth: CGFloat = 0
@@ -127,14 +127,14 @@ struct PlumpyInfoCard: View {
     let subtitle: String?
     let icon: String
     let iconColor: Color
-    let action: (() -> Void)?
+    let action: () -> Void
     
     init(
         title: String,
         subtitle: String? = nil,
         icon: String,
-        iconColor: Color = PlumpyTheme.primaryAccent,
-        action: (() -> Void)? = nil
+        iconColor: Color = PlumpyTheme.primary,
+        action: @escaping () -> Void
     ) {
         self.title = title
         self.subtitle = subtitle
@@ -144,48 +144,48 @@ struct PlumpyInfoCard: View {
     }
     
     var body: some View {
-        Button(action: {
-            action?()
-        }) {
+        Button(action: action) {
             HStack(spacing: PlumpyTheme.Spacing.medium) {
                 Image(systemName: icon)
                     .font(.title2)
                     .foregroundColor(iconColor)
-                    .frame(width: 40, height: 40)
-                    .background(
-                        Circle()
-                            .fill(iconColor.opacity(0.1))
-                    )
+                    .frame(width: 24, height: 24)
                 
                 VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.tiny) {
                     Text(title)
-                        .font(PlumpyTheme.Typography.headline)
+                        .font(PlumpyTheme.Typography.subheadline)
+                        .fontWeight(.medium)
                         .foregroundColor(PlumpyTheme.textPrimary)
-                        .multilineTextAlignment(.leading)
                     
                     if let subtitle = subtitle {
                         Text(subtitle)
                             .font(PlumpyTheme.Typography.caption1)
                             .foregroundColor(PlumpyTheme.textSecondary)
-                            .multilineTextAlignment(.leading)
                     }
                 }
                 
                 Spacer()
                 
-                if action != nil {
-                    Image(systemName: "chevron.right")
-                        .font(.caption)
-                        .foregroundColor(PlumpyTheme.textTertiary)
-                }
+                Image(systemName: "chevron.right")
+                    .font(.caption)
+                    .foregroundColor(PlumpyTheme.textTertiary)
             }
+            .padding(.horizontal, PlumpyTheme.Spacing.large)
+            .padding(.vertical, PlumpyTheme.Spacing.medium)
+            .background(PlumpyTheme.surface)
+            .clipShape(RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium))
+            .overlay(
+                RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
+                    .stroke(PlumpyTheme.neutral200, lineWidth: 1)
+            )
+            .shadow(
+                color: PlumpyTheme.shadow.opacity(0.02),
+                radius: PlumpyTheme.Shadow.small.radius,
+                x: PlumpyTheme.Shadow.small.x,
+                y: PlumpyTheme.Shadow.small.y
+            )
         }
         .buttonStyle(PlainButtonStyle())
-        .plumpyCard(
-            backgroundColor: PlumpyTheme.surfaceSecondary,
-            borderColor: action != nil ? PlumpyTheme.borderLight : nil,
-            borderWidth: action != nil ? 1 : 0
-        )
     }
 }
 
@@ -195,32 +195,26 @@ struct PlumpyStatsCard: View {
     let subtitle: String?
     let icon: String
     let iconColor: Color
-    let trend: Trend?
+    let trend: PlumpyTrend
     
-    enum Trend {
+    enum PlumpyTrend {
         case up
         case down
         case neutral
         
         var icon: String {
             switch self {
-            case .up:
-                return "arrow.up.right"
-            case .down:
-                return "arrow.down.right"
-            case .neutral:
-                return "minus"
+            case .up: return "arrow.up.right"
+            case .down: return "arrow.down.right"
+            case .neutral: return "minus"
             }
         }
         
         var color: Color {
             switch self {
-            case .up:
-                return PlumpyTheme.success
-            case .down:
-                return PlumpyTheme.error
-            case .neutral:
-                return PlumpyTheme.textTertiary
+            case .up: return PlumpyTheme.success
+            case .down: return PlumpyTheme.error
+            case .neutral: return PlumpyTheme.textTertiary
             }
         }
     }
@@ -230,8 +224,8 @@ struct PlumpyStatsCard: View {
         value: String,
         subtitle: String? = nil,
         icon: String,
-        iconColor: Color = PlumpyTheme.primaryAccent,
-        trend: Trend? = nil
+        iconColor: Color = PlumpyTheme.primary,
+        trend: PlumpyTrend = .neutral
     ) {
         self.title = title
         self.value = value
@@ -247,19 +241,13 @@ struct PlumpyStatsCard: View {
                 Image(systemName: icon)
                     .font(.title2)
                     .foregroundColor(iconColor)
-                    .frame(width: 40, height: 40)
-                    .background(
-                        Circle()
-                            .fill(iconColor.opacity(0.1))
-                    )
+                    .frame(width: 24, height: 24)
                 
                 Spacer()
                 
-                if let trend = trend {
-                    Image(systemName: trend.icon)
-                        .font(.caption)
-                        .foregroundColor(trend.color)
-                }
+                Image(systemName: trend.icon)
+                    .font(.caption)
+                    .foregroundColor(trend.color)
             }
             
             VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.tiny) {
@@ -269,18 +257,29 @@ struct PlumpyStatsCard: View {
                     .foregroundColor(PlumpyTheme.textPrimary)
                 
                 Text(title)
-                    .font(PlumpyTheme.Typography.subheadline)
+                    .font(PlumpyTheme.Typography.caption1)
                     .foregroundColor(PlumpyTheme.textSecondary)
                 
                 if let subtitle = subtitle {
                     Text(subtitle)
-                        .font(PlumpyTheme.Typography.caption1)
+                        .font(PlumpyTheme.Typography.caption2)
                         .foregroundColor(PlumpyTheme.textTertiary)
                 }
             }
         }
-        .plumpyCard(
-            backgroundColor: PlumpyTheme.surfaceSecondary
+        .padding(.horizontal, PlumpyTheme.Spacing.large)
+        .padding(.vertical, PlumpyTheme.Spacing.large)
+        .background(PlumpyTheme.surface)
+        .clipShape(RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium))
+        .overlay(
+            RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
+                .stroke(PlumpyTheme.neutral200, lineWidth: 1)
+        )
+        .shadow(
+            color: PlumpyTheme.shadow.opacity(0.02),
+            radius: PlumpyTheme.Shadow.small.radius,
+            x: PlumpyTheme.Shadow.small.x,
+            y: PlumpyTheme.Shadow.small.y
         )
     }
 }
@@ -288,34 +287,32 @@ struct PlumpyStatsCard: View {
 #Preview {
     VStack(spacing: PlumpyTheme.Spacing.large) {
         PlumpyCard {
-            Text("Basic Card Content")
-                .font(PlumpyTheme.Typography.body)
+            VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.medium) {
+                Text("Card Title")
+                    .font(PlumpyTheme.Typography.title3)
+                    .fontWeight(.semibold)
+                
+                Text("This is a sample card with some content to demonstrate the new design system.")
+                    .font(PlumpyTheme.Typography.body)
+                    .foregroundColor(PlumpyTheme.textSecondary)
+            }
         }
         
         PlumpyInfoCard(
-            title: "Profile Settings",
-            subtitle: "Manage your account preferences",
+            title: "Personal Information",
+            subtitle: "Edit your name, email, and photo",
             icon: "person.circle",
-            action: {}
-        )
+            iconColor: PlumpyTheme.primary
+        ) {}
         
         PlumpyStatsCard(
-            title: "Total Calories",
-            value: "1,250",
-            subtitle: "Today's intake",
-            icon: "flame.fill",
-            iconColor: PlumpyTheme.warning,
+            title: "Total Meals",
+            value: "156",
+            subtitle: "This month",
+            icon: "fork.knife",
+            iconColor: PlumpyTheme.primary,
             trend: .up
         )
-        
-        Text("Custom Card")
-            .font(PlumpyTheme.Typography.headline)
-            .plumpyCard(
-                cornerRadius: PlumpyTheme.Radius.large,
-                backgroundColor: PlumpyTheme.primary.opacity(0.1),
-                borderColor: PlumpyTheme.primary,
-                borderWidth: 2
-            )
     }
     .padding()
     .background(PlumpyTheme.background)

@@ -10,77 +10,49 @@ import SwiftUI
 struct PlumpyTabBar: View {
     @Binding var selectedTab: Int
     let tabs: [PlumpyTabItem]
-    let backgroundColor: Color
-    let showBorder: Bool
-    
-    init(
-        selectedTab: Binding<Int>,
-        tabs: [PlumpyTabItem],
-        backgroundColor: Color = PlumpyTheme.surface,
-        showBorder: Bool = true
-    ) {
-        self._selectedTab = selectedTab
-        self.tabs = tabs
-        self.backgroundColor = backgroundColor
-        self.showBorder = showBorder
-    }
     
     var body: some View {
-        VStack(spacing: 0) {
-            // Верхняя граница
-            if showBorder {
-                Rectangle()
-                    .fill(PlumpyTheme.border)
-                    .frame(height: 1)
-            }
-            
-            HStack(spacing: 0) {
-                ForEach(0..<tabs.count, id: \.self) { index in
-                    Button(action: {
-                        withAnimation(PlumpyTheme.Animation.spring) {
-                            selectedTab = index
-                        }
-                    }) {
-                        VStack(spacing: PlumpyTheme.Spacing.tiny) {
-                            Image(systemName: tabs[index].icon)
-                                .font(.title3)
-                                .foregroundColor(selectedTab == index ? tabs[index].color : PlumpyTheme.textTertiary)
-                            
-                            Text(tabs[index].title)
-                                .font(PlumpyTheme.Typography.caption2)
-                                .foregroundColor(selectedTab == index ? tabs[index].color : PlumpyTheme.textTertiary)
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, PlumpyTheme.Spacing.small)
-                        .background(
-                            Group {
-                                if selectedTab == index {
-                                    RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
-                                        .fill(tabs[index].color.opacity(0.15))
-                                }
-                            }
-                        )
+        HStack(spacing: 0) {
+            ForEach(0..<tabs.count, id: \.self) { index in
+                Button(action: {
+                    withAnimation(PlumpyTheme.Animation.spring) {
+                        selectedTab = index
                     }
-                    .buttonStyle(PlainButtonStyle())
-                }
-            }
-            .padding(.horizontal, PlumpyTheme.Spacing.small)
-            .padding(.vertical, PlumpyTheme.Spacing.tiny)
-            .background(
-                RoundedRectangle(cornerRadius: PlumpyTheme.Radius.large)
-                    .fill(backgroundColor)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: PlumpyTheme.Radius.large)
-                            .stroke(Color.black.opacity(0.05), lineWidth: 1)
+                }) {
+                    VStack(spacing: PlumpyTheme.Spacing.tiny) {
+                        Image(systemName: tabs[index].icon)
+                            .font(.title3)
+                            .foregroundColor(selectedTab == index ? tabs[index].color : PlumpyTheme.textTertiary)
+                        
+                        Text(tabs[index].title)
+                            .font(PlumpyTheme.Typography.caption1)
+                            .foregroundColor(selectedTab == index ? tabs[index].color : PlumpyTheme.textTertiary)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, PlumpyTheme.Spacing.medium)
+                    .background(
+                        Rectangle()
+                            .fill(selectedTab == index ? tabs[index].color.opacity(0.1) : Color.clear)
                     )
-            )
-            .shadow(
-                color: PlumpyTheme.shadow.opacity(0.1),
-                radius: PlumpyTheme.Shadow.large.radius,
-                x: PlumpyTheme.Shadow.large.x,
-                y: PlumpyTheme.Shadow.large.y
-            )
+                }
+                .buttonStyle(PlainButtonStyle())
+            }
         }
+        .padding(.horizontal, PlumpyTheme.Spacing.large)
+        .padding(.vertical, PlumpyTheme.Spacing.small)
+        .background(PlumpyTheme.surface)
+        .overlay(
+            Rectangle()
+                .fill(PlumpyTheme.neutral200)
+                .frame(height: 1),
+            alignment: .top
+        )
+        .shadow(
+            color: PlumpyTheme.shadow.opacity(0.05),
+            radius: PlumpyTheme.Shadow.small.radius,
+            x: PlumpyTheme.Shadow.small.x,
+            y: PlumpyTheme.Shadow.small.y
+        )
     }
 }
 
@@ -97,14 +69,17 @@ struct PlumpyTabItem {
 }
 
 #Preview {
-    PlumpyTabBar(
-        selectedTab: .constant(0),
-        tabs: [
-            PlumpyTabItem(icon: "house.fill", title: "Home", color: PlumpyTheme.primaryAccent),
-            PlumpyTabItem(icon: "chart.bar.fill", title: "Stats", color: PlumpyTheme.secondaryAccent),
-            PlumpyTabItem(icon: "person.fill", title: "Profile", color: PlumpyTheme.tertiaryAccent)
-        ]
-    )
-    .padding()
+    VStack {
+        Spacer()
+        
+        PlumpyTabBar(
+            selectedTab: .constant(0),
+            tabs: [
+                PlumpyTabItem(icon: "house.fill", title: "Home", color: PlumpyTheme.primary),
+                PlumpyTabItem(icon: "chart.bar.fill", title: "Stats", color: PlumpyTheme.secondary),
+                PlumpyTabItem(icon: "person.fill", title: "Profile", color: PlumpyTheme.tertiary)
+            ]
+        )
+    }
     .background(PlumpyTheme.background)
 }
