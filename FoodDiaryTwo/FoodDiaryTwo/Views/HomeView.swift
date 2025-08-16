@@ -134,12 +134,12 @@ struct HomeView: View {
         HStack {
             VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.tiny) {
                 Text(formatDate(selectedDate))
-                    .font(PlumpyTheme.Typography.title2)
+                    .font(PlumpyTheme.Typography.title3)
                     .fontWeight(.semibold)
                     .foregroundColor(PlumpyTheme.textPrimary)
                 
                 Text("Total calories today")
-                    .font(PlumpyTheme.Typography.caption1)
+                    .font(PlumpyTheme.Typography.caption2)
                     .foregroundColor(PlumpyTheme.textSecondary)
             }
             
@@ -154,7 +154,7 @@ struct HomeView: View {
                     }
                 }
             )
-            .frame(maxWidth: 80)
+            .frame(maxWidth: 70)
         }
         .plumpyCard()
     }
@@ -162,7 +162,7 @@ struct HomeView: View {
     private var calorieRingChart: some View {
         VStack(spacing: PlumpyTheme.Spacing.large) {
             Text("Daily Progress")
-                .font(PlumpyTheme.Typography.title3)
+                .font(PlumpyTheme.Typography.subheadline)
                 .fontWeight(.semibold)
                 .foregroundColor(PlumpyTheme.textPrimary)
             
@@ -204,7 +204,7 @@ struct HomeView: View {
     private var quickActionsSection: some View {
         VStack(spacing: PlumpyTheme.Spacing.large) {
             Text("Quick Actions")
-                .font(PlumpyTheme.Typography.title3)
+                .font(PlumpyTheme.Typography.subheadline)
                 .fontWeight(.semibold)
                 .foregroundColor(PlumpyTheme.textPrimary)
             
@@ -243,7 +243,7 @@ struct HomeView: View {
         return VStack(spacing: PlumpyTheme.Spacing.large) {
             HStack {
                 Text("Today's Meals")
-                    .font(PlumpyTheme.Typography.title3)
+                    .font(PlumpyTheme.Typography.subheadline)
                     .fontWeight(.semibold)
                     .foregroundColor(PlumpyTheme.textPrimary)
                 
@@ -282,7 +282,7 @@ struct HomeView: View {
         
         return VStack(spacing: PlumpyTheme.Spacing.large) {
             Text("History & Recommendations")
-                .font(PlumpyTheme.Typography.title3)
+                .font(PlumpyTheme.Typography.subheadline)
                 .fontWeight(.semibold)
                 .foregroundColor(PlumpyTheme.textPrimary)
             

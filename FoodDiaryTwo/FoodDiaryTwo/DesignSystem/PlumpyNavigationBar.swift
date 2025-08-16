@@ -46,7 +46,7 @@ struct PlumpyNavigationBar: View {
                 // Заголовок
                 VStack(spacing: PlumpyTheme.Spacing.tiny) {
                     Text(title)
-                        .font(PlumpyTheme.Typography.title2)
+                        .font(PlumpyTheme.Typography.title3)
                         .fontWeight(.bold)
                         .foregroundColor(PlumpyTheme.textPrimary)
                         .multilineTextAlignment(.center)
