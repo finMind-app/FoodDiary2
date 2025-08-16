@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftData
+import SwiftUI
 
 @Model
 final class FoodEntry {
@@ -16,6 +17,7 @@ final class FoodEntry {
     var mealType: MealType
     var products: [FoodProduct]
     var notes: String?
+    var photoData: Data?
     var totalCalories: Int
     var totalProtein: Double
     var totalCarbs: Double
@@ -28,7 +30,8 @@ final class FoodEntry {
         date: Date = Date(),
         mealType: MealType = .breakfast,
         products: [FoodProduct] = [],
-        notes: String? = nil
+        notes: String? = nil,
+        photoData: Data? = nil
     ) {
         self.id = UUID()
         self.name = name
@@ -36,6 +39,7 @@ final class FoodEntry {
         self.mealType = mealType
         self.products = products
         self.notes = notes
+        self.photoData = photoData
         self.totalCalories = products.reduce(0) { $0 + $1.totalCalories }
         self.totalProtein = products.reduce(0) { $0 + $1.protein }
         self.totalCarbs = products.reduce(0) { $0 + $1.carbs }
@@ -90,6 +94,44 @@ enum MealType: String, CaseIterable, Codable {
             return "moon.fill"
         case .snack:
             return "leaf.fill"
+        }
+    }
+    
+    var color: Color {
+        switch self {
+        case .breakfast:
+            return Color(hex: "#F59E0B") // Янтарный
+        case .lunch:
+            return Color(hex: "#10B981") // Изумрудный
+        case .dinner:
+            return Color(hex: "#6366F1") // Индиго
+        case .snack:
+            return Color(hex: "#EC4899") // Розовый
+        }
+    }
+    
+    var gradient: Gradient {
+        switch self {
+        case .breakfast:
+            return Gradient(colors: [
+                Color(hex: "#F59E0B"),
+                Color(hex: "#F97316")
+            ])
+        case .lunch:
+            return Gradient(colors: [
+                Color(hex: "#10B981"),
+                Color(hex: "#059669")
+            ])
+        case .dinner:
+            return Gradient(colors: [
+                Color(hex: "#6366F1"),
+                Color(hex: "#4F46E5")
+            ])
+        case .snack:
+            return Gradient(colors: [
+                Color(hex: "#EC4899"),
+                Color(hex: "#DB2777")
+            ])
         }
     }
 }

@@ -11,9 +11,49 @@ struct PlumpyButton: View {
     let title: String
     let icon: String?
     let style: PlumpyButtonStyle
+    let size: PlumpyButtonSize
     let isEnabled: Bool
     let isLoading: Bool
     let action: () -> Void
+    
+    enum PlumpyButtonSize {
+        case small
+        case medium
+        case large
+        
+        var padding: EdgeInsets {
+            switch self {
+            case .small:
+                return EdgeInsets(top: 8, leading: 12, bottom: 8, trailing: 12)
+            case .medium:
+                return EdgeInsets(top: 12, leading: 16, bottom: 12, trailing: 16)
+            case .large:
+                return EdgeInsets(top: 16, leading: 20, bottom: 16, trailing: 20)
+            }
+        }
+        
+        var fontSize: Font {
+            switch self {
+            case .small:
+                return PlumpyTheme.Typography.caption1
+            case .medium:
+                return PlumpyTheme.Typography.body
+            case .large:
+                return PlumpyTheme.Typography.headline
+            }
+        }
+        
+        var iconSize: CGFloat {
+            switch self {
+            case .small:
+                return 14
+            case .medium:
+                return 16
+            case .large:
+                return 18
+            }
+        }
+    }
     
     enum PlumpyButtonStyle {
         case primary
@@ -80,6 +120,7 @@ struct PlumpyButton: View {
         title: String,
         icon: String? = nil,
         style: PlumpyButtonStyle = .primary,
+        size: PlumpyButtonSize = .medium,
         isEnabled: Bool = true,
         isLoading: Bool = false,
         action: @escaping () -> Void
@@ -87,6 +128,7 @@ struct PlumpyButton: View {
         self.title = title
         self.icon = icon
         self.style = style
+        self.size = size
         self.isEnabled = isEnabled
         self.isLoading = isLoading
         self.action = action
@@ -107,16 +149,15 @@ struct PlumpyButton: View {
                         .scaleEffect(0.8)
                 } else if let icon = icon {
                     Image(systemName: icon)
-                        .font(PlumpyTheme.Typography.subheadline)
+                        .font(.system(size: size.iconSize))
                 }
                 
                 Text(title)
-                    .font(PlumpyTheme.Typography.subheadline)
+                    .font(size.fontSize)
                     .fontWeight(.semibold)
             }
             .foregroundColor(isEnabled ? style.foregroundColor : PlumpyTheme.textTertiary)
-            .padding(.horizontal, PlumpyTheme.Spacing.large)
-            .padding(.vertical, PlumpyTheme.Spacing.medium)
+            .padding(size.padding)
             .frame(maxWidth: .infinity)
             .background(
                 RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)

@@ -6,16 +6,19 @@
 //
 
 import SwiftUI
+import SwiftData
+import PhotosUI
 
 struct AddMealView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var modelContext
     
     @State private var mealName = ""
     @State private var selectedMealType: MealType
     @State private var selectedTime = Date()
     @State private var calories = ""
     @State private var notes = ""
-    @State private var showingImagePicker = false
+    @State private var selectedPhotoItem: PhotosPickerItem?
     @State private var selectedImage: UIImage?
     
     init(mealType: MealType = .breakfast) {
@@ -161,27 +164,30 @@ struct AddMealView: View {
                         )
                     
                     HStack(spacing: PlumpyTheme.Spacing.medium) {
-                        PlumpyButton(
-                            title: "Change Photo",
-                            icon: "camera.fill",
-                            style: .secondary
-                        ) {
-                            showingImagePicker = true
+                        PhotosPicker(selection: $selectedPhotoItem, matching: .images) {
+                            PlumpyButton(
+                                title: "Change",
+                                icon: "camera.fill",
+                                style: .secondary,
+                                size: .small
+                            ) {
+                                // Action handled by PhotosPicker
+                            }
                         }
                         
                         PlumpyButton(
                             title: "Remove",
                             icon: "trash.fill",
-                            style: .error
+                            style: .error,
+                            size: .small
                         ) {
                             self.selectedImage = nil
+                            self.selectedPhotoItem = nil
                         }
                     }
                 }
             } else {
-                Button(action: {
-                    showingImagePicker = true
-                }) {
+                PhotosPicker(selection: $selectedPhotoItem, matching: .images) {
                     VStack(spacing: PlumpyTheme.Spacing.medium) {
                         Image(systemName: "camera.fill")
                             .font(.system(size: 40))
@@ -210,6 +216,14 @@ struct AddMealView: View {
             }
         }
         .plumpyCard()
+        .onChange(of: selectedPhotoItem) { _, newItem in
+            Task {
+                if let data = try? await newItem?.loadTransferable(type: Data.self),
+                   let image = UIImage(data: data) {
+                    selectedImage = image
+                }
+            }
+        }
     }
     
     private var notesSection: some View {
@@ -220,18 +234,97 @@ struct AddMealView: View {
                 .foregroundColor(PlumpyTheme.textPrimary)
                 .frame(maxWidth: .infinity, alignment: .leading)
             
-            PlumpyTextArea(
-                title: "",
-                placeholder: "Add notes about your meal...",
-                text: $notes
-            )
+            VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.small) {
+                Text("Additional notes")
+                    .font(PlumpyTheme.Typography.caption1)
+                    .fontWeight(.medium)
+                    .foregroundColor(PlumpyTheme.textSecondary)
+                
+                ZStack(alignment: .topLeading) {
+                    RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
+                        .fill(PlumpyTheme.neutral50)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
+                                .stroke(PlumpyTheme.neutral200, lineWidth: 1)
+                        )
+                        .shadow(
+                            color: PlumpyTheme.shadow.opacity(0.02),
+                            radius: PlumpyTheme.Shadow.small.radius,
+                            x: PlumpyTheme.Shadow.small.x,
+                            y: PlumpyTheme.Shadow.small.y
+                        )
+                    
+                    if notes.isEmpty {
+                        Text("Add notes about your meal...")
+                            .font(PlumpyTheme.Typography.body)
+                            .foregroundColor(PlumpyTheme.textTertiary)
+                            .padding(.horizontal, PlumpyTheme.Spacing.medium)
+                            .padding(.top, PlumpyTheme.Spacing.medium)
+                    }
+                    
+                    TextEditor(text: $notes)
+                        .font(PlumpyTheme.Typography.body)
+                        .foregroundColor(PlumpyTheme.textPrimary)
+                        .padding(.horizontal, PlumpyTheme.Spacing.medium)
+                        .padding(.vertical, PlumpyTheme.Spacing.medium)
+                        .background(Color.clear)
+                        .frame(minHeight: 80, maxHeight: 120)
+                }
+            }
         }
         .plumpyCard()
     }
     
     private func saveMeal() {
-        // Здесь будет логика сохранения приема пищи
-        dismiss()
+        // Валидация данных
+        guard !mealName.isEmpty else {
+            // Можно добавить алерт для пользователя
+            print("Meal name is required")
+            return
+        }
+        
+        guard let caloriesInt = Int(calories), caloriesInt > 0 else {
+            // Можно добавить алерт для пользователя
+            print("Valid calories are required")
+            return
+        }
+        
+        // Создаем продукт для приема пищи
+        let product = FoodProduct(
+            name: mealName,
+            caloriesPerServing: caloriesInt,
+            protein: 0, // Можно добавить поля для ввода
+            carbs: 0,
+            fat: 0
+        )
+        
+        // Конвертируем изображение в Data для сохранения
+        var photoData: Data? = nil
+        if let selectedImage = selectedImage {
+            photoData = selectedImage.jpegData(compressionQuality: 0.8)
+        }
+        
+        // Создаем запись о приеме пищи
+        let foodEntry = FoodEntry(
+            name: mealName,
+            date: selectedTime,
+            mealType: selectedMealType,
+            products: [product],
+            notes: notes.isEmpty ? nil : notes,
+            photoData: photoData
+        )
+        
+        // Сохраняем в базу данных
+        modelContext.insert(foodEntry)
+        
+        do {
+            try modelContext.save()
+            print("Meal saved successfully: \(foodEntry.displayName)")
+            dismiss()
+        } catch {
+            print("Error saving meal: \(error)")
+            // Можно добавить алерт для пользователя
+        }
     }
 }
 

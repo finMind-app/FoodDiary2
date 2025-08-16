@@ -21,11 +21,17 @@ struct ContentView: View {
                     HomeView()
                         .tag(0)
                     
-                    HistoryStatsSettings()
+                    HistoryView()
                         .tag(1)
                     
-                    ProfileView()
+                    StatisticsView()
                         .tag(2)
+                    
+                    SettingsView()
+                        .tag(3)
+                    
+                    ProfileView()
+                        .tag(4)
                 }
                 .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
                 
@@ -33,12 +39,12 @@ struct ContentView: View {
                     selectedTab: $selectedTab,
                     tabs: [
                         PlumpyTabItem(icon: "house.fill", title: "Home", color: PlumpyTheme.primary),
-                        PlumpyTabItem(icon: "chart.bar.fill", title: "Stats", color: PlumpyTheme.secondary),
+                        PlumpyTabItem(icon: "clock.fill", title: "History", color: PlumpyTheme.primaryAccent),
+                        PlumpyTabItem(icon: "chart.bar.fill", title: "Stats", color: PlumpyTheme.secondaryAccent),
+                        PlumpyTabItem(icon: "gear", title: "Settings", color: PlumpyTheme.tertiaryAccent),
                         PlumpyTabItem(icon: "person.fill", title: "Profile", color: PlumpyTheme.tertiary)
                     ]
                 )
-                .padding(.horizontal, PlumpyTheme.Spacing.large)
-                .padding(.bottom, PlumpyTheme.Spacing.small)
             }
         }
     }

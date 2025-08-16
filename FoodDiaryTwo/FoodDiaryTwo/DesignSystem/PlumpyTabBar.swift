@@ -12,47 +12,47 @@ struct PlumpyTabBar: View {
     let tabs: [PlumpyTabItem]
     
     var body: some View {
-        HStack(spacing: 0) {
+        HStack(spacing: PlumpyTheme.Spacing.medium) {
             ForEach(0..<tabs.count, id: \.self) { index in
                 Button(action: {
                     withAnimation(PlumpyTheme.Animation.spring) {
                         selectedTab = index
                     }
                 }) {
-                    VStack(spacing: PlumpyTheme.Spacing.tiny) {
+                    VStack(spacing: 2) {
                         Image(systemName: tabs[index].icon)
-                            .font(.title3)
+                            .font(.system(size: 16))
                             .foregroundColor(selectedTab == index ? tabs[index].color : PlumpyTheme.textTertiary)
                         
                         Text(tabs[index].title)
-                            .font(PlumpyTheme.Typography.caption1)
+                            .font(.system(size: 10, weight: .medium))
                             .foregroundColor(selectedTab == index ? tabs[index].color : PlumpyTheme.textTertiary)
                     }
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, PlumpyTheme.Spacing.medium)
+                    .padding(.vertical, 8)
+                    .padding(.horizontal, 4)
                     .background(
-                        Rectangle()
-                            .fill(selectedTab == index ? tabs[index].color.opacity(0.1) : Color.clear)
+                        RoundedRectangle(cornerRadius: PlumpyTheme.Radius.extraLarge)
+                            .fill(selectedTab == index ? tabs[index].color.opacity(0.15) : Color.clear)
                     )
                 }
                 .buttonStyle(PlainButtonStyle())
             }
         }
+        .padding(.horizontal, PlumpyTheme.Spacing.medium)
+        .padding(.vertical, 6)
+        .background(
+            RoundedRectangle(cornerRadius: PlumpyTheme.Radius.extraLarge)
+                .fill(PlumpyTheme.surface)
+                .shadow(
+                    color: PlumpyTheme.shadow.opacity(0.08),
+                    radius: PlumpyTheme.Shadow.medium.radius,
+                    x: PlumpyTheme.Shadow.medium.x,
+                    y: PlumpyTheme.Shadow.medium.y
+                )
+        )
         .padding(.horizontal, PlumpyTheme.Spacing.large)
-        .padding(.vertical, PlumpyTheme.Spacing.small)
-        .background(PlumpyTheme.surface)
-        .overlay(
-            Rectangle()
-                .fill(PlumpyTheme.neutral100)
-                .frame(height: 1),
-            alignment: .top
-        )
-        .shadow(
-            color: PlumpyTheme.shadow.opacity(0.03),
-            radius: PlumpyTheme.Shadow.small.radius,
-            x: PlumpyTheme.Shadow.small.x,
-            y: PlumpyTheme.Shadow.small.y
-        )
+        .padding(.bottom, 0)
     }
 }
 

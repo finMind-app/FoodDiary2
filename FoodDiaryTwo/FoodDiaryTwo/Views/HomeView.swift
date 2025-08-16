@@ -19,6 +19,35 @@ struct HomeView: View {
     @State private var showingAchievements = false
     @State private var showingHistory = false
     
+    // Автоматические запросы для обновления UI
+    @Query private var allFoodEntries: [FoodEntry]
+    
+    // Фильтрованные записи для выбранной даты
+    private var foodEntriesForSelectedDate: [FoodEntry] {
+        let calendar = Calendar.current
+        let startOfDay = calendar.startOfDay(for: selectedDate)
+        let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay)!
+        
+        return allFoodEntries.filter { entry in
+            entry.date >= startOfDay && entry.date < endOfDay
+        }.sorted { $0.date > $1.date }
+    }
+    
+    // Общее количество калорий за выбранную дату
+    private var totalCaloriesForSelectedDate: Int {
+        foodEntriesForSelectedDate.reduce(0) { $0 + $1.totalCalories }
+    }
+    
+    // Записи за последние 7 дней
+    private var recentFoodEntries: [FoodEntry] {
+        let calendar = Calendar.current
+        let startDate = calendar.date(byAdding: .day, value: -7, to: Date()) ?? Date()
+        
+        return allFoodEntries.filter { entry in
+            entry.date >= startDate
+        }.sorted { $0.date > $1.date }
+    }
+    
     var body: some View {
         ZStack {
             PlumpyBackground(style: .gradient)
@@ -44,13 +73,13 @@ struct HomeView: View {
                         // Список приемов пищи
                         foodEntriesList
                         
-                        // История и рекомендации
-                        historySection
+                        // Рекомендации
+                        recommendationsSection
                         
                         PlumpySpacer(size: .large)
                     }
-                    .padding(.horizontal, PlumpyTheme.Spacing.large)
-                    .padding(.top, PlumpyTheme.Spacing.large)
+                    .padding(.horizontal, PlumpyTheme.Spacing.medium)
+                    .padding(.top, PlumpyTheme.Spacing.medium)
                 }
             }
         }
@@ -145,16 +174,16 @@ struct HomeView: View {
             
             Spacer()
             
-            PlumpyButton(
-                title: "Today",
-                style: .outline,
-                action: {
-                    withAnimation(PlumpyTheme.Animation.spring) {
-                        selectedDate = Date()
-                    }
-                }
-            )
-            .frame(maxWidth: 100)
+            VStack(alignment: .trailing, spacing: PlumpyTheme.Spacing.tiny) {
+                Text("\(totalCaloriesForSelectedDate)")
+                    .font(PlumpyTheme.Typography.title2)
+                    .fontWeight(.bold)
+                    .foregroundColor(PlumpyTheme.primary)
+                
+                Text("calories")
+                    .font(PlumpyTheme.Typography.caption2)
+                    .foregroundColor(PlumpyTheme.textSecondary)
+            }
         }
         .plumpyCard()
     }
@@ -169,7 +198,7 @@ struct HomeView: View {
             ZStack {
                 // Кольцевая диаграмма
                 PlumpyCircularProgressBar(
-                    value: Double(getTotalCaloriesForDate(selectedDate)),
+                    value: Double(totalCaloriesForSelectedDate),
                     maxValue: Double(getDailyCalorieGoal()),
                     size: 120,
                     lineWidth: 10,
@@ -178,7 +207,7 @@ struct HomeView: View {
             }
             
             PlumpyProgressBar(
-                value: Double(getTotalCaloriesForDate(selectedDate)),
+                value: Double(totalCaloriesForSelectedDate),
                 maxValue: Double(getDailyCalorieGoal()),
                 title: "Goal: \(getDailyCalorieGoal()) cal",
                 showPercentage: true,
@@ -190,12 +219,12 @@ struct HomeView: View {
     
     private var quickActionsSection: some View {
         VStack(spacing: PlumpyTheme.Spacing.large) {
-            Text("Meal Types")
+            Text("Quick Actions")
                 .font(PlumpyTheme.Typography.subheadline)
                 .fontWeight(.semibold)
                 .foregroundColor(PlumpyTheme.textPrimary)
             
-            LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: PlumpyTheme.Spacing.medium) {
+            HStack(spacing: PlumpyTheme.Spacing.medium) {
                 ForEach(MealType.allCases, id: \.self) { mealType in
                     Button(action: {
                         selectedMealType = mealType
@@ -204,18 +233,28 @@ struct HomeView: View {
                         VStack(spacing: PlumpyTheme.Spacing.small) {
                             Image(systemName: mealType.icon)
                                 .font(.title2)
-                                .foregroundColor(PlumpyTheme.primary)
+                                .foregroundColor(.white)
                             
                             Text(mealType.displayName)
                                 .font(PlumpyTheme.Typography.caption1)
-                                .fontWeight(.medium)
-                                .foregroundColor(PlumpyTheme.textPrimary)
+                                .fontWeight(.semibold)
+                                .foregroundColor(.white)
                         }
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, PlumpyTheme.Spacing.large)
-                        .plumpyCard(
-                            cornerRadius: PlumpyTheme.Radius.medium,
-                            backgroundColor: PlumpyTheme.neutral50
+                        .background(
+                            LinearGradient(
+                                gradient: mealType.gradient,
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .clipShape(RoundedRectangle(cornerRadius: PlumpyTheme.Radius.large))
+                        .shadow(
+                            color: mealType.color.opacity(0.3),
+                            radius: 8,
+                            x: 0,
+                            y: 4
                         )
                     }
                     .buttonStyle(PlainButtonStyle())
@@ -226,8 +265,6 @@ struct HomeView: View {
     }
     
     private var foodEntriesList: some View {
-        let entries = getFoodEntriesForDate(selectedDate)
-        
         return VStack(spacing: PlumpyTheme.Spacing.large) {
             HStack {
                 Text("Today's Meals")
@@ -238,13 +275,13 @@ struct HomeView: View {
                 Spacer()
                 
                 PlumpyBadge(
-                    text: "\(entries.count)",
+                    text: "\(foodEntriesForSelectedDate.count)",
                     style: .primary,
                     size: .medium
                 )
             }
             
-            if entries.isEmpty {
+            if foodEntriesForSelectedDate.isEmpty {
                 PlumpyEmptyState(
                     icon: "fork.knife",
                     title: "No meals yet today",
@@ -256,7 +293,7 @@ struct HomeView: View {
                 }
             } else {
                 LazyVStack(spacing: PlumpyTheme.Spacing.medium) {
-                    ForEach(entries) { entry in
+                    ForEach(foodEntriesForSelectedDate) { entry in
                         FoodEntryCard(entry: entry)
                     }
                 }
@@ -265,53 +302,15 @@ struct HomeView: View {
         .plumpyCard()
     }
     
-    private var historySection: some View {
-        let recentEntries = getFoodEntriesForLastDays(7)
-        let similarEntries = getSimilarFoodEntries(for: selectedDate)
-        
+    private var recommendationsSection: some View {
         return VStack(spacing: PlumpyTheme.Spacing.large) {
-            Text("History & Recommendations")
+            Text("AI Recommendations")
                 .font(PlumpyTheme.Typography.subheadline)
                 .fontWeight(.semibold)
                 .foregroundColor(PlumpyTheme.textPrimary)
             
-            if !recentEntries.isEmpty {
-                VStack(spacing: PlumpyTheme.Spacing.medium) {
-                    Text("A week ago at this time you ate:")
-                        .font(PlumpyTheme.Typography.caption1)
-                        .foregroundColor(PlumpyTheme.textSecondary)
-                    
-                    ForEach(similarEntries.prefix(3), id: \.id) { entry in
-                        HStack {
-                            Image(systemName: entry.mealType.icon)
-                                .foregroundColor(PlumpyTheme.primary)
-                                .frame(width: 20)
-                            
-                            Text(entry.displayName)
-                                .font(PlumpyTheme.Typography.caption1)
-                                .foregroundColor(PlumpyTheme.textPrimary)
-                            
-                            Spacer()
-                            
-                            Text("\(entry.totalCalories) cal")
-                                .font(PlumpyTheme.Typography.caption1)
-                                .foregroundColor(PlumpyTheme.textSecondary)
-                        }
-                        .padding(PlumpyTheme.Spacing.medium)
-                        .plumpyCard(
-                            cornerRadius: PlumpyTheme.Radius.small,
-                            backgroundColor: PlumpyTheme.neutral50
-                        )
-                    }
-                }
-            }
-            
             // AI рекомендации
             VStack(spacing: PlumpyTheme.Spacing.medium) {
-                Text("AI recommends:")
-                    .font(PlumpyTheme.Typography.caption1)
-                    .foregroundColor(PlumpyTheme.textSecondary)
-                
                 let suggestions = getAIFoodSuggestions(for: Date())
                 ForEach(suggestions.prefix(3), id: \.self) { suggestion in
                     HStack {
@@ -375,66 +374,52 @@ struct FoodEntryCard: View {
         Button(action: {
             showingDetail = true
         }) {
-            VStack(spacing: PlumpyTheme.Spacing.large) {
-                HStack {
-                    HStack(spacing: PlumpyTheme.Spacing.medium) {
-                        Image(systemName: entry.mealType.icon)
-                            .foregroundColor(PlumpyTheme.primary)
-                            .frame(width: 20)
-                        
-                        VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.tiny) {
-                            Text(entry.displayName)
-                                .font(PlumpyTheme.Typography.headline)
-                                .fontWeight(.semibold)
-                                .foregroundColor(PlumpyTheme.textPrimary)
-                            
-                            Text(entry.formattedTime)
-                                .font(PlumpyTheme.Typography.caption1)
-                                .foregroundColor(PlumpyTheme.textSecondary)
-                        }
-                    }
-                    
-                    Spacer()
-                    
-                    VStack(alignment: .trailing, spacing: PlumpyTheme.Spacing.tiny) {
-                        Text("\(entry.totalCalories)")
-                            .font(PlumpyTheme.Typography.title3)
-                            .fontWeight(.bold)
-                            .foregroundColor(PlumpyTheme.primary)
-                        
-                        Text("calories")
-                            .font(PlumpyTheme.Typography.caption2)
-                            .foregroundColor(PlumpyTheme.textSecondary)
-                    }
+            HStack(spacing: PlumpyTheme.Spacing.medium) {
+                // Фотография или иконка
+                if let imageData = entry.photoData, let uiImage = UIImage(data: imageData) {
+                    Image(uiImage: uiImage)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 50, height: 50)
+                        .clipShape(RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium))
+                        .shadow(
+                            color: PlumpyTheme.shadow.opacity(0.1),
+                            radius: 3,
+                            x: 0,
+                            y: 1
+                        )
+                } else {
+                    Image(systemName: entry.mealType.icon)
+                        .foregroundColor(PlumpyTheme.primary)
+                        .frame(width: 50, height: 50)
+                        .background(
+                            RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
+                                .fill(PlumpyTheme.primary.opacity(0.1))
+                        )
                 }
                 
-                if !entry.products.isEmpty {
-                    VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.medium) {
-                        Text("Products")
-                            .font(PlumpyTheme.Typography.caption1)
-                            .fontWeight(.medium)
-                            .foregroundColor(PlumpyTheme.textSecondary)
-                        
-                        ForEach(entry.products.prefix(3)) { product in
-                            HStack {
-                                Text(product.displayName)
-                                    .font(PlumpyTheme.Typography.caption1)
-                                    .foregroundColor(PlumpyTheme.textPrimary)
-                                
-                                Spacer()
-                                
-                                Text("\(product.totalCalories) cal")
-                                    .font(PlumpyTheme.Typography.caption1)
-                                    .foregroundColor(PlumpyTheme.textSecondary)
-                            }
-                        }
-                        
-                        if entry.products.count > 3 {
-                            Text("and \(entry.products.count - 3) more...")
-                                .font(PlumpyTheme.Typography.caption1)
-                                .foregroundColor(PlumpyTheme.textTertiary)
-                        }
-                    }
+                VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.tiny) {
+                    Text(entry.displayName)
+                        .font(PlumpyTheme.Typography.subheadline)
+                        .fontWeight(.semibold)
+                        .foregroundColor(PlumpyTheme.textPrimary)
+                    
+                    Text(entry.formattedTime)
+                        .font(PlumpyTheme.Typography.caption1)
+                        .foregroundColor(PlumpyTheme.textSecondary)
+                }
+                
+                Spacer()
+                
+                VStack(alignment: .trailing, spacing: PlumpyTheme.Spacing.tiny) {
+                    Text("\(entry.totalCalories)")
+                        .font(PlumpyTheme.Typography.subheadline)
+                        .fontWeight(.bold)
+                        .foregroundColor(PlumpyTheme.primary)
+                    
+                    Text("cal")
+                        .font(PlumpyTheme.Typography.caption2)
+                        .foregroundColor(PlumpyTheme.textSecondary)
                 }
             }
         }
@@ -443,6 +428,9 @@ struct FoodEntryCard: View {
             cornerRadius: PlumpyTheme.Radius.medium,
             backgroundColor: PlumpyTheme.neutral50
         )
+        .sheet(isPresented: $showingDetail) {
+            FoodEntryDetailView(foodEntry: entry)
+        }
     }
 }
 

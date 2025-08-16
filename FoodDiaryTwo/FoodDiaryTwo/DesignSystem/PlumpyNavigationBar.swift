@@ -72,7 +72,7 @@ struct PlumpyNavigationBar: View {
                 }
             }
             .padding(.horizontal, PlumpyTheme.Spacing.large)
-            .padding(.vertical, PlumpyTheme.Spacing.medium)
+            .padding(.vertical, PlumpyTheme.Spacing.small)
             .background(
                 Rectangle()
                     .fill(backgroundColor)
@@ -83,13 +83,6 @@ struct PlumpyNavigationBar: View {
                         y: PlumpyTheme.Shadow.small.y
                     )
             )
-            
-            // Нижняя граница
-            if showBorder {
-                Rectangle()
-                    .fill(PlumpyTheme.neutral200)
-                    .frame(height: 1)
-            }
         }
     }
 }
