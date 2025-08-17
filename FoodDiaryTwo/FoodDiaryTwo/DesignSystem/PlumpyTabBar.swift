@@ -36,8 +36,6 @@ struct PlumpyTabBar: View {
                     )
                 }
                 .buttonStyle(PlainButtonStyle())
-                .scaleEffect(selectedTab == index ? 1.05 : 1.0)
-                .animation(.easeInOut(duration: 0.15), value: selectedTab)
             }
         }
         .padding(.horizontal, PlumpyTheme.Spacing.medium)

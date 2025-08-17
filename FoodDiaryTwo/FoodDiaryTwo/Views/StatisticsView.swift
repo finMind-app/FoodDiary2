@@ -142,8 +142,6 @@ struct StatisticsView: View {
                         // Немедленно обновляем UI для быстрого отклика
                         selectedPeriod = period
                     }
-                    .scaleEffect(selectedPeriod == period ? 1.02 : 1.0)
-                    .animation(.easeInOut(duration: 0.1), value: selectedPeriod)
                 }
                 Spacer()
             }
@@ -274,7 +272,6 @@ struct StatisticsView: View {
                     )
                 )
                 .frame(width: 24, height: max(4, CGFloat(data.calories) / CGFloat(maxCalories) * 160))
-                .animation(.easeInOut(duration: 0.6).delay(Double(index) * 0.1), value: chartData)
             
             Text(data.dateLabel)
                 .font(PlumpyTheme.Typography.caption2)
