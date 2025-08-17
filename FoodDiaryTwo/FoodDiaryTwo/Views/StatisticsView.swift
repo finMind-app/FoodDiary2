@@ -13,6 +13,12 @@ struct StatisticsView: View {
     @State private var selectedPeriod: StatisticsPeriod = .week
     @State private var selectedDate = Date()
     @State private var showingCalendar = false
+    @State private var isLoading = false
+    @State private var isDataLoading = false
+    
+    // Кэшированные данные для оптимизации
+    @State private var cachedPeriodEntries: [FoodEntry] = []
+    @State private var cachedChartData: [ChartDataPoint] = []
     
     struct ChartDataPoint: Equatable {
         let date: Date
@@ -72,6 +78,26 @@ struct StatisticsView: View {
         .sheet(isPresented: $showingCalendar) {
             CalendarView(selectedDate: $selectedDate)
         }
+        .onAppear {
+            loadData()
+        }
+        .onChange(of: selectedPeriod) { _, newPeriod in
+            if newPeriod != .custom {
+                selectedDate = Date()
+            }
+            // Добавляем небольшую задержку для предотвращения блокировки UI
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                loadData()
+            }
+        }
+        .onChange(of: selectedDate) { _, _ in
+            if selectedPeriod == .custom {
+                // Добавляем небольшую задержку для предотвращения блокировки UI
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    loadData()
+                }
+            }
+        }
     }
     
     private var periodSelector: some View {
@@ -113,11 +139,11 @@ struct StatisticsView: View {
                         style: selectedPeriod == period ? .primary : .outline,
                         isSelected: selectedPeriod == period
                     ) {
+                        // Немедленно обновляем UI для быстрого отклика
                         selectedPeriod = period
-                        if period != .custom {
-                            selectedDate = Date()
-                        }
                     }
+                    .scaleEffect(selectedPeriod == period ? 1.02 : 1.0)
+                    .animation(.easeInOut(duration: 0.1), value: selectedPeriod)
                 }
                 Spacer()
             }
@@ -166,32 +192,26 @@ struct StatisticsView: View {
     }
 
     private var totalMeals: Int {
-        periodEntries.count
+        cachedPeriodEntries.count
     }
+    
     private var totalCalories: Int {
-        periodEntries.reduce(0) { $0 + $1.totalCalories }
+        cachedPeriodEntries.reduce(0) { $0 + $1.totalCalories }
     }
+    
     private var averageDailyCalories: Int {
         let days = max(1, uniqueDayCount)
         return totalCalories / days
     }
+    
     private var uniqueDayCount: Int {
         let calendar = Calendar.current
-        let days = Set(periodEntries.map { calendar.startOfDay(for: $0.date) })
+        let days = Set(cachedPeriodEntries.map { calendar.startOfDay(for: $0.date) })
         return days.count
     }
     
     private var chartData: [ChartDataPoint] {
-        switch selectedPeriod {
-        case .week:
-            return generateWeekData()
-        case .month:
-            return generateMonthData()
-        case .year:
-            return generateYearData()
-        case .custom:
-            return generateCustomData()
-        }
+        cachedChartData
     }
     
     private var maxCalories: Int {
@@ -283,34 +303,6 @@ struct StatisticsView: View {
         }
         .padding(.horizontal, 16)
     }
-    private var periodEntries: [FoodEntry] {
-        let calendar = Calendar.current
-        let startDate: Date
-        let endDate: Date
-        
-        switch selectedPeriod {
-        case .week:
-            startDate = calendar.date(byAdding: .day, value: -7, to: Date()) ?? Date()
-            endDate = Date()
-        case .month:
-            startDate = calendar.date(byAdding: .month, value: -1, to: Date()) ?? Date()
-            endDate = Date()
-        case .year:
-            startDate = calendar.date(byAdding: .year, value: -1, to: Date()) ?? Date()
-            endDate = Date()
-        case .custom:
-            startDate = calendar.startOfDay(for: selectedDate)
-            endDate = calendar.date(byAdding: .day, value: 1, to: startDate) ?? startDate
-        }
-        
-        let descriptor = FetchDescriptor<FoodEntry>(
-            predicate: #Predicate<FoodEntry> { entry in
-                entry.date >= startDate && entry.date < endDate
-            },
-            sortBy: [SortDescriptor(\.date, order: .reverse)]
-        )
-        return (try? modelContext.fetch(descriptor)) ?? []
-    }
     
     private var caloriesChart: some View {
         VStack(spacing: PlumpyTheme.Spacing.medium) {
@@ -320,7 +312,23 @@ struct StatisticsView: View {
                 .foregroundColor(PlumpyTheme.textPrimary)
                 .frame(maxWidth: .infinity, alignment: .leading)
             
-            if chartData.isEmpty {
+            if isLoading {
+                // Состояние загрузки
+                RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
+                    .fill(PlumpyTheme.surfaceSecondary)
+                    .frame(height: 200)
+                    .overlay(
+                        VStack(spacing: PlumpyTheme.Spacing.medium) {
+                            ProgressView()
+                                .scaleEffect(1.2)
+                                .foregroundColor(PlumpyTheme.primary)
+                            
+                            Text("Loading data...")
+                                .font(PlumpyTheme.Typography.caption1)
+                                .foregroundColor(PlumpyTheme.textSecondary)
+                        }
+                    )
+            } else if chartData.isEmpty {
                 // Пустое состояние
                 RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
                     .fill(PlumpyTheme.surfaceSecondary)
@@ -386,6 +394,82 @@ struct StatisticsView: View {
         return formatter.string(from: date)
     }
     
+    // MARK: - Data Loading
+    
+    private func loadData() {
+        // Предотвращаем множественные одновременные загрузки
+        guard !isDataLoading else { return }
+        
+        isDataLoading = true
+        isLoading = true
+        
+        // Загружаем данные асинхронно в фоновом потоке
+        Task {
+            await loadPeriodEntries()
+            await loadChartData()
+            
+            await MainActor.run {
+                isLoading = false
+                isDataLoading = false
+            }
+        }
+    }
+    
+    @MainActor
+    private func loadPeriodEntries() async {
+        let calendar = Calendar.current
+        let startDate: Date
+        let endDate: Date
+        
+        switch selectedPeriod {
+        case .week:
+            startDate = calendar.date(byAdding: .day, value: -7, to: Date()) ?? Date()
+            endDate = Date()
+        case .month:
+            startDate = calendar.date(byAdding: .month, value: -1, to: Date()) ?? Date()
+            endDate = Date()
+        case .year:
+            startDate = calendar.date(byAdding: .year, value: -1, to: Date()) ?? Date()
+            endDate = Date()
+        case .custom:
+            startDate = calendar.startOfDay(for: selectedDate)
+            endDate = calendar.date(byAdding: .day, value: 1, to: startDate) ?? startDate
+        }
+        
+        let descriptor = FetchDescriptor<FoodEntry>(
+            predicate: #Predicate<FoodEntry> { entry in
+                entry.date >= startDate && entry.date < endDate
+            },
+            sortBy: [SortDescriptor(\.date, order: .reverse)]
+        )
+        
+        do {
+            // Добавляем небольшую задержку для предотвращения блокировки UI
+            try await Task.sleep(nanoseconds: 100_000) // 0.1 секунды
+            cachedPeriodEntries = try modelContext.fetch(descriptor)
+        } catch {
+            print("Error fetching period entries: \(error)")
+            cachedPeriodEntries = []
+        }
+    }
+    
+    @MainActor
+    private func loadChartData() async {
+        // Добавляем небольшую задержку для предотвращения блокировки UI
+        try? await Task.sleep(nanoseconds: 50_000) // 0.05 секунды
+        
+        switch selectedPeriod {
+        case .week:
+            cachedChartData = generateWeekData()
+        case .month:
+            cachedChartData = generateMonthData()
+        case .year:
+            cachedChartData = generateYearData()
+        case .custom:
+            cachedChartData = generateCustomData()
+        }
+    }
+    
     // MARK: - Chart Data Generation
     
     private func generateWeekData() -> [ChartDataPoint] {
@@ -401,7 +485,7 @@ struct StatisticsView: View {
             let startOfDay = calendar.startOfDay(for: date)
             let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay) ?? startOfDay
             
-            let dayEntries = periodEntries.filter { entry in
+            let dayEntries = cachedPeriodEntries.filter { entry in
                 entry.date >= startOfDay && entry.date < endOfDay
             }
             
@@ -427,7 +511,7 @@ struct StatisticsView: View {
             let startOfDay = calendar.startOfDay(for: date)
             let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay) ?? startOfDay
             
-            let dayEntries = periodEntries.filter { entry in
+            let dayEntries = cachedPeriodEntries.filter { entry in
                 entry.date >= startOfDay && entry.date < endOfDay
             }
             
@@ -453,7 +537,7 @@ struct StatisticsView: View {
             let startOfMonth = calendar.dateInterval(of: .month, for: date)?.start ?? date
             let endOfMonth = calendar.date(byAdding: .month, value: 1, to: startOfMonth) ?? startOfMonth
             
-            let monthEntries = periodEntries.filter { entry in
+            let monthEntries = cachedPeriodEntries.filter { entry in
                 entry.date >= startOfMonth && entry.date < endOfMonth
             }
             
@@ -474,7 +558,7 @@ struct StatisticsView: View {
         let startOfDay = calendar.startOfDay(for: selectedDate)
         let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay) ?? startOfDay
         
-        let dayEntries = periodEntries.filter { entry in
+        let dayEntries = cachedPeriodEntries.filter { entry in
             entry.date >= startOfDay && entry.date < endOfDay
         }
         

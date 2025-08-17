@@ -98,13 +98,14 @@ struct FoodEntryDetailView: View {
         }
         .onChange(of: selectedPhotoItem) { _, newItem in
             Task {
-                if let data = try? await newItem?.loadTransferable(type: Data.self) {
+                if let newItem = newItem,
+                   let data = try? await newItem.loadTransferable(type: Data.self) {
                     if isEditing {
                         // В режиме редактирования сохраняем во временную переменную
                         // Фото будет сохранено при нажатии "Сохранить"
                     } else {
                         // В режиме просмотра сразу обновляем
-                        foodEntry.photoData = data
+                        $foodEntry.photoData.wrappedValue = data
                         try? modelContext.save()
                     }
                 }
@@ -123,7 +124,7 @@ struct FoodEntryDetailView: View {
     // MARK: - Photo Section
     private var photoSection: some View {
         VStack(spacing: PlumpyTheme.Spacing.medium) {
-            if let photoData = foodEntry.photoData, let uiImage = UIImage(data: photoData) {
+            if let photoData = $foodEntry.photoData.wrappedValue, let uiImage = UIImage(data: photoData) {
                 Image(uiImage: uiImage)
                     .resizable()
                     .aspectRatio(contentMode: .fill)
@@ -168,14 +169,14 @@ struct FoodEntryDetailView: View {
                         }
                     }
                     
-                    if foodEntry.photoData != nil {
+                    if $foodEntry.photoData.wrappedValue != nil {
                         PlumpyButton(
                             title: "Remove",
                             icon: "trash",
                             style: .outline,
                             size: .small
                         ) {
-                            foodEntry.photoData = nil
+                            $foodEntry.photoData.wrappedValue = nil
                         }
                     }
                 }
