@@ -153,8 +153,6 @@ struct PlumpyChip: View {
             )
         }
         .buttonStyle(PlainButtonStyle())
-        .scaleEffect(isSelected ? 1.02 : 1.0)
-        .animation(PlumpyTheme.Animation.spring, value: isSelected)
     }
 }
 

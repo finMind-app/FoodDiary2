@@ -58,6 +58,7 @@ struct HistoryView: View {
                         
                         PlumpySpacer(size: .huge)
                     }
+                    .frame(maxWidth: .infinity)
                     .padding(.horizontal, PlumpyTheme.Spacing.medium)
                     .padding(.top, PlumpyTheme.Spacing.medium)
                 }
@@ -90,7 +91,7 @@ struct HistoryView: View {
                         }
                         .foregroundColor(PlumpyTheme.primary)
                         .padding(.horizontal, PlumpyTheme.Spacing.small)
-                        .padding(.vertical, 4)
+                        .padding(.vertical, PlumpyTheme.Spacing.tiny)
                         .background(
                             RoundedRectangle(cornerRadius: PlumpyTheme.Radius.small)
                                 .fill(PlumpyTheme.primary.opacity(0.1))
@@ -112,7 +113,7 @@ struct HistoryView: View {
                             selectedDate = Date()
                         }
                     }
-                    .frame(minWidth: 80) // Увеличиваем минимальную ширину для лучшего размещения текста
+                    .frame(minWidth: PlumpyTheme.Spacing.huge) // Увеличиваем минимальную ширину для лучшего размещения текста
                 }
                 Spacer()
             }
@@ -307,20 +308,20 @@ struct FoodEntryHistoryCard: View {
                     Image(uiImage: uiImage)
                         .resizable()
                         .aspectRatio(contentMode: .fill)
-                        .frame(width: 50, height: 50)
+                        .frame(width: PlumpyTheme.Spacing.huge, height: PlumpyTheme.Spacing.huge)
                         .clipShape(RoundedRectangle(cornerRadius: PlumpyTheme.Radius.small))
                 } else {
                     Image(systemName: entry.mealType.icon)
                         .font(.system(size: 20))
                         .foregroundColor(entry.mealType.color)
-                        .frame(width: 50, height: 50)
+                        .frame(width: PlumpyTheme.Spacing.huge, height: PlumpyTheme.Spacing.huge)
                         .background(
                             RoundedRectangle(cornerRadius: PlumpyTheme.Radius.small)
                                 .fill(entry.mealType.color.opacity(0.1))
                         )
                 }
                 
-                VStack(alignment: .leading, spacing: 4) {
+                VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.tiny) {
                     Text(entry.displayName)
                         .font(PlumpyTheme.Typography.subheadline)
                         .fontWeight(.medium)
@@ -330,8 +331,8 @@ struct FoodEntryHistoryCard: View {
                         Text(entry.mealType.displayName)
                             .font(PlumpyTheme.Typography.caption2)
                             .foregroundColor(entry.mealType.color)
-                            .padding(.horizontal, 6)
-                            .padding(.vertical, 2)
+                            .padding(.horizontal, PlumpyTheme.Spacing.tiny)
+                            .padding(.vertical, PlumpyTheme.Spacing.tiny)
                             .background(
                                 RoundedRectangle(cornerRadius: PlumpyTheme.Radius.small)
                                     .fill(entry.mealType.color.opacity(0.1))
@@ -351,7 +352,7 @@ struct FoodEntryHistoryCard: View {
                 
                 Spacer()
                 
-                VStack(alignment: .trailing, spacing: 2) {
+                VStack(alignment: .trailing, spacing: PlumpyTheme.Spacing.tiny) {
                     Text("\(entry.totalCalories)")
                         .font(PlumpyTheme.Typography.subheadline)
                         .fontWeight(.semibold)
