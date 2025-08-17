@@ -69,10 +69,13 @@ struct StatisticsView: View {
                         additionalStats
                         
                         PlumpySpacer(size: .huge)
+                            .frame(height: PlumpyTheme.Spacing.huge) // Фиксированная высота
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.horizontal, PlumpyTheme.Spacing.medium)
                     .padding(.top, PlumpyTheme.Spacing.medium)
+                    .animation(.easeInOut(duration: 0.3), value: selectedPeriod)
+                    .animation(.easeInOut(duration: 0.3), value: isLoading)
                 }
             }
             .frame(maxWidth: .infinity)
@@ -125,6 +128,7 @@ struct StatisticsView: View {
                                 .fill(PlumpyTheme.primary.opacity(0.1))
                         )
                     }
+                    .transition(.opacity.combined(with: .move(edge: .trailing)))
                 }
             }
             
@@ -145,6 +149,8 @@ struct StatisticsView: View {
             }
         }
         .statisticsCard()
+        .frame(minHeight: 120) // Минимальная высота для предотвращения "прыжков"
+        .animation(.easeInOut(duration: 0.2), value: selectedPeriod)
     }
     
     private var mainStatistics: some View {
@@ -157,6 +163,7 @@ struct StatisticsView: View {
                 iconColor: PlumpyTheme.warning,
                 trend: .up
             )
+            .transition(.opacity.combined(with: .scale(scale: 0.95)))
             
             StatisticsCard(
                 title: "Meals",
@@ -166,6 +173,7 @@ struct StatisticsView: View {
                 iconColor: PlumpyTheme.primaryAccent,
                 trend: .up
             )
+            .transition(.opacity.combined(with: .scale(scale: 0.95)))
             
             StatisticsCard(
                 title: "Avg. Daily",
@@ -175,6 +183,7 @@ struct StatisticsView: View {
                 iconColor: PlumpyTheme.secondaryAccent,
                 trend: .neutral
             )
+            .transition(.opacity.combined(with: .scale(scale: 0.95)))
             
             StatisticsCard(
                 title: "Goal Met",
@@ -184,7 +193,12 @@ struct StatisticsView: View {
                 iconColor: PlumpyTheme.success,
                 trend: .up
             )
+            .transition(.opacity.combined(with: .scale(scale: 0.95)))
         }
+        .frame(minHeight: 200) // Минимальная высота для предотвращения "прыжков"
+        .animation(.easeInOut(duration: 0.3), value: totalCalories)
+        .animation(.easeInOut(duration: 0.3), value: totalMeals)
+        .animation(.easeInOut(duration: 0.3), value: averageDailyCalories)
     }
 
     private var totalMeals: Int {
@@ -226,6 +240,7 @@ struct StatisticsView: View {
             RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
                 .fill(PlumpyTheme.surfaceSecondary)
         )
+        .clipped() // Предотвращаем выход за границы
     }
     
     private var chartBars: some View {
@@ -235,6 +250,7 @@ struct StatisticsView: View {
         }
         .frame(height: 160)
         .frame(maxWidth: .infinity)
+        .clipped() // Предотвращаем выход за границы
     }
     
     private var chartGrid: some View {
@@ -252,6 +268,7 @@ struct StatisticsView: View {
         }
         .frame(height: 160)
         .frame(maxWidth: .infinity)
+        .clipped() // Предотвращаем выход за границы
     }
     
     private var chartColumns: some View {
@@ -263,6 +280,7 @@ struct StatisticsView: View {
         .frame(height: 160)
         .frame(maxWidth: .infinity)
         .padding(.horizontal, PlumpyTheme.Spacing.medium)
+        .clipped() // Предотвращаем выход за границы
     }
     
     private func chartColumn(index: Int, data: ChartDataPoint) -> some View {
@@ -286,6 +304,7 @@ struct StatisticsView: View {
                 .frame(width: 30, height: 20) // Фиксированные размеры для текста
         }
         .frame(width: 30) // Фиксированная ширина для столбца
+        .clipped() // Предотвращаем выход за границы
     }
     
     private var chartLegend: some View {
@@ -306,6 +325,8 @@ struct StatisticsView: View {
                 .foregroundColor(PlumpyTheme.textSecondary)
         }
         .padding(.horizontal, PlumpyTheme.Spacing.medium)
+        .frame(height: 40) // Фиксированная высота для легенды
+        .clipped() // Предотвращаем выход за границы
     }
     
     private var caloriesChart: some View {
@@ -316,42 +337,54 @@ struct StatisticsView: View {
                 .foregroundColor(PlumpyTheme.textPrimary)
                 .frame(maxWidth: .infinity, alignment: .leading)
             
-            if isLoading {
-                // Состояние загрузки
-                RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
-                    .fill(PlumpyTheme.surfaceSecondary)
-                    .frame(height: 200)
-                    .frame(maxWidth: .infinity)
-                    .overlay(
-                        VStack(spacing: PlumpyTheme.Spacing.medium) {
-                            ProgressView()
-                                .foregroundColor(PlumpyTheme.primary)
-                            
-                            Text("Loading data...")
-                                .font(PlumpyTheme.Typography.caption1)
-                                .foregroundColor(PlumpyTheme.textSecondary)
-                        }
-                    )
-            } else if chartData.isEmpty {
-                // Пустое состояние
-                RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
-                    .fill(PlumpyTheme.surfaceSecondary)
-                    .frame(height: 200)
-                    .frame(maxWidth: .infinity)
-                    .overlay(
-                        VStack(spacing: PlumpyTheme.Spacing.medium) {
-                            Image(systemName: "chart.line.uptrend.xyaxis")
-                                .font(.system(size: 40))
-                                .foregroundColor(PlumpyTheme.textTertiary)
-                            
-                            Text("No data for this period")
-                                .font(PlumpyTheme.Typography.caption1)
-                                .foregroundColor(PlumpyTheme.textTertiary)
-                        }
-                    )
-            } else {
-                chartView
+            // Контейнер с фиксированной высотой для предотвращения "прыжков"
+            ZStack {
+                if isLoading {
+                    // Состояние загрузки
+                    RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
+                        .fill(PlumpyTheme.surfaceSecondary)
+                        .frame(height: 200)
+                        .frame(maxWidth: .infinity)
+                        .clipped() // Предотвращаем выход за границы
+                        .overlay(
+                            VStack(spacing: PlumpyTheme.Spacing.medium) {
+                                ProgressView()
+                                    .foregroundColor(PlumpyTheme.primary)
+                                
+                                Text("Loading data...")
+                                    .font(PlumpyTheme.Typography.caption1)
+                                    .foregroundColor(PlumpyTheme.textSecondary)
+                            }
+                        )
+                        .transition(.opacity.combined(with: .scale(scale: 0.95)))
+                } else if chartData.isEmpty {
+                    // Пустое состояние
+                    RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
+                        .fill(PlumpyTheme.surfaceSecondary)
+                        .frame(height: 200)
+                        .frame(maxWidth: .infinity)
+                        .clipped() // Предотвращаем выход за границы
+                        .overlay(
+                            VStack(spacing: PlumpyTheme.Spacing.medium) {
+                                Image(systemName: "chart.line.uptrend.xyaxis")
+                                    .font(.system(size: 40))
+                                    .foregroundColor(PlumpyTheme.textTertiary)
+                                
+                                Text("No data for this period")
+                                    .font(PlumpyTheme.Typography.caption1)
+                                    .foregroundColor(PlumpyTheme.textTertiary)
+                            }
+                        )
+                        .transition(.opacity.combined(with: .scale(scale: 0.95)))
+                } else {
+                    chartView
+                        .transition(.opacity.combined(with: .scale(scale: 1.0)))
+                }
             }
+            .frame(height: 200) // Фиксированная высота для всех состояний
+            .frame(maxWidth: .infinity)
+            .animation(.easeInOut(duration: 0.3), value: isLoading)
+            .animation(.easeInOut(duration: 0.3), value: chartData.isEmpty)
         }
         .statisticsCard()
     }
@@ -391,6 +424,7 @@ struct StatisticsView: View {
             }
         }
         .statisticsCard()
+        .frame(minHeight: 200) // Минимальная высота для предотвращения "прыжков"
     }
     
     private func formatDate(_ date: Date) -> String {
@@ -414,8 +448,10 @@ struct StatisticsView: View {
             await loadChartData()
             
             await MainActor.run {
-                isLoading = false
-                isDataLoading = false
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    isLoading = false
+                    isDataLoading = false
+                }
             }
         }
     }
