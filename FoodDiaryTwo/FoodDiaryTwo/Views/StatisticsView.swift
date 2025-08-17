@@ -88,17 +88,11 @@ struct StatisticsView: View {
             if newPeriod != .custom {
                 selectedDate = Date()
             }
-            // Добавляем небольшую задержку для предотвращения блокировки UI
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                loadData()
-            }
+            loadData()
         }
         .onChange(of: selectedDate) { _, _ in
             if selectedPeriod == .custom {
-                // Добавляем небольшую задержку для предотвращения блокировки UI
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    loadData()
-                }
+                loadData()
             }
         }
     }
@@ -125,7 +119,7 @@ struct StatisticsView: View {
                         }
                         .foregroundColor(PlumpyTheme.primary)
                         .padding(.horizontal, PlumpyTheme.Spacing.small)
-                        .padding(.vertical, 4)
+                        .padding(.vertical, PlumpyTheme.Spacing.tiny)
                         .background(
                             RoundedRectangle(cornerRadius: PlumpyTheme.Radius.small)
                                 .fill(PlumpyTheme.primary.opacity(0.1))
@@ -145,17 +139,17 @@ struct StatisticsView: View {
                         // Немедленно обновляем UI для быстрого отклика
                         selectedPeriod = period
                     }
-                    .frame(minWidth: 80) // Увеличиваем минимальную ширину для лучшего размещения текста
+                    .frame(minWidth: PlumpyTheme.Spacing.huge) // Увеличиваем минимальную ширину для лучшего размещения текста
                 }
                 Spacer()
             }
         }
-        .plumpyCard()
+        .statisticsCard()
     }
     
     private var mainStatistics: some View {
         LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: PlumpyTheme.Spacing.medium) {
-            PlumpyStatsCard(
+            StatisticsCard(
                 title: "Total Calories",
                 value: String(totalCalories),
                 subtitle: "This period",
@@ -164,7 +158,7 @@ struct StatisticsView: View {
                 trend: .up
             )
             
-            PlumpyStatsCard(
+            StatisticsCard(
                 title: "Meals",
                 value: String(totalMeals),
                 subtitle: "This period",
@@ -173,7 +167,7 @@ struct StatisticsView: View {
                 trend: .up
             )
             
-            PlumpyStatsCard(
+            StatisticsCard(
                 title: "Avg. Daily",
                 value: String(averageDailyCalories),
                 subtitle: "Calories",
@@ -182,7 +176,7 @@ struct StatisticsView: View {
                 trend: .neutral
             )
             
-            PlumpyStatsCard(
+            StatisticsCard(
                 title: "Goal Met",
                 value: "85%",
                 subtitle: "Of days",
@@ -261,19 +255,19 @@ struct StatisticsView: View {
     }
     
     private var chartColumns: some View {
-        HStack(alignment: .bottom, spacing: 8) {
+        HStack(alignment: .bottom, spacing: PlumpyTheme.Spacing.small) {
             ForEach(Array(chartData.enumerated()), id: \.offset) { index, data in
                 chartColumn(index: index, data: data)
             }
         }
         .frame(height: 160)
         .frame(maxWidth: .infinity)
-        .padding(.horizontal, 16)
+        .padding(.horizontal, PlumpyTheme.Spacing.medium)
     }
     
     private func chartColumn(index: Int, data: ChartDataPoint) -> some View {
-        VStack(spacing: 4) {
-            RoundedRectangle(cornerRadius: 4)
+        VStack(spacing: PlumpyTheme.Spacing.tiny) {
+            RoundedRectangle(cornerRadius: PlumpyTheme.Radius.small)
                 .fill(
                     LinearGradient(
                         colors: [PlumpyTheme.primaryAccent, PlumpyTheme.secondaryAccent],
@@ -281,14 +275,14 @@ struct StatisticsView: View {
                         endPoint: .top
                     )
                 )
-                .frame(width: 24, height: max(4, CGFloat(data.calories) / CGFloat(maxCalories) * 160))
+                .frame(width: PlumpyTheme.Spacing.medium, height: max(4, CGFloat(data.calories) / CGFloat(maxCalories) * 160))
                 .clipped() // Предотвращаем выход за границы
             
             Text(data.dateLabel)
                 .font(PlumpyTheme.Typography.caption2)
                 .foregroundColor(PlumpyTheme.textSecondary)
                 .rotationEffect(.degrees(-45))
-                .offset(y: 8)
+                .offset(y: PlumpyTheme.Spacing.small)
                 .frame(width: 30, height: 20) // Фиксированные размеры для текста
         }
         .frame(width: 30) // Фиксированная ширина для столбца
@@ -296,10 +290,10 @@ struct StatisticsView: View {
     
     private var chartLegend: some View {
         HStack(spacing: PlumpyTheme.Spacing.medium) {
-            HStack(spacing: 4) {
+            HStack(spacing: PlumpyTheme.Spacing.tiny) {
                 Circle()
                     .fill(PlumpyTheme.primaryAccent)
-                    .frame(width: 8, height: 8)
+                    .frame(width: PlumpyTheme.Spacing.small, height: PlumpyTheme.Spacing.small)
                 Text("Calories")
                     .font(PlumpyTheme.Typography.caption2)
                     .foregroundColor(PlumpyTheme.textSecondary)
@@ -311,7 +305,7 @@ struct StatisticsView: View {
                 .font(PlumpyTheme.Typography.caption2)
                 .foregroundColor(PlumpyTheme.textSecondary)
         }
-        .padding(.horizontal, 16)
+        .padding(.horizontal, PlumpyTheme.Spacing.medium)
     }
     
     private var caloriesChart: some View {
@@ -359,7 +353,7 @@ struct StatisticsView: View {
                 chartView
             }
         }
-        .plumpyCard()
+        .statisticsCard()
     }
     
     private var additionalStats: some View {
@@ -371,7 +365,7 @@ struct StatisticsView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             
             VStack(spacing: PlumpyTheme.Spacing.small) {
-                PlumpyInfoCard(
+                StatisticsInfoCard(
                     title: "Most Common Meal",
                     subtitle: "Breakfast - 15 times",
                     icon: "sunrise.fill",
@@ -379,7 +373,7 @@ struct StatisticsView: View {
                     action: {}
                 )
                 
-                PlumpyInfoCard(
+                StatisticsInfoCard(
                     title: "Best Day",
                     subtitle: "Wednesday - 1,450 cal",
                     icon: "star.fill",
@@ -387,7 +381,7 @@ struct StatisticsView: View {
                     action: {}
                 )
                 
-                PlumpyInfoCard(
+                StatisticsInfoCard(
                     title: "Streak",
                     subtitle: "7 days in a row",
                     icon: "flame.fill",
@@ -396,7 +390,7 @@ struct StatisticsView: View {
                 )
             }
         }
-        .plumpyCard()
+        .statisticsCard()
     }
     
     private func formatDate(_ date: Date) -> String {
@@ -455,8 +449,6 @@ struct StatisticsView: View {
         )
         
         do {
-            // Добавляем небольшую задержку для предотвращения блокировки UI
-            try await Task.sleep(nanoseconds: 100_000) // 0.1 секунды
             cachedPeriodEntries = try modelContext.fetch(descriptor)
         } catch {
             print("Error fetching period entries: \(error)")
@@ -466,9 +458,6 @@ struct StatisticsView: View {
     
     @MainActor
     private func loadChartData() async {
-        // Добавляем небольшую задержку для предотвращения блокировки UI
-        try? await Task.sleep(nanoseconds: 50_000) // 0.05 секунды
-        
         switch selectedPeriod {
         case .week:
             cachedChartData = generateWeekData()
@@ -590,6 +579,164 @@ struct StatisticsView: View {
         }
         
         return data
+    }
+}
+
+// MARK: - Statistics Info Card
+
+struct StatisticsInfoCard: View {
+    let title: String
+    let subtitle: String?
+    let icon: String
+    let iconColor: Color
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: PlumpyTheme.Spacing.medium) {
+                Image(systemName: icon)
+                    .font(.title2)
+                    .foregroundColor(iconColor)
+                    .frame(width: 24, height: 24)
+                
+                VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.tiny) {
+                    Text(title)
+                        .font(PlumpyTheme.Typography.subheadline)
+                        .fontWeight(.medium)
+                        .foregroundColor(PlumpyTheme.textPrimary)
+                    
+                    if let subtitle = subtitle {
+                        Text(subtitle)
+                            .font(PlumpyTheme.Typography.caption1)
+                            .foregroundColor(PlumpyTheme.textSecondary)
+                    }
+                }
+                
+                Spacer()
+                
+                Image(systemName: "chevron.right")
+                    .font(.caption)
+                    .foregroundColor(PlumpyTheme.textTertiary)
+            }
+            .padding(.horizontal, PlumpyTheme.Spacing.medium)
+            .padding(.vertical, PlumpyTheme.Spacing.medium)
+            .background(PlumpyTheme.surface)
+            .clipShape(RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium))
+            .overlay(
+                RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
+                    .stroke(PlumpyTheme.neutral200, lineWidth: 1)
+            )
+            .shadow(
+                color: PlumpyTheme.shadow.opacity(0.02),
+                radius: PlumpyTheme.Shadow.small.radius,
+                x: PlumpyTheme.Shadow.small.x,
+                y: PlumpyTheme.Shadow.small.y
+            )
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+}
+
+// MARK: - Statistics Card
+
+struct StatisticsCard: View {
+    let title: String
+    let value: String
+    let subtitle: String?
+    let icon: String
+    let iconColor: Color
+    let trend: PlumpyTrend
+    
+    enum PlumpyTrend {
+        case up
+        case down
+        case neutral
+        
+        var icon: String {
+            switch self {
+            case .up: return "arrow.up.right"
+            case .down: return "arrow.down.right"
+            case .neutral: return "minus"
+            }
+        }
+        
+        var color: Color {
+            switch self {
+            case .up: return PlumpyTheme.success
+            case .down: return PlumpyTheme.error
+            case .neutral: return PlumpyTheme.textTertiary
+            }
+        }
+    }
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.medium) {
+            HStack {
+                Image(systemName: icon)
+                    .font(.title2)
+                    .foregroundColor(iconColor)
+                    .frame(width: 24, height: 24)
+                
+                Spacer()
+                
+                Image(systemName: trend.icon)
+                    .font(.caption)
+                    .foregroundColor(trend.color)
+            }
+            
+            VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.tiny) {
+                Text(value)
+                    .font(PlumpyTheme.Typography.title2)
+                    .fontWeight(.bold)
+                    .foregroundColor(PlumpyTheme.textPrimary)
+                
+                Text(title)
+                    .font(PlumpyTheme.Typography.caption1)
+                    .foregroundColor(PlumpyTheme.textSecondary)
+                
+                if let subtitle = subtitle {
+                    Text(subtitle)
+                        .font(PlumpyTheme.Typography.caption2)
+                        .foregroundColor(PlumpyTheme.textTertiary)
+                }
+            }
+        }
+        .padding(.horizontal, PlumpyTheme.Spacing.medium)
+        .padding(.vertical, PlumpyTheme.Spacing.medium)
+        .background(PlumpyTheme.surface)
+        .clipShape(RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium))
+        .overlay(
+            RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
+                .stroke(PlumpyTheme.neutral200, lineWidth: 1)
+        )
+        .shadow(
+            color: PlumpyTheme.shadow.opacity(0.02),
+            radius: PlumpyTheme.Shadow.small.radius,
+            x: PlumpyTheme.Shadow.small.x,
+            y: PlumpyTheme.Shadow.small.y
+        )
+    }
+}
+
+// MARK: - Statistics Card Modifier
+
+extension View {
+    func statisticsCard() -> some View {
+        self
+            .padding(.horizontal, PlumpyTheme.Spacing.medium)
+            .padding(.vertical, PlumpyTheme.Spacing.medium)
+            .background(PlumpyTheme.surface)
+            .clipShape(RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium))
+            .overlay(
+                RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
+                    .stroke(PlumpyTheme.neutral200, lineWidth: 1)
+            )
+            .shadow(
+                color: PlumpyTheme.shadow.opacity(0.02),
+                radius: PlumpyTheme.Shadow.small.radius,
+                x: PlumpyTheme.Shadow.small.x,
+                y: PlumpyTheme.Shadow.small.y
+            )
     }
 }
 

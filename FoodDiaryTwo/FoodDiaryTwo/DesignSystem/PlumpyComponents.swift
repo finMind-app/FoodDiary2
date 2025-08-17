@@ -29,9 +29,7 @@ struct PlumpyActionIconButton: View {
     
     var body: some View {
         Button(action: {
-            withAnimation(PlumpyTheme.Animation.spring) {
-                action()
-            }
+            action()
         }) {
             VStack(spacing: PlumpyTheme.Spacing.small) {
                 Image(systemName: systemImageName)
@@ -57,8 +55,6 @@ struct PlumpyActionIconButton: View {
             }
         }
         .buttonStyle(PlainButtonStyle())
-        .scaleEffect(1.0)
-        .animation(PlumpyTheme.Animation.spring, value: true)
     }
 }
 
@@ -128,9 +124,7 @@ struct PlumpyChip: View {
     
     var body: some View {
         Button(action: {
-            withAnimation(PlumpyTheme.Animation.spring) {
-                action()
-            }
+            action()
         }) {
             HStack(spacing: PlumpyTheme.Spacing.tiny) {
                 if let icon = icon {
