@@ -270,47 +270,68 @@ struct ProfileView: View {
     
     private var profileSettingsSection: some View {
         VStack(spacing: PlumpyTheme.Spacing.medium) {
-            Text("Profile Settings")
+            Text("Personal Information")
                 .font(PlumpyTheme.Typography.headline)
                 .fontWeight(.semibold)
                 .foregroundColor(PlumpyTheme.textPrimary)
                 .frame(maxWidth: .infinity, alignment: .leading)
             
-            VStack(spacing: PlumpyTheme.Spacing.small) {
-                PlumpyInfoCard(
-                    title: "Personal Information",
-                    subtitle: "Edit your name, email, and photo",
-                    icon: "person.circle",
-                    iconColor: PlumpyTheme.primaryAccent
-                ) {
-                    showingEditProfile = true
+            VStack(spacing: PlumpyTheme.Spacing.medium) {
+                HStack(spacing: PlumpyTheme.Spacing.medium) {
+                    Image(systemName: "person.circle.fill")
+                        .font(.system(size: 60))
+                        .foregroundColor(PlumpyTheme.primaryAccent)
+                    
+                    VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.tiny) {
+                        Text(users.first?.name ?? "Your Name")
+                            .font(PlumpyTheme.Typography.title3)
+                            .fontWeight(.semibold)
+                            .foregroundColor(PlumpyTheme.textPrimary)
+                        
+                        Text(users.first?.email ?? "No Email")
+                            .font(PlumpyTheme.Typography.caption1)
+                            .foregroundColor(PlumpyTheme.textSecondary)
+                    }
+                    
+                    Spacer()
+                    
+                    PlumpyButton(
+                        title: "Edit",
+                        icon: "pencil",
+                        style: .outline
+                    ) {
+                        showingEditProfile = true
+                    }
+                    .frame(maxWidth: 80)
                 }
                 
-                PlumpyInfoCard(
-                    title: "Goals & Targets",
-                    subtitle: "Set your daily calorie goals",
-                    icon: "target",
-                    iconColor: PlumpyTheme.success
-                ) {
-                    // Открытие настроек целей
-                }
-                
-                PlumpyInfoCard(
-                    title: "Notifications",
-                    subtitle: "Manage your notification preferences",
-                    icon: "bell.fill",
-                    iconColor: PlumpyTheme.warning
-                ) {
-                    // Открытие настроек уведомлений
-                }
-                
-                PlumpyInfoCard(
-                    title: "Privacy & Security",
-                    subtitle: "Control your privacy settings",
-                    icon: "lock.fill",
-                    iconColor: PlumpyTheme.info
-                ) {
-                    // Открытие настроек приватности
+                VStack(spacing: PlumpyTheme.Spacing.small) {
+                    PlumpyInfoCard(
+                        title: "Name",
+                        subtitle: users.first?.name ?? "Not set",
+                        icon: "person",
+                        iconColor: PlumpyTheme.primaryAccent
+                    ) {
+                        showingEditProfile = true
+                    }
+                    
+                    PlumpyInfoCard(
+                        title: "Email",
+                        subtitle: users.first?.email ?? "Not set",
+                        icon: "envelope",
+                        iconColor: PlumpyTheme.secondaryAccent
+                    ) {
+                        showingEditProfile = true
+                    }
+                    
+                    PlumpyInfoCard(
+                        title: "Member Since",
+                        subtitle: "August 2025",
+                        icon: "calendar",
+                        iconColor: PlumpyTheme.tertiaryAccent
+                    ) {
+                        // Информация о дате регистрации
+                    }
                 }
             }
         }

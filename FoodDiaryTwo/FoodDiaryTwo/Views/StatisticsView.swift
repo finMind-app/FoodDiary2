@@ -11,17 +11,27 @@ import SwiftData
 struct StatisticsView: View {
     @Environment(\.modelContext) private var modelContext
     @State private var selectedPeriod: StatisticsPeriod = .week
+    @State private var selectedDate = Date()
+    @State private var showingCalendar = false
+    
+    struct ChartDataPoint: Equatable {
+        let date: Date
+        let calories: Int
+        let dateLabel: String
+    }
     
     enum StatisticsPeriod: String, CaseIterable {
         case week = "week"
         case month = "month"
         case year = "year"
+        case custom = "custom"
         
         var displayName: String {
             switch self {
             case .week: return "Week"
             case .month: return "Month"
             case .year: return "Year"
+            case .custom: return "Custom"
             }
         }
     }
@@ -59,16 +69,44 @@ struct StatisticsView: View {
                 }
             }
         }
+        .sheet(isPresented: $showingCalendar) {
+            CalendarView(selectedDate: $selectedDate)
+        }
     }
     
     private var periodSelector: some View {
         VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.medium) {
-            Text("Period")
-                .font(PlumpyTheme.Typography.headline)
-                .fontWeight(.semibold)
-                .foregroundColor(PlumpyTheme.textPrimary)
+            HStack {
+                Text("Period")
+                    .font(PlumpyTheme.Typography.headline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(PlumpyTheme.textPrimary)
+                
+                Spacer()
+                
+                if selectedPeriod == .custom {
+                    Button(action: {
+                        showingCalendar = true
+                    }) {
+                        HStack(spacing: PlumpyTheme.Spacing.tiny) {
+                            Image(systemName: "calendar")
+                                .font(.system(size: 14))
+                            Text(formatDate(selectedDate))
+                                .font(PlumpyTheme.Typography.caption1)
+                        }
+                        .foregroundColor(PlumpyTheme.primary)
+                        .padding(.horizontal, PlumpyTheme.Spacing.small)
+                        .padding(.vertical, 4)
+                        .background(
+                            RoundedRectangle(cornerRadius: PlumpyTheme.Radius.small)
+                                .fill(PlumpyTheme.primary.opacity(0.1))
+                        )
+                    }
+                }
+            }
             
             HStack(spacing: PlumpyTheme.Spacing.small) {
+                Spacer()
                 ForEach(StatisticsPeriod.allCases, id: \.self) { period in
                     PlumpyChip(
                         title: period.displayName,
@@ -76,8 +114,12 @@ struct StatisticsView: View {
                         isSelected: selectedPeriod == period
                     ) {
                         selectedPeriod = period
+                        if period != .custom {
+                            selectedDate = Date()
+                        }
                     }
                 }
+                Spacer()
             }
         }
         .plumpyCard()
@@ -138,20 +180,132 @@ struct StatisticsView: View {
         let days = Set(periodEntries.map { calendar.startOfDay(for: $0.date) })
         return days.count
     }
+    
+    private var chartData: [ChartDataPoint] {
+        switch selectedPeriod {
+        case .week:
+            return generateWeekData()
+        case .month:
+            return generateMonthData()
+        case .year:
+            return generateYearData()
+        case .custom:
+            return generateCustomData()
+        }
+    }
+    
+    private var maxCalories: Int {
+        let max = chartData.map { $0.calories }.max() ?? 0
+        return max > 0 ? max : 1000 // Минимальное значение для отображения
+    }
+    
+    private var chartView: some View {
+        VStack(spacing: PlumpyTheme.Spacing.small) {
+            chartBars
+            chartLegend
+        }
+        .frame(height: 200)
+        .background(
+            RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
+                .fill(PlumpyTheme.surfaceSecondary)
+        )
+    }
+    
+    private var chartBars: some View {
+        ZStack(alignment: .bottom) {
+            chartGrid
+            chartColumns
+        }
+    }
+    
+    private var chartGrid: some View {
+        VStack(spacing: 0) {
+            ForEach(0..<5, id: \.self) { index in
+                Rectangle()
+                    .fill(PlumpyTheme.neutral100)
+                    .frame(height: 1)
+                    .frame(maxWidth: .infinity)
+                
+                if index < 4 {
+                    Spacer()
+                }
+            }
+        }
+        .frame(height: 160)
+    }
+    
+    private var chartColumns: some View {
+        HStack(alignment: .bottom, spacing: 8) {
+            ForEach(Array(chartData.enumerated()), id: \.offset) { index, data in
+                chartColumn(index: index, data: data)
+            }
+        }
+        .padding(.horizontal, 16)
+    }
+    
+    private func chartColumn(index: Int, data: ChartDataPoint) -> some View {
+        VStack(spacing: 4) {
+            RoundedRectangle(cornerRadius: 4)
+                .fill(
+                    LinearGradient(
+                        colors: [PlumpyTheme.primaryAccent, PlumpyTheme.secondaryAccent],
+                        startPoint: .bottom,
+                        endPoint: .top
+                    )
+                )
+                .frame(width: 24, height: max(4, CGFloat(data.calories) / CGFloat(maxCalories) * 160))
+                .animation(.easeInOut(duration: 0.6).delay(Double(index) * 0.1), value: chartData)
+            
+            Text(data.dateLabel)
+                .font(PlumpyTheme.Typography.caption2)
+                .foregroundColor(PlumpyTheme.textSecondary)
+                .rotationEffect(.degrees(-45))
+                .offset(y: 8)
+        }
+    }
+    
+    private var chartLegend: some View {
+        HStack(spacing: PlumpyTheme.Spacing.medium) {
+            HStack(spacing: 4) {
+                Circle()
+                    .fill(PlumpyTheme.primaryAccent)
+                    .frame(width: 8, height: 8)
+                Text("Calories")
+                    .font(PlumpyTheme.Typography.caption2)
+                    .foregroundColor(PlumpyTheme.textSecondary)
+            }
+            
+            Spacer()
+            
+            Text("Max: \(maxCalories) cal")
+                .font(PlumpyTheme.Typography.caption2)
+                .foregroundColor(PlumpyTheme.textSecondary)
+        }
+        .padding(.horizontal, 16)
+    }
     private var periodEntries: [FoodEntry] {
         let calendar = Calendar.current
         let startDate: Date
+        let endDate: Date
+        
         switch selectedPeriod {
         case .week:
             startDate = calendar.date(byAdding: .day, value: -7, to: Date()) ?? Date()
+            endDate = Date()
         case .month:
             startDate = calendar.date(byAdding: .month, value: -1, to: Date()) ?? Date()
+            endDate = Date()
         case .year:
             startDate = calendar.date(byAdding: .year, value: -1, to: Date()) ?? Date()
+            endDate = Date()
+        case .custom:
+            startDate = calendar.startOfDay(for: selectedDate)
+            endDate = calendar.date(byAdding: .day, value: 1, to: startDate) ?? startDate
         }
+        
         let descriptor = FetchDescriptor<FoodEntry>(
             predicate: #Predicate<FoodEntry> { entry in
-                entry.date >= startDate
+                entry.date >= startDate && entry.date < endDate
             },
             sortBy: [SortDescriptor(\.date, order: .reverse)]
         )
@@ -166,21 +320,25 @@ struct StatisticsView: View {
                 .foregroundColor(PlumpyTheme.textPrimary)
                 .frame(maxWidth: .infinity, alignment: .leading)
             
-            // Заглушка для графика
-            RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
-                .fill(PlumpyTheme.surfaceSecondary)
-                .frame(height: 200)
-                .overlay(
-                    VStack(spacing: PlumpyTheme.Spacing.medium) {
-                        Image(systemName: "chart.bar.fill")
-                            .font(.system(size: 40))
-                            .foregroundColor(PlumpyTheme.textTertiary)
-                        
-                        Text("Chart will appear here")
-                            .font(PlumpyTheme.Typography.caption1)
-                            .foregroundColor(PlumpyTheme.textTertiary)
-                    }
-                )
+            if chartData.isEmpty {
+                // Пустое состояние
+                RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
+                    .fill(PlumpyTheme.surfaceSecondary)
+                    .frame(height: 200)
+                    .overlay(
+                        VStack(spacing: PlumpyTheme.Spacing.medium) {
+                            Image(systemName: "chart.line.uptrend.xyaxis")
+                                .font(.system(size: 40))
+                                .foregroundColor(PlumpyTheme.textTertiary)
+                            
+                            Text("No data for this period")
+                                .font(PlumpyTheme.Typography.caption1)
+                                .foregroundColor(PlumpyTheme.textTertiary)
+                        }
+                    )
+            } else {
+                chartView
+            }
         }
         .plumpyCard()
     }
@@ -220,6 +378,123 @@ struct StatisticsView: View {
             }
         }
         .plumpyCard()
+    }
+    
+    private func formatDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        return formatter.string(from: date)
+    }
+    
+    // MARK: - Chart Data Generation
+    
+    private func generateWeekData() -> [ChartDataPoint] {
+        let calendar = Calendar.current
+        let formatter = DateFormatter()
+        formatter.dateFormat = "E"
+        
+        var data: [ChartDataPoint] = []
+        let today = Date()
+        
+        for i in 0..<7 {
+            let date = calendar.date(byAdding: .day, value: -i, to: today) ?? today
+            let startOfDay = calendar.startOfDay(for: date)
+            let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay) ?? startOfDay
+            
+            let dayEntries = periodEntries.filter { entry in
+                entry.date >= startOfDay && entry.date < endOfDay
+            }
+            
+            let calories = dayEntries.reduce(0) { $0 + $1.totalCalories }
+            let dateLabel = formatter.string(from: date)
+            
+            data.append(ChartDataPoint(date: date, calories: calories, dateLabel: dateLabel))
+        }
+        
+        return data.reversed()
+    }
+    
+    private func generateMonthData() -> [ChartDataPoint] {
+        let calendar = Calendar.current
+        let formatter = DateFormatter()
+        formatter.dateFormat = "d"
+        
+        var data: [ChartDataPoint] = []
+        let today = Date()
+        
+        for i in 0..<30 {
+            let date = calendar.date(byAdding: .day, value: -i, to: today) ?? today
+            let startOfDay = calendar.startOfDay(for: date)
+            let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay) ?? startOfDay
+            
+            let dayEntries = periodEntries.filter { entry in
+                entry.date >= startOfDay && entry.date < endOfDay
+            }
+            
+            let calories = dayEntries.reduce(0) { $0 + $1.totalCalories }
+            let dateLabel = formatter.string(from: date)
+            
+            data.append(ChartDataPoint(date: date, calories: calories, dateLabel: dateLabel))
+        }
+        
+        return data.reversed()
+    }
+    
+    private func generateYearData() -> [ChartDataPoint] {
+        let calendar = Calendar.current
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMM"
+        
+        var data: [ChartDataPoint] = []
+        let today = Date()
+        
+        for i in 0..<12 {
+            let date = calendar.date(byAdding: .month, value: -i, to: today) ?? today
+            let startOfMonth = calendar.dateInterval(of: .month, for: date)?.start ?? date
+            let endOfMonth = calendar.date(byAdding: .month, value: 1, to: startOfMonth) ?? startOfMonth
+            
+            let monthEntries = periodEntries.filter { entry in
+                entry.date >= startOfMonth && entry.date < endOfMonth
+            }
+            
+            let calories = monthEntries.reduce(0) { $0 + $1.totalCalories }
+            let dateLabel = formatter.string(from: date)
+            
+            data.append(ChartDataPoint(date: date, calories: calories, dateLabel: dateLabel))
+        }
+        
+        return data.reversed()
+    }
+    
+    private func generateCustomData() -> [ChartDataPoint] {
+        let calendar = Calendar.current
+        let formatter = DateFormatter()
+        formatter.dateFormat = "HH:mm"
+        
+        let startOfDay = calendar.startOfDay(for: selectedDate)
+        let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay) ?? startOfDay
+        
+        let dayEntries = periodEntries.filter { entry in
+            entry.date >= startOfDay && entry.date < endOfDay
+        }
+        
+        // Группируем по часам
+        var hourlyData: [Int: Int] = [:]
+        for entry in dayEntries {
+            let hour = calendar.component(.hour, from: entry.date)
+            hourlyData[hour, default: 0] += entry.totalCalories
+        }
+        
+        var data: [ChartDataPoint] = []
+        for hour in 0..<24 {
+            let calories = hourlyData[hour] ?? 0
+            let date = calendar.date(byAdding: .hour, value: hour, to: startOfDay) ?? startOfDay
+            let dateLabel = formatter.string(from: date)
+            
+            data.append(ChartDataPoint(date: date, calories: calories, dateLabel: dateLabel))
+        }
+        
+        return data
     }
 }
 

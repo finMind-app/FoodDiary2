@@ -53,38 +53,48 @@ struct SettingsView: View {
     
     private var profileSection: some View {
         VStack(spacing: PlumpyTheme.Spacing.medium) {
-            Text("Profile")
+            Text("Profile Settings")
                 .font(PlumpyTheme.Typography.headline)
                 .fontWeight(.semibold)
                 .foregroundColor(PlumpyTheme.textPrimary)
                 .frame(maxWidth: .infinity, alignment: .leading)
             
-            HStack(spacing: PlumpyTheme.Spacing.medium) {
-                Image(systemName: "person.circle.fill")
-                    .font(.system(size: 60))
-                    .foregroundColor(PlumpyTheme.primaryAccent)
-                
-                VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.tiny) {
-                    Text("User Name")
-                        .font(PlumpyTheme.Typography.title3)
-                        .fontWeight(.semibold)
-                        .foregroundColor(PlumpyTheme.textPrimary)
-                    
-                    Text("user@example.com")
-                        .font(PlumpyTheme.Typography.caption1)
-                        .foregroundColor(PlumpyTheme.textSecondary)
-                }
-                
-                Spacer()
-                
-                PlumpyButton(
-                    title: "Edit",
-                    icon: "pencil",
-                    style: .outline
+            VStack(spacing: PlumpyTheme.Spacing.small) {
+                PlumpyInfoCard(
+                    title: "Personal Information",
+                    subtitle: "Edit your name, email, and photo",
+                    icon: "person.circle",
+                    iconColor: PlumpyTheme.primaryAccent
                 ) {
-                    // Редактирование профиля
+                    // Открытие редактирования профиля
                 }
-                .frame(maxWidth: 80)
+                
+                PlumpyInfoCard(
+                    title: "Goals & Targets",
+                    subtitle: "Set your daily calorie goals",
+                    icon: "target",
+                    iconColor: PlumpyTheme.success
+                ) {
+                    // Открытие настроек целей
+                }
+                
+                PlumpyInfoCard(
+                    title: "Notifications",
+                    subtitle: "Manage your notification preferences",
+                    icon: "bell.fill",
+                    iconColor: PlumpyTheme.warning
+                ) {
+                    // Открытие настроек уведомлений
+                }
+                
+                PlumpyInfoCard(
+                    title: "Privacy & Security",
+                    subtitle: "Control your privacy settings",
+                    icon: "lock.fill",
+                    iconColor: PlumpyTheme.info
+                ) {
+                    // Открытие настроек приватности
+                }
             }
         }
         .plumpyCard()

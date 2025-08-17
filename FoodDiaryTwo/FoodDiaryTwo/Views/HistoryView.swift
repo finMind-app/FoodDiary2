@@ -100,6 +100,7 @@ struct HistoryView: View {
             }
             
             HStack(spacing: PlumpyTheme.Spacing.small) {
+                Spacer()
                 ForEach(HistoryPeriod.allCases, id: \.self) { period in
                     PlumpyChip(
                         title: period.displayName,
@@ -112,6 +113,7 @@ struct HistoryView: View {
                         }
                     }
                 }
+                Spacer()
             }
         }
         .plumpyCard()
