@@ -74,8 +74,8 @@ struct StatisticsView: View {
                     .frame(maxWidth: .infinity)
                     .padding(.horizontal, PlumpyTheme.Spacing.medium)
                     .padding(.top, PlumpyTheme.Spacing.medium)
-                    .animation(.easeInOut(duration: 0.3), value: selectedPeriod)
-                    .animation(.easeInOut(duration: 0.3), value: isLoading)
+                    .animation(nil, value: selectedPeriod) // Отключаем анимацию для изменения данных
+                    .animation(nil, value: isLoading) // Отключаем анимацию для изменения данных
                 }
             }
             .frame(maxWidth: .infinity)
@@ -128,7 +128,6 @@ struct StatisticsView: View {
                                 .fill(PlumpyTheme.primary.opacity(0.1))
                         )
                     }
-                    .transition(.opacity.combined(with: .move(edge: .trailing)))
                 }
             }
             
@@ -150,7 +149,7 @@ struct StatisticsView: View {
         }
         .statisticsCard()
         .frame(minHeight: 120) // Минимальная высота для предотвращения "прыжков"
-        .animation(.easeInOut(duration: 0.2), value: selectedPeriod)
+        .animation(nil, value: selectedPeriod) // Отключаем анимацию для изменения данных
     }
     
     private var mainStatistics: some View {
@@ -163,7 +162,6 @@ struct StatisticsView: View {
                 iconColor: PlumpyTheme.warning,
                 trend: .up
             )
-            .transition(.opacity.combined(with: .scale(scale: 0.95)))
             
             StatisticsCard(
                 title: "Meals",
@@ -173,7 +171,6 @@ struct StatisticsView: View {
                 iconColor: PlumpyTheme.primaryAccent,
                 trend: .up
             )
-            .transition(.opacity.combined(with: .scale(scale: 0.95)))
             
             StatisticsCard(
                 title: "Avg. Daily",
@@ -183,7 +180,6 @@ struct StatisticsView: View {
                 iconColor: PlumpyTheme.secondaryAccent,
                 trend: .neutral
             )
-            .transition(.opacity.combined(with: .scale(scale: 0.95)))
             
             StatisticsCard(
                 title: "Goal Met",
@@ -193,12 +189,11 @@ struct StatisticsView: View {
                 iconColor: PlumpyTheme.success,
                 trend: .up
             )
-            .transition(.opacity.combined(with: .scale(scale: 0.95)))
         }
         .frame(minHeight: 200) // Минимальная высота для предотвращения "прыжков"
-        .animation(.easeInOut(duration: 0.3), value: totalCalories)
-        .animation(.easeInOut(duration: 0.3), value: totalMeals)
-        .animation(.easeInOut(duration: 0.3), value: averageDailyCalories)
+        .animation(nil, value: totalCalories) // Отключаем анимацию для изменения данных
+        .animation(nil, value: totalMeals) // Отключаем анимацию для изменения данных
+        .animation(nil, value: averageDailyCalories) // Отключаем анимацию для изменения данных
     }
 
     private var totalMeals: Int {
@@ -241,6 +236,7 @@ struct StatisticsView: View {
                 .fill(PlumpyTheme.surfaceSecondary)
         )
         .clipped() // Предотвращаем выход за границы
+        .animation(nil, value: chartData.count) // Отключаем анимацию для изменения данных
     }
     
     private var chartBars: some View {
@@ -251,6 +247,7 @@ struct StatisticsView: View {
         .frame(height: 160)
         .frame(maxWidth: .infinity)
         .clipped() // Предотвращаем выход за границы
+        .animation(nil, value: chartData.count) // Отключаем анимацию для изменения данных
     }
     
     private var chartGrid: some View {
@@ -269,6 +266,7 @@ struct StatisticsView: View {
         .frame(height: 160)
         .frame(maxWidth: .infinity)
         .clipped() // Предотвращаем выход за границы
+        .animation(nil, value: true) // Отключаем анимацию
     }
     
     private var chartColumns: some View {
@@ -281,6 +279,7 @@ struct StatisticsView: View {
         .frame(maxWidth: .infinity)
         .padding(.horizontal, PlumpyTheme.Spacing.medium)
         .clipped() // Предотвращаем выход за границы
+        .animation(nil, value: chartData.count) // Отключаем анимацию для изменения данных
     }
     
     private func chartColumn(index: Int, data: ChartDataPoint) -> some View {
@@ -295,6 +294,7 @@ struct StatisticsView: View {
                 )
                 .frame(width: PlumpyTheme.Spacing.medium, height: max(4, CGFloat(data.calories) / CGFloat(maxCalories) * 160))
                 .clipped() // Предотвращаем выход за границы
+                .animation(nil, value: data.calories) // Отключаем анимацию для изменения данных
             
             Text(data.dateLabel)
                 .font(PlumpyTheme.Typography.caption2)
@@ -327,6 +327,7 @@ struct StatisticsView: View {
         .padding(.horizontal, PlumpyTheme.Spacing.medium)
         .frame(height: 40) // Фиксированная высота для легенды
         .clipped() // Предотвращаем выход за границы
+        .animation(nil, value: maxCalories) // Отключаем анимацию для изменения данных
     }
     
     private var caloriesChart: some View {
@@ -356,7 +357,6 @@ struct StatisticsView: View {
                                     .foregroundColor(PlumpyTheme.textSecondary)
                             }
                         )
-                        .transition(.opacity.combined(with: .scale(scale: 0.95)))
                 } else if chartData.isEmpty {
                     // Пустое состояние
                     RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
@@ -375,16 +375,12 @@ struct StatisticsView: View {
                                     .foregroundColor(PlumpyTheme.textTertiary)
                             }
                         )
-                        .transition(.opacity.combined(with: .scale(scale: 0.95)))
                 } else {
                     chartView
-                        .transition(.opacity.combined(with: .scale(scale: 1.0)))
                 }
             }
             .frame(height: 200) // Фиксированная высота для всех состояний
             .frame(maxWidth: .infinity)
-            .animation(.easeInOut(duration: 0.3), value: isLoading)
-            .animation(.easeInOut(duration: 0.3), value: chartData.isEmpty)
         }
         .statisticsCard()
     }
@@ -425,6 +421,7 @@ struct StatisticsView: View {
         }
         .statisticsCard()
         .frame(minHeight: 200) // Минимальная высота для предотвращения "прыжков"
+        .animation(nil, value: true) // Отключаем анимацию
     }
     
     private func formatDate(_ date: Date) -> String {
@@ -448,10 +445,8 @@ struct StatisticsView: View {
             await loadChartData()
             
             await MainActor.run {
-                withAnimation(.easeInOut(duration: 0.3)) {
-                    isLoading = false
-                    isDataLoading = false
-                }
+                isLoading = false
+                isDataLoading = false
             }
         }
     }
