@@ -83,9 +83,7 @@ struct PlumpyField: View {
                 .textContentType(textContentType)
                 .focused($isFocused)
                 .onChange(of: isFocused) { newValue in
-                    withAnimation(PlumpyTheme.Animation.smooth) {
-                        isEditing = newValue
-                    }
+                    isEditing = newValue
                 }
             }
             .padding(.horizontal, PlumpyTheme.Spacing.medium)
@@ -119,8 +117,6 @@ struct PlumpyField: View {
                 .transition(.opacity.combined(with: .move(edge: .top)))
             }
         }
-        .animation(PlumpyTheme.Animation.smooth, value: isEditing)
-        .animation(PlumpyTheme.Animation.smooth, value: errorMessage != nil)
     }
     
     // MARK: - Computed Properties
@@ -212,8 +208,6 @@ struct PlumpySearchField: View {
             x: PlumpyTheme.Shadow.small.x,
             y: PlumpyTheme.Shadow.small.y
         )
-        .animation(PlumpyTheme.Animation.smooth, value: isFocused)
-        .animation(PlumpyTheme.Animation.smooth, value: text.isEmpty)
     }
 }
 
@@ -283,7 +277,6 @@ struct PlumpyTextArea: View {
                     }
                 )
         }
-        .animation(PlumpyTheme.Animation.smooth, value: isFocused)
     }
 }
 

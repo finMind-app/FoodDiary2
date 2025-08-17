@@ -143,10 +143,6 @@ struct PlumpyProgressBar: View {
                             width: geometry.size.width * progress,
                             height: size.height
                         )
-                        .animation(
-                            animated ? PlumpyTheme.Animation.smooth : nil,
-                            value: progress
-                        )
                 }
             }
             .frame(height: size.height)
@@ -159,18 +155,10 @@ struct PlumpyProgressBar: View {
             }
         }
         .onAppear {
-            if animated {
-                withAnimation(PlumpyTheme.Animation.slow) {
-                    animatedValue = value
-                }
-            }
+            animatedValue = value
         }
         .onChange(of: value) { newValue in
-            if animated {
-                withAnimation(PlumpyTheme.Animation.smooth) {
-                    animatedValue = newValue
-                }
-            }
+            animatedValue = newValue
         }
     }
     
@@ -261,18 +249,10 @@ struct PlumpyCircularProgressBar: View {
             }
         }
         .onAppear {
-            if animated {
-                withAnimation(PlumpyTheme.Animation.slow) {
-                    animatedValue = value
-                }
-            }
+            animatedValue = value
         }
         .onChange(of: value) { newValue in
-            if animated {
-                withAnimation(PlumpyTheme.Animation.smooth) {
-                    animatedValue = newValue
-                }
-            }
+            animatedValue = newValue
         }
     }
     

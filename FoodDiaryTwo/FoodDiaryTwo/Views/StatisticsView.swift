@@ -142,6 +142,7 @@ struct StatisticsView: View {
                         // Немедленно обновляем UI для быстрого отклика
                         selectedPeriod = period
                     }
+                    .frame(minWidth: 70) // Увеличиваем минимальную ширину для лучшего размещения текста
                 }
                 Spacer()
             }

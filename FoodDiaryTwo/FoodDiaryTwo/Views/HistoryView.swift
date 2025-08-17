@@ -112,6 +112,7 @@ struct HistoryView: View {
                             selectedDate = Date()
                         }
                     }
+                    .frame(minWidth: 70) // Увеличиваем минимальную ширину для лучшего размещения текста
                 }
                 Spacer()
             }
