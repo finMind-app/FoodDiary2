@@ -69,13 +69,11 @@ struct StatisticsView: View {
                         additionalStats
                         
                         PlumpySpacer(size: .huge)
-                            .frame(height: PlumpyTheme.Spacing.huge) // Фиксированная высота
+                            .frame(height: PlumpyTheme.Spacing.huge)
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.horizontal, PlumpyTheme.Spacing.medium)
                     .padding(.top, PlumpyTheme.Spacing.medium)
-                    .animation(nil, value: selectedPeriod) // Отключаем анимацию для изменения данных
-                    .animation(nil, value: isLoading) // Отключаем анимацию для изменения данных
                 }
             }
             .frame(maxWidth: .infinity)
@@ -139,17 +137,15 @@ struct StatisticsView: View {
                         style: selectedPeriod == period ? .primary : .outline,
                         isSelected: selectedPeriod == period
                     ) {
-                        // Немедленно обновляем UI для быстрого отклика
                         selectedPeriod = period
                     }
-                    .frame(minWidth: PlumpyTheme.Spacing.huge) // Увеличиваем минимальную ширину для лучшего размещения текста
+                    .frame(minWidth: PlumpyTheme.Spacing.huge)
                 }
                 Spacer()
             }
         }
         .statisticsCard()
-        .frame(minHeight: 120) // Минимальная высота для предотвращения "прыжков"
-        .animation(nil, value: selectedPeriod) // Отключаем анимацию для изменения данных
+        .frame(height: 120) // Фиксированная высота вместо minHeight
     }
     
     private var mainStatistics: some View {
@@ -190,10 +186,7 @@ struct StatisticsView: View {
                 trend: .up
             )
         }
-        .frame(minHeight: 200) // Минимальная высота для предотвращения "прыжков"
-        .animation(nil, value: totalCalories) // Отключаем анимацию для изменения данных
-        .animation(nil, value: totalMeals) // Отключаем анимацию для изменения данных
-        .animation(nil, value: averageDailyCalories) // Отключаем анимацию для изменения данных
+        .frame(height: 200) // Фиксированная высота вместо minHeight
     }
 
     private var totalMeals: Int {
@@ -221,7 +214,7 @@ struct StatisticsView: View {
     
     private var maxCalories: Int {
         let max = chartData.map { $0.calories }.max() ?? 0
-        return max > 0 ? max : 1000 // Минимальное значение для отображения
+        return max > 0 ? max : 1000
     }
     
     private var chartView: some View {
@@ -235,8 +228,6 @@ struct StatisticsView: View {
             RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
                 .fill(PlumpyTheme.surfaceSecondary)
         )
-        .clipped() // Предотвращаем выход за границы
-        .animation(nil, value: chartData.count) // Отключаем анимацию для изменения данных
     }
     
     private var chartBars: some View {
@@ -246,8 +237,6 @@ struct StatisticsView: View {
         }
         .frame(height: 160)
         .frame(maxWidth: .infinity)
-        .clipped() // Предотвращаем выход за границы
-        .animation(nil, value: chartData.count) // Отключаем анимацию для изменения данных
     }
     
     private var chartGrid: some View {
@@ -265,8 +254,6 @@ struct StatisticsView: View {
         }
         .frame(height: 160)
         .frame(maxWidth: .infinity)
-        .clipped() // Предотвращаем выход за границы
-        .animation(nil, value: true) // Отключаем анимацию
     }
     
     private var chartColumns: some View {
@@ -278,8 +265,6 @@ struct StatisticsView: View {
         .frame(height: 160)
         .frame(maxWidth: .infinity)
         .padding(.horizontal, PlumpyTheme.Spacing.medium)
-        .clipped() // Предотвращаем выход за границы
-        .animation(nil, value: chartData.count) // Отключаем анимацию для изменения данных
     }
     
     private func chartColumn(index: Int, data: ChartDataPoint) -> some View {
@@ -293,18 +278,15 @@ struct StatisticsView: View {
                     )
                 )
                 .frame(width: PlumpyTheme.Spacing.medium, height: max(4, CGFloat(data.calories) / CGFloat(maxCalories) * 160))
-                .clipped() // Предотвращаем выход за границы
-                .animation(nil, value: data.calories) // Отключаем анимацию для изменения данных
             
             Text(data.dateLabel)
                 .font(PlumpyTheme.Typography.caption2)
                 .foregroundColor(PlumpyTheme.textSecondary)
                 .rotationEffect(.degrees(-45))
                 .offset(y: PlumpyTheme.Spacing.small)
-                .frame(width: 30, height: 20) // Фиксированные размеры для текста
+                .frame(width: 30, height: 20)
         }
-        .frame(width: 30) // Фиксированная ширина для столбца
-        .clipped() // Предотвращаем выход за границы
+        .frame(width: 30)
     }
     
     private var chartLegend: some View {
@@ -325,9 +307,7 @@ struct StatisticsView: View {
                 .foregroundColor(PlumpyTheme.textSecondary)
         }
         .padding(.horizontal, PlumpyTheme.Spacing.medium)
-        .frame(height: 40) // Фиксированная высота для легенды
-        .clipped() // Предотвращаем выход за границы
-        .animation(nil, value: maxCalories) // Отключаем анимацию для изменения данных
+        .frame(height: 40)
     }
     
     private var caloriesChart: some View {
@@ -338,15 +318,12 @@ struct StatisticsView: View {
                 .foregroundColor(PlumpyTheme.textPrimary)
                 .frame(maxWidth: .infinity, alignment: .leading)
             
-            // Контейнер с фиксированной высотой для предотвращения "прыжков"
             ZStack {
                 if isLoading {
-                    // Состояние загрузки
                     RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
                         .fill(PlumpyTheme.surfaceSecondary)
                         .frame(height: 200)
                         .frame(maxWidth: .infinity)
-                        .clipped() // Предотвращаем выход за границы
                         .overlay(
                             VStack(spacing: PlumpyTheme.Spacing.medium) {
                                 ProgressView()
@@ -358,12 +335,10 @@ struct StatisticsView: View {
                             }
                         )
                 } else if chartData.isEmpty {
-                    // Пустое состояние
                     RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
                         .fill(PlumpyTheme.surfaceSecondary)
                         .frame(height: 200)
                         .frame(maxWidth: .infinity)
-                        .clipped() // Предотвращаем выход за границы
                         .overlay(
                             VStack(spacing: PlumpyTheme.Spacing.medium) {
                                 Image(systemName: "chart.line.uptrend.xyaxis")
@@ -379,7 +354,7 @@ struct StatisticsView: View {
                     chartView
                 }
             }
-            .frame(height: 200) // Фиксированная высота для всех состояний
+            .frame(height: 200)
             .frame(maxWidth: .infinity)
         }
         .statisticsCard()
@@ -420,8 +395,7 @@ struct StatisticsView: View {
             }
         }
         .statisticsCard()
-        .frame(minHeight: 200) // Минимальная высота для предотвращения "прыжков"
-        .animation(nil, value: true) // Отключаем анимацию
+        .frame(height: 200) // Фиксированная высота вместо minHeight
     }
     
     private func formatDate(_ date: Date) -> String {
@@ -433,13 +407,11 @@ struct StatisticsView: View {
     // MARK: - Data Loading
     
     private func loadData() {
-        // Предотвращаем множественные одновременные загрузки
         guard !isDataLoading else { return }
         
         isDataLoading = true
         isLoading = true
         
-        // Загружаем данные асинхронно в фоновом потоке
         Task {
             await loadPeriodEntries()
             await loadChartData()
@@ -593,7 +565,6 @@ struct StatisticsView: View {
             entry.date >= startOfDay && entry.date < endOfDay
         }
         
-        // Группируем по часам
         var hourlyData: [Int: Int] = [:]
         for entry in dayEntries {
             let hour = calendar.component(.hour, from: entry.date)
