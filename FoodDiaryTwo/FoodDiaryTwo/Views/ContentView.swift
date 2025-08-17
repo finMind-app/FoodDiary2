@@ -34,6 +34,7 @@ struct ContentView: View {
                         .tag(4)
                 }
                 .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
+                .animation(.easeInOut(duration: 0.2), value: selectedTab)
                 
                 PlumpyTabBar(
                     selectedTab: $selectedTab,

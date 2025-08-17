@@ -29,7 +29,9 @@ struct PlumpyActionIconButton: View {
     
     var body: some View {
         Button(action: {
-            action()
+            withAnimation(PlumpyTheme.Animation.spring) {
+                action()
+            }
         }) {
             VStack(spacing: PlumpyTheme.Spacing.small) {
                 Image(systemName: systemImageName)
@@ -55,6 +57,8 @@ struct PlumpyActionIconButton: View {
             }
         }
         .buttonStyle(PlainButtonStyle())
+        .scaleEffect(1.0)
+        .animation(PlumpyTheme.Animation.spring, value: true)
     }
 }
 
@@ -124,7 +128,9 @@ struct PlumpyChip: View {
     
     var body: some View {
         Button(action: {
-            action()
+            withAnimation(PlumpyTheme.Animation.spring) {
+                action()
+            }
         }) {
             HStack(spacing: PlumpyTheme.Spacing.tiny) {
                 if let icon = icon {
@@ -135,6 +141,7 @@ struct PlumpyChip: View {
                 Text(title)
                     .font(PlumpyTheme.Typography.caption1)
                     .fontWeight(.medium)
+                    .lineLimit(1)
             }
             .foregroundColor(isSelected ? style.foregroundColor : PlumpyTheme.textSecondary)
             .padding(.horizontal, PlumpyTheme.Spacing.medium)
@@ -152,6 +159,8 @@ struct PlumpyChip: View {
             )
         }
         .buttonStyle(PlainButtonStyle())
+        .scaleEffect(isSelected ? 1.02 : 1.0)
+        .animation(PlumpyTheme.Animation.spring, value: isSelected)
     }
 }
 

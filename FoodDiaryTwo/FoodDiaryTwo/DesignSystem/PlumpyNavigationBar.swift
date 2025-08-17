@@ -150,7 +150,9 @@ struct PlumpyNavigationButton: View {
     
     var body: some View {
         Button(action: {
-            action()
+            withAnimation(PlumpyTheme.Animation.spring) {
+                action()
+            }
         }) {
             Image(systemName: icon)
                 .font(.title3)
@@ -172,6 +174,8 @@ struct PlumpyNavigationButton: View {
                 )
         }
         .accessibilityLabel(title)
+        .scaleEffect(1.0)
+        .animation(PlumpyTheme.Animation.spring, value: true)
     }
 }
 

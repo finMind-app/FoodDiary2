@@ -15,8 +15,9 @@ struct PlumpyTabBar: View {
         HStack(spacing: PlumpyTheme.Spacing.medium) {
             ForEach(0..<tabs.count, id: \.self) { index in
                 Button(action: {
-                    // Убираем анимацию для более быстрого отклика
-                    selectedTab = index
+                    withAnimation(PlumpyTheme.Animation.spring) {
+                        selectedTab = index
+                    }
                 }) {
                     VStack(spacing: 2) {
                         Image(systemName: tabs[index].icon)
@@ -36,6 +37,8 @@ struct PlumpyTabBar: View {
                     )
                 }
                 .buttonStyle(PlainButtonStyle())
+                .scaleEffect(selectedTab == index ? 1.05 : 1.0)
+                .animation(.easeInOut(duration: 0.15), value: selectedTab)
             }
         }
         .padding(.horizontal, PlumpyTheme.Spacing.medium)

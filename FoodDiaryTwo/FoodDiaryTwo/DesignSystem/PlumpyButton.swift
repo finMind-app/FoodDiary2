@@ -137,7 +137,9 @@ struct PlumpyButton: View {
     var body: some View {
         Button(action: {
             if isEnabled && !isLoading {
-                action()
+                withAnimation(PlumpyTheme.Animation.spring) {
+                    action()
+                }
             }
         }) {
             HStack(spacing: PlumpyTheme.Spacing.small) {
@@ -173,6 +175,9 @@ struct PlumpyButton: View {
             )
         }
         .disabled(!isEnabled || isLoading)
+        .scaleEffect(isEnabled && !isLoading ? 1.0 : 0.98)
+        .animation(PlumpyTheme.Animation.spring, value: isEnabled)
+        .animation(PlumpyTheme.Animation.spring, value: isLoading)
     }
 }
 
@@ -242,7 +247,9 @@ struct PlumpyIconButton: View {
     
     var body: some View {
         Button(action: {
-            action()
+            withAnimation(PlumpyTheme.Animation.spring) {
+                action()
+            }
         }) {
             Image(systemName: systemImageName)
                 .font(.title3)
@@ -264,6 +271,8 @@ struct PlumpyIconButton: View {
                 )
         }
         .accessibilityLabel(title)
+        .scaleEffect(1.0)
+        .animation(PlumpyTheme.Animation.spring, value: true)
     }
 }
 
@@ -275,7 +284,9 @@ struct PlumpyFloatingButton: View {
     
     var body: some View {
         Button(action: {
-            action()
+            withAnimation(PlumpyTheme.Animation.bouncy) {
+                action()
+            }
         }) {
             Image(systemName: icon)
                 .font(.title2)
@@ -292,6 +303,8 @@ struct PlumpyFloatingButton: View {
                         )
                 )
         }
+        .scaleEffect(1.0)
+        .animation(PlumpyTheme.Animation.spring, value: true)
     }
 }
 
