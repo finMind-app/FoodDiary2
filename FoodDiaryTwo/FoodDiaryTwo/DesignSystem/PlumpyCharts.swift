@@ -155,7 +155,6 @@ struct PlumpyLineChart: View {
                         addSmoothLine(path: &path, points: points)
                     }
                     .stroke(lineColor, style: StrokeStyle(lineWidth: 2, lineCap: .round, lineJoin: .round))
-                    .trim(from: 0, to: 1)
                     .animation(PlumpyTheme.Animation.smooth, value: values)
                 }
 
@@ -183,7 +182,6 @@ struct PlumpyLineChart: View {
             if i == 1 {
                 path.addQuadCurve(to: mid, control: prev)
             } else {
-                let prevMid = CGPoint(x: (points[i - 2].x + prev.x) / 2, y: (points[i - 2].y + prev.y) / 2)
                 path.addCurve(to: mid, control1: prev, control2: prev)
             }
             if i == points.count - 1 {
