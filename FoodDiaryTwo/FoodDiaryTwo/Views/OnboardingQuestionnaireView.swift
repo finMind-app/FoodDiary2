@@ -1,0 +1,153 @@
+//
+//  OnboardingQuestionnaireView.swift
+//  FoodDiaryTwo
+//
+
+import SwiftUI
+import SwiftData
+
+struct OnboardingQuestionnaireView: View {
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var modelContext
+    @Query private var users: [UserProfile]
+
+    @State private var name: String = ""
+    @State private var age: String = "28"
+    @State private var gender: Gender = .male
+    @State private var height: String = "175"
+    @State private var weight: String = "70"
+    @State private var activity: ActivityLevel = .moderate
+    @State private var goal: Goal = .maintain
+    @State private var customCalories: String = ""
+
+    var body: some View {
+        ZStack {
+            PlumpyBackground(style: .primary)
+                .ignoresSafeArea()
+
+            VStack(spacing: 0) {
+                PlumpyNavigationBar(
+                    title: "Questionnaire",
+                    leftButton: PlumpyNavigationButton(icon: "xmark", title: "Skip", style: .outline) {
+                        dismiss()
+                    },
+                    rightButton: PlumpyNavigationButton(icon: "checkmark", title: "Done", style: .primary) {
+                        save()
+                    }
+                )
+
+                ScrollView {
+                    VStack(spacing: PlumpyTheme.Spacing.medium) {
+                        PlumpyField(title: "Name", placeholder: "Your name", text: $name, icon: "person", isRequired: true)
+                        PlumpyField(title: "Age", placeholder: "Years", text: $age, keyboardType: .numberPad, icon: "number", isRequired: true)
+
+                        pickerCard(title: "Gender") {
+                            Picker("Gender", selection: $gender) {
+                                ForEach(Gender.allCases, id: \.self) { g in
+                                    Text(g.displayName).tag(g)
+                                }
+                            }
+                            .pickerStyle(.segmented)
+                        }
+
+                        HStack(spacing: PlumpyTheme.Spacing.medium) {
+                            PlumpyField(title: "Height (cm)", placeholder: "175", text: $height, keyboardType: .decimalPad, icon: "ruler", isRequired: true)
+                            PlumpyField(title: "Weight (kg)", placeholder: "70", text: $weight, keyboardType: .decimalPad, icon: "scalemass", isRequired: true)
+                        }
+
+                        pickerCard(title: "Activity") {
+                            Picker("Activity", selection: $activity) {
+                                ForEach(ActivityLevel.allCases, id: \.self) { a in
+                                    Text(a.displayName).tag(a)
+                                }
+                            }
+                        }
+
+                        pickerCard(title: "Goal") {
+                            Picker("Goal", selection: $goal) {
+                                ForEach(Goal.allCases, id: \.self) { g in
+                                    Text(g.displayName).tag(g)
+                                }
+                            }
+                            .pickerStyle(.segmented)
+                        }
+
+                        PlumpyField(
+                            title: "Custom Calories (optional)",
+                            placeholder: "Auto-calculated if empty",
+                            text: $customCalories,
+                            keyboardType: .numberPad,
+                            icon: "flame.fill",
+                            iconColor: PlumpyTheme.warning,
+                            isRequired: false
+                        )
+
+                        PlumpySpacer(size: .huge)
+                    }
+                    .padding(.horizontal, PlumpyTheme.Spacing.medium)
+                    .padding(.top, PlumpyTheme.Spacing.medium)
+                }
+            }
+        }
+        .onAppear { preloadUser() }
+    }
+
+    private func pickerCard<Content: View>(title: String, @ViewBuilder content: () -> Content) -> some View {
+        VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.small) {
+            Text(title)
+                .font(PlumpyTheme.Typography.subheadline)
+                .fontWeight(.medium)
+                .foregroundColor(PlumpyTheme.textPrimary)
+            content()
+        }
+        .plumpyCard()
+    }
+
+    private func preloadUser() {
+        if let u = users.first {
+            name = u.name
+            age = String(u.age)
+            gender = u.gender
+            height = String(format: "%.0f", u.height)
+            weight = String(format: "%.1f", u.weight)
+            activity = u.activityLevel
+            goal = u.goal
+            customCalories = String(u.dailyCalorieGoal)
+        }
+    }
+
+    private func save() {
+        guard let ageInt = Int(age), let h = Double(height), let w = Double(weight) else { dismiss(); return }
+        if let u = users.first {
+            u.name = name.isEmpty ? u.name : name
+            u.age = ageInt
+            u.gender = gender
+            u.height = h
+            u.weight = w
+            u.activityLevel = activity
+            u.goal = goal
+            let bmr = UserProfile.calculateBMR(weight: w, height: h, age: ageInt, gender: gender)
+            let tdee = UserProfile.calculateTDEE(bmr: bmr, activityLevel: activity)
+            let auto = UserProfile.calculateCalorieGoal(tdee: tdee, goal: goal)
+            let final = Int(customCalories) ?? auto
+            u.dailyCalorieGoal = final
+            u.updatedAt = Date()
+            try? modelContext.save()
+        } else {
+            let g = gender
+            let a = ageInt
+            let new = UserProfile(name: name.isEmpty ? "User" : name, age: a, gender: g, height: h, weight: w, activityLevel: activity, goal: goal)
+            if let override = Int(customCalories) { new.dailyCalorieGoal = override }
+            modelContext.insert(new)
+            try? modelContext.save()
+        }
+        dismiss()
+    }
+}
+
+#Preview {
+    OnboardingQuestionnaireView()
+        .modelContainer(for: [UserProfile.self], inMemory: true)
+}
+
+

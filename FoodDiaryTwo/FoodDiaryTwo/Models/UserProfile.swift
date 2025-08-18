@@ -62,7 +62,7 @@ final class UserProfile {
         self.updatedAt = Date()
     }
     
-    private static func calculateBMR(weight: Double, height: Double, age: Int, gender: Gender) -> Double {
+    static func calculateBMR(weight: Double, height: Double, age: Int, gender: Gender) -> Double {
         // Mifflin-St Jeor Formula
         let bmr: Double
         if gender == .male {
@@ -73,7 +73,7 @@ final class UserProfile {
         return bmr
     }
     
-    private static func calculateTDEE(bmr: Double, activityLevel: ActivityLevel) -> Double {
+    static func calculateTDEE(bmr: Double, activityLevel: ActivityLevel) -> Double {
         let multiplier: Double
         switch activityLevel {
         case .sedentary:
@@ -90,7 +90,7 @@ final class UserProfile {
         return bmr * multiplier
     }
     
-    private static func calculateCalorieGoal(tdee: Double, goal: Goal) -> Int {
+    static func calculateCalorieGoal(tdee: Double, goal: Goal) -> Int {
         let adjustment: Double
         switch goal {
         case .lose:

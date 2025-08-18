@@ -13,6 +13,8 @@ struct ProfileView: View {
     @Environment(\.modelContext) private var modelContext
     @State private var showingEditProfile = false
     @State private var showingSettings = false
+    @State private var showingCalorieEditor = false
+    @State private var showingQuestionnaire = false
     
     @Query private var users: [UserProfile] // Using @Query to fetch user profiles
     @Query private var allFoodEntries: [FoodEntry]
@@ -43,6 +45,9 @@ struct ProfileView: View {
                         // Статистика (вся за все время, компактная)
                         profileStats
                         
+                        // Управление целями
+                        goalsControls
+                        
                         // Достижения
                         achievementsSection
                         
@@ -58,6 +63,12 @@ struct ProfileView: View {
         }
         .sheet(isPresented: $showingSettings) {
             SettingsView()
+        }
+        .sheet(isPresented: $showingCalorieEditor) {
+            CalorieGoalEditor()
+        }
+        .sheet(isPresented: $showingQuestionnaire) {
+            OnboardingQuestionnaireView()
         }
     }
     
@@ -184,7 +195,7 @@ struct ProfileView: View {
                         VStack(spacing: PlumpyTheme.Spacing.small) {
                             Circle()
                                 .fill(PlumpyTheme.primaryAccent)
-                                .frame(width: 64, height: 64)
+                                .frame(width: 56, height: 56)
                                 .overlay(
                                     Image(systemName: achievementIcons[index])
                                         .font(.title2)
@@ -204,7 +215,7 @@ struct ProfileView: View {
                                 .multilineTextAlignment(.center)
                                 .lineLimit(2)
                         }
-                        .frame(width: 84)
+                        .frame(width: 76)
                     }
                 }
                 .padding(.horizontal, PlumpyTheme.Spacing.medium)
@@ -243,6 +254,14 @@ struct ProfileView: View {
             "Early Bird",
             "Night Owl"
         ]
+    }
+
+    private var goalsControls: some View {
+        HStack(spacing: PlumpyTheme.Spacing.medium) {
+            PlumpyButton(title: "Edit Calories", icon: "flame.fill", style: .outline) { showingCalorieEditor = true }
+            PlumpyButton(title: "Re-run Questionnaire", icon: "list.bullet.rectangle", style: .ghost) { showingQuestionnaire = true }
+        }
+        .plumpyCard()
     }
 }
 
