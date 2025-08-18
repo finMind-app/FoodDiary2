@@ -155,6 +155,8 @@ struct PlumpyButton: View {
                 Text(title)
                     .font(size.fontSize)
                     .fontWeight(.semibold)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.9)
             }
             .foregroundColor(isEnabled ? style.foregroundColor : PlumpyTheme.textTertiary)
             .padding(size.padding)

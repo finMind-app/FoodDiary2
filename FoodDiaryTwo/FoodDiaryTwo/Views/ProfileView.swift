@@ -15,11 +15,13 @@ struct ProfileView: View {
     @State private var showingSettings = false
     @State private var showingCalorieEditor = false
     @State private var showingQuestionnaire = false
+    @State private var navigateQuestionnaire = false
     
     @Query private var users: [UserProfile] // Using @Query to fetch user profiles
     @Query private var allFoodEntries: [FoodEntry]
     
     var body: some View {
+        NavigationStack {
         ZStack {
             PlumpyBackground(style: .gradient)
                 .ignoresSafeArea()
@@ -56,7 +58,12 @@ struct ProfileView: View {
                     .padding(.horizontal, PlumpyTheme.Spacing.medium)
                     .padding(.top, PlumpyTheme.Spacing.medium)
                 }
+                // Hidden navigation link for questionnaire
+                NavigationLink(isActive: $navigateQuestionnaire) {
+                    OnboardingFlowView()
+                } label: { EmptyView() }
             }
+        }
         }
         .sheet(isPresented: $showingEditProfile) {
             EditProfileView()
@@ -66,9 +73,6 @@ struct ProfileView: View {
         }
         .sheet(isPresented: $showingCalorieEditor) {
             CalorieGoalEditor()
-        }
-        .sheet(isPresented: $showingQuestionnaire) {
-            OnboardingQuestionnaireView()
         }
     }
     
@@ -257,9 +261,11 @@ struct ProfileView: View {
     }
 
     private var goalsControls: some View {
-        HStack(spacing: PlumpyTheme.Spacing.medium) {
-            PlumpyButton(title: "Edit Calories", icon: "flame.fill", style: .outline) { showingCalorieEditor = true }
-            PlumpyButton(title: "Re-run Questionnaire", icon: "list.bullet.rectangle", style: .ghost) { showingQuestionnaire = true }
+        VStack(spacing: PlumpyTheme.Spacing.small) {
+            HStack(spacing: PlumpyTheme.Spacing.medium) {
+                PlumpyButton(title: "Edit Daily Calories", icon: "flame.fill", style: .outline, size: .small) { showingCalorieEditor = true }
+                PlumpyButton(title: "Run Questionnaire", icon: "list.bullet.rectangle", style: .ghost, size: .small) { navigateQuestionnaire = true }
+            }
         }
         .plumpyCard()
     }
