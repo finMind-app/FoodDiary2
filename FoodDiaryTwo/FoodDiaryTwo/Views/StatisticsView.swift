@@ -186,7 +186,7 @@ struct StatisticsView: View {
                 trend: .up
             )
         }
-        .frame(height: 200) // Фиксированная высота вместо minHeight
+        // убран фиксированный размер, чтобы сетка не накладывалась
     }
 
     private var totalMeals: Int {
@@ -224,10 +224,6 @@ struct StatisticsView: View {
         }
         .frame(height: 200)
         .frame(maxWidth: .infinity)
-        .background(
-            RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
-                .fill(PlumpyTheme.surfaceSecondary)
-        )
     }
     
     private var chartBars: some View {
@@ -243,7 +239,7 @@ struct StatisticsView: View {
         VStack(spacing: 0) {
             ForEach(0..<5, id: \.self) { index in
                 Rectangle()
-                    .fill(PlumpyTheme.neutral100)
+                    .fill(PlumpyTheme.neutral200.opacity(0.6))
                     .frame(height: 1)
                     .frame(maxWidth: .infinity)
                 
@@ -285,6 +281,12 @@ struct StatisticsView: View {
                     )
                 )
                 .frame(width: barWidth, height: max(4, CGFloat(data.calories) / CGFloat(maxCalories) * 160))
+                .shadow(
+                    color: PlumpyTheme.shadow.opacity(0.03),
+                    radius: PlumpyTheme.Shadow.small.radius,
+                    x: PlumpyTheme.Shadow.small.x,
+                    y: PlumpyTheme.Shadow.small.y
+                )
             
             Text(data.dateLabel)
                 .font(PlumpyTheme.Typography.caption2)
@@ -402,7 +404,6 @@ struct StatisticsView: View {
             }
         }
         .statisticsCard()
-        .frame(height: 200) // Фиксированная высота вместо minHeight
     }
     
     private func formatDate(_ date: Date) -> String {
