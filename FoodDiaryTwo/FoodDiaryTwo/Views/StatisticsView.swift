@@ -257,17 +257,24 @@ struct StatisticsView: View {
     }
     
     private var chartColumns: some View {
-        HStack(alignment: .bottom, spacing: PlumpyTheme.Spacing.small) {
-            ForEach(Array(chartData.enumerated()), id: \.offset) { index, data in
-                chartColumn(index: index, data: data)
+        GeometryReader { proxy in
+            let count = max(chartData.count, 1)
+            let spacing = PlumpyTheme.Spacing.tiny
+            let availableWidth = proxy.size.width
+            let barWidth = max(3, (availableWidth - spacing * CGFloat(count - 1)) / CGFloat(count))
+            
+            HStack(alignment: .bottom, spacing: spacing) {
+                ForEach(Array(chartData.enumerated()), id: \.offset) { index, data in
+                    chartColumn(index: index, data: data, barWidth: barWidth)
+                }
             }
+            .frame(height: 160, alignment: .bottom)
+            .frame(maxWidth: .infinity, alignment: .bottom)
         }
         .frame(height: 160)
-        .frame(maxWidth: .infinity)
-        .padding(.horizontal, PlumpyTheme.Spacing.medium)
     }
     
-    private func chartColumn(index: Int, data: ChartDataPoint) -> some View {
+    private func chartColumn(index: Int, data: ChartDataPoint, barWidth: CGFloat) -> some View {
         VStack(spacing: PlumpyTheme.Spacing.tiny) {
             RoundedRectangle(cornerRadius: PlumpyTheme.Radius.small)
                 .fill(
@@ -277,16 +284,16 @@ struct StatisticsView: View {
                         endPoint: .top
                     )
                 )
-                .frame(width: PlumpyTheme.Spacing.medium, height: max(4, CGFloat(data.calories) / CGFloat(maxCalories) * 160))
+                .frame(width: barWidth, height: max(4, CGFloat(data.calories) / CGFloat(maxCalories) * 160))
             
             Text(data.dateLabel)
                 .font(PlumpyTheme.Typography.caption2)
                 .foregroundColor(PlumpyTheme.textSecondary)
                 .rotationEffect(.degrees(-45))
                 .offset(y: PlumpyTheme.Spacing.small)
-                .frame(width: 30, height: 20)
+                .frame(width: max(barWidth + 6, 16), height: 20)
         }
-        .frame(width: 30)
+        .frame(width: max(barWidth + 6, 16))
     }
     
     private var chartLegend: some View {
