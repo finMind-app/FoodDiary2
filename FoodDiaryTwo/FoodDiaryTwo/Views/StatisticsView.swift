@@ -15,6 +15,8 @@ struct StatisticsView: View {
     @State private var showingCalendar = false
     @State private var isLoading = false
     @State private var isDataLoading = false
+    @State private var customLowerIndex: Int = 0
+    @State private var customUpperIndex: Int = 23
     
     // Кэшированные данные для оптимизации
     @State private var cachedPeriodEntries: [FoodEntry] = []
@@ -219,10 +221,58 @@ struct StatisticsView: View {
     
     private var chartView: some View {
         VStack(spacing: PlumpyTheme.Spacing.small) {
-            chartBars
-            chartLegend
+            switch selectedPeriod {
+            case .week:
+                // 7 округлённых столбиков с короткими подписями
+                PlumpyBarChart(
+                    data: chartData.map { PlumpyBarDataPoint(label: $0.dateLabel, value: Double($0.calories)) },
+                    barColor: PlumpyChartPalette.accentBlue,
+                    emptyColor: PlumpyChartPalette.emptyGray,
+                    highlightMinMax: false
+                )
+                .frame(height: 160)
+                chartLegend
+            case .month:
+                // Мягкая линия с тонкой заливкой без градиента
+                PlumpyLineChart(
+                    values: chartData.map { Double($0.calories) },
+                    labels: chartData.enumerated().map { idx, p in idx % 5 == 0 ? p.dateLabel : "" },
+                    lineColor: PlumpyChartPalette.accentBlue,
+                    areaOpacity: 0.18
+                )
+                .frame(height: 180)
+            case .year:
+                // 12 минималистичных столбиков, акцент на min/max
+                PlumpyBarChart(
+                    data: chartData.map { PlumpyBarDataPoint(label: $0.dateLabel, value: Double($0.calories)) },
+                    barColor: PlumpyChartPalette.accentBlue,
+                    emptyColor: PlumpyChartPalette.emptyGray,
+                    highlightMinMax: true
+                )
+                .frame(height: 160)
+                chartLegend
+            case .custom:
+                // Линия с заливкой + селектор диапазона
+                VStack(spacing: PlumpyTheme.Spacing.medium) {
+                    let values = chartData.map { Double($0.calories) }
+                    let labels = chartData.map { $0.dateLabel }
+                    let clampedLower = min(max(0, customLowerIndex), max(0, values.count - 1))
+                    let clampedUpper = min(max(clampedLower, customUpperIndex), max(0, values.count - 1))
+                    let slicedValues = Array(values[clampedLower...clampedUpper])
+                    let slicedLabels = Array(labels[clampedLower...clampedUpper])
+                    
+                    PlumpyLineChart(
+                        values: slicedValues,
+                        labels: slicedLabels.enumerated().map { i, l in i % 3 == 0 ? l : "" },
+                        lineColor: PlumpyChartPalette.accentBlue,
+                        areaOpacity: 0.18
+                    )
+                    .frame(height: 160)
+                    
+                    PlumpyRangeSelector(lowerIndex: $customLowerIndex, upperIndex: $customUpperIndex, total: values.count)
+                }
+            }
         }
-        .frame(height: 200)
         .frame(maxWidth: .infinity)
     }
     
