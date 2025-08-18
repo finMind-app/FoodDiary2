@@ -15,7 +15,8 @@ struct ProfileView: View {
     @State private var showingSettings = false
     
     @Query private var users: [UserProfile] // Using @Query to fetch user profiles
-
+    @Query private var allFoodEntries: [FoodEntry]
+    
     var body: some View {
         ZStack {
             PlumpyBackground(style: .gradient)
@@ -39,17 +40,11 @@ struct ProfileView: View {
                         // Основная информация профиля
                         profileHeader
                         
-                        // Статистика
+                        // Статистика (вся за все время, компактная)
                         profileStats
                         
                         // Достижения
                         achievementsSection
-                        
-                        // Быстрые действия
-                        quickActionsSection
-                        
-                        // Настройки профиля
-                        profileSettingsSection
                         
                         PlumpySpacer(size: .large)
                     }
@@ -123,52 +118,47 @@ struct ProfileView: View {
     }
     
     private var profileStats: some View {
-        VStack(spacing: PlumpyTheme.Spacing.medium) {
-            Text("Your Stats")
-                .font(PlumpyTheme.Typography.headline)
+        VStack(spacing: PlumpyTheme.Spacing.small) {
+            Text("All-time")
+                .font(PlumpyTheme.Typography.subheadline)
                 .fontWeight(.semibold)
                 .foregroundColor(PlumpyTheme.textPrimary)
                 .frame(maxWidth: .infinity, alignment: .leading)
             
-            LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: PlumpyTheme.Spacing.medium) {
-                PlumpyStatsCard(
-                    title: "Total Meals",
-                    value: "156",
-                    subtitle: "This month",
-                    icon: "fork.knife",
-                    iconColor: PlumpyTheme.primaryAccent,
-                    trend: .up
-                )
-                
-                PlumpyStatsCard(
-                    title: "Calories",
-                    value: "42,350",
-                    subtitle: "This month",
-                    icon: "flame.fill",
-                    iconColor: PlumpyTheme.warning,
-                    trend: .up
-                )
-                
-                PlumpyStatsCard(
-                    title: "Streak",
-                    value: "12",
-                    subtitle: "Days in a row",
-                    icon: "flame.fill",
-                    iconColor: PlumpyTheme.error,
-                    trend: .up
-                )
-                
-                PlumpyStatsCard(
-                    title: "Goal Met",
-                    value: "78%",
-                    subtitle: "Of days",
-                    icon: "target",
-                    iconColor: PlumpyTheme.success,
-                    trend: .neutral
-                )
+            HStack(spacing: PlumpyTheme.Spacing.large) {
+                statPill(title: "Meals", value: String(allTimeTotalMeals), icon: "fork.knife", color: PlumpyTheme.primaryAccent)
+                statPill(title: "Calories", value: String(allTimeTotalCalories), icon: "flame.fill", color: PlumpyTheme.warning)
+                statPill(title: "Avg/Day", value: String(averageDailyCaloriesAllTime), icon: "chart.line.uptrend.xyaxis", color: PlumpyTheme.secondaryAccent)
             }
         }
         .plumpyCard()
+    }
+
+    private func statPill(title: String, value: String, icon: String, color: Color) -> some View {
+        HStack(spacing: PlumpyTheme.Spacing.small) {
+            Image(systemName: icon)
+                .font(.footnote)
+                .foregroundColor(color)
+                .frame(width: 16, height: 16)
+            VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.tiny) {
+                Text(value)
+                    .font(PlumpyTheme.Typography.subheadline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(PlumpyTheme.textPrimary)
+                Text(title)
+                    .font(PlumpyTheme.Typography.caption2)
+                    .foregroundColor(PlumpyTheme.textSecondary)
+            }
+        }
+    }
+
+    private var allTimeTotalMeals: Int { allFoodEntries.count }
+    private var allTimeTotalCalories: Int { allFoodEntries.reduce(0) { $0 + $1.totalCalories } }
+    private var averageDailyCaloriesAllTime: Int {
+        let calendar = Calendar.current
+        let uniqueDays = Set(allFoodEntries.map { calendar.startOfDay(for: $0.date) })
+        let daysCount = max(uniqueDays.count, 1)
+        return allTimeTotalCalories / daysCount
     }
     
     private var achievementsSection: some View {
@@ -194,7 +184,7 @@ struct ProfileView: View {
                         VStack(spacing: PlumpyTheme.Spacing.small) {
                             Circle()
                                 .fill(PlumpyTheme.primaryAccent)
-                                .frame(width: 60, height: 60)
+                                .frame(width: 64, height: 64)
                                 .overlay(
                                     Image(systemName: achievementIcons[index])
                                         .font(.title2)
@@ -214,7 +204,7 @@ struct ProfileView: View {
                                 .multilineTextAlignment(.center)
                                 .lineLimit(2)
                         }
-                        .frame(width: 80)
+                        .frame(width: 84)
                     }
                 }
                 .padding(.horizontal, PlumpyTheme.Spacing.medium)
@@ -223,120 +213,9 @@ struct ProfileView: View {
         .plumpyCard()
     }
     
-    private var quickActionsSection: some View {
-        VStack(spacing: PlumpyTheme.Spacing.medium) {
-            Text("Quick Actions")
-                .font(PlumpyTheme.Typography.headline)
-                .fontWeight(.semibold)
-                .foregroundColor(PlumpyTheme.textPrimary)
-                .frame(maxWidth: .infinity, alignment: .leading)
-            
-            LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: PlumpyTheme.Spacing.medium) {
-                PlumpyActionIconButton(
-                    systemImageName: "plus.circle.fill",
-                    title: "Add Meal",
-                    color: PlumpyTheme.primaryAccent
-                ) {
-                    // Действие добавления приема пищи
-                }
-                
-                PlumpyActionIconButton(
-                    systemImageName: "camera.fill",
-                    title: "Take Photo",
-                    color: PlumpyTheme.secondaryAccent
-                ) {
-                    // Действие фото
-                }
-                
-                PlumpyActionIconButton(
-                    systemImageName: "chart.bar.fill",
-                    title: "View Stats",
-                    color: PlumpyTheme.tertiaryAccent
-                ) {
-                    // Действие просмотра статистики
-                }
-                
-                PlumpyActionIconButton(
-                    systemImageName: "trophy.fill",
-                    title: "Achievements",
-                    color: PlumpyTheme.warning
-                ) {
-                    // Действие достижений
-                }
-            }
-        }
-        .plumpyCard()
-    }
+    // quickActionsSection удален по требованию
     
-    private var profileSettingsSection: some View {
-        VStack(spacing: PlumpyTheme.Spacing.medium) {
-            Text("Personal Information")
-                .font(PlumpyTheme.Typography.headline)
-                .fontWeight(.semibold)
-                .foregroundColor(PlumpyTheme.textPrimary)
-                .frame(maxWidth: .infinity, alignment: .leading)
-            
-            VStack(spacing: PlumpyTheme.Spacing.medium) {
-                HStack(spacing: PlumpyTheme.Spacing.medium) {
-                    Image(systemName: "person.circle.fill")
-                        .font(.system(size: 60))
-                        .foregroundColor(PlumpyTheme.primaryAccent)
-                    
-                    VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.tiny) {
-                        Text(users.first?.name ?? "Your Name")
-                            .font(PlumpyTheme.Typography.title3)
-                            .fontWeight(.semibold)
-                            .foregroundColor(PlumpyTheme.textPrimary)
-                        
-                        Text(users.first?.email ?? "No Email")
-                            .font(PlumpyTheme.Typography.caption1)
-                            .foregroundColor(PlumpyTheme.textSecondary)
-                    }
-                    
-                    Spacer()
-                    
-                    PlumpyButton(
-                        title: "Edit",
-                        icon: "pencil",
-                        style: .outline
-                    ) {
-                        showingEditProfile = true
-                    }
-                    .frame(maxWidth: 80)
-                }
-                
-                VStack(spacing: PlumpyTheme.Spacing.small) {
-                    PlumpyInfoCard(
-                        title: "Name",
-                        subtitle: users.first?.name ?? "Not set",
-                        icon: "person",
-                        iconColor: PlumpyTheme.primaryAccent
-                    ) {
-                        showingEditProfile = true
-                    }
-                    
-                    PlumpyInfoCard(
-                        title: "Email",
-                        subtitle: users.first?.email ?? "Not set",
-                        icon: "envelope",
-                        iconColor: PlumpyTheme.secondaryAccent
-                    ) {
-                        showingEditProfile = true
-                    }
-                    
-                    PlumpyInfoCard(
-                        title: "Member Since",
-                        subtitle: "August 2025",
-                        icon: "calendar",
-                        iconColor: PlumpyTheme.tertiaryAccent
-                    ) {
-                        // Информация о дате регистрации
-                    }
-                }
-            }
-        }
-        .plumpyCard()
-    }
+    // profileSettingsSection удален по требованию
     
     // MARK: - Helper Properties
     
