@@ -267,7 +267,7 @@ struct ProfileView: View {
         VStack(spacing: PlumpyTheme.Spacing.small) {
             HStack(spacing: PlumpyTheme.Spacing.medium) {
                 PlumpyButton(title: "Edit Daily Calories", icon: "flame.fill", style: .outline, size: .small) { showingCalorieEditor = true }
-                PlumpyButton(title: "Run Questionnaire", icon: "list.bullet.rectangle", style: .ghost, size: .small) { navigateQuestionnaire = true }
+                PlumpyButton(title: "Run Questionnaire", icon: "list.bullet.rectangle", style: .outline, size: .small) { navigateQuestionnaire = true }
             }
         }
         .plumpyCard()
@@ -275,33 +275,51 @@ struct ProfileView: View {
 
     private var profileInfoDashboard: some View {
         let user = users.first
-        return VStack(spacing: PlumpyTheme.Spacing.medium) {
+        return VStack(spacing: PlumpyTheme.Spacing.small) {
             Text("Profile Summary")
                 .font(PlumpyTheme.Typography.subheadline)
                 .fontWeight(.semibold)
                 .foregroundColor(PlumpyTheme.textPrimary)
                 .frame(maxWidth: .infinity, alignment: .leading)
-            HStack(spacing: PlumpyTheme.Spacing.large) {
-                dashboardItem(title: "Goal", value: user?.goal.displayName ?? "-")
-                dashboardItem(title: "Calories", value: user != nil ? "\(user!.dailyCalorieGoal) cal" : "-")
-                dashboardItem(title: "Height", value: user != nil ? "\(Int(user!.height)) cm" : "-")
-                dashboardItem(title: "Weight", value: user != nil ? String(format: "%.1f kg", user!.weight) : "-")
-                dashboardItem(title: "BMI", value: user != nil ? String(format: "%.1f", user!.bmi) : "-")
+            
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: PlumpyTheme.Spacing.medium), count: 2), spacing: PlumpyTheme.Spacing.medium) {
+                dashboardCard(icon: "target", title: "Goal", value: user?.goal.displayName ?? "-")
+                dashboardCard(icon: "flame.fill", title: "Calories", value: user != nil ? "\(user!.dailyCalorieGoal) cal" : "-")
+                dashboardCard(icon: "ruler", title: "Height", value: user != nil ? "\(Int(user!.height)) cm" : "-")
+                dashboardCard(icon: "scalemass", title: "Weight", value: user != nil ? String(format: "%.1f kg", user!.weight) : "-")
+                dashboardCard(icon: "heart.text.square", title: "BMI", value: user != nil ? String(format: "%.1f", user!.bmi) : "-")
             }
         }
         .plumpyCard()
     }
-
-    private func dashboardItem(title: String, value: String) -> some View {
-        VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.tiny) {
-            Text(value)
-                .font(PlumpyTheme.Typography.subheadline)
-                .fontWeight(.semibold)
-                .foregroundColor(PlumpyTheme.textPrimary)
-            Text(title)
-                .font(PlumpyTheme.Typography.caption2)
-                .foregroundColor(PlumpyTheme.textSecondary)
+ 
+    private func dashboardCard(icon: String, title: String, value: String) -> some View {
+        HStack(spacing: PlumpyTheme.Spacing.medium) {
+            Image(systemName: icon)
+                .font(.title3)
+                .foregroundColor(PlumpyTheme.primaryAccent)
+                .frame(width: 24, height: 24)
+            VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.tiny) {
+                Text(value)
+                    .font(PlumpyTheme.Typography.subheadline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(PlumpyTheme.textPrimary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.9)
+                Text(title)
+                    .font(PlumpyTheme.Typography.caption2)
+                    .foregroundColor(PlumpyTheme.textSecondary)
+            }
+            Spacer()
         }
+        .padding(.horizontal, PlumpyTheme.Spacing.medium)
+        .padding(.vertical, PlumpyTheme.Spacing.small)
+        .background(PlumpyTheme.surfaceSecondary)
+        .clipShape(RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium))
+        .overlay(
+            RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
+                .stroke(PlumpyTheme.neutral200, lineWidth: 1)
+        )
     }
 }
 

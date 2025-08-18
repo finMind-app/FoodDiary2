@@ -52,6 +52,8 @@ struct OnboardingFlowView: View {
                     ) {
                         if step < maxStep { withAnimation { step += 1 } } else { saveAndExit() }
                     }
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.9)
                 }
                 .padding(.horizontal, PlumpyTheme.Spacing.medium)
                 .padding(.top, PlumpyTheme.Spacing.medium)
@@ -82,12 +84,14 @@ struct OnboardingFlowView: View {
                 set: { gender = Gender.allCases[$0] }
             ))
         case 2:
-            VStack(spacing: PlumpyTheme.Spacing.medium) {
+            VStack(spacing: PlumpyTheme.Spacing.large) {
                 HStack(spacing: PlumpyTheme.Spacing.medium) {
                     PlumpyField(title: "Height (cm)", placeholder: "175", text: $height, keyboardType: .decimalPad, icon: "ruler", isRequired: true)
                     PlumpyField(title: "Weight (kg)", placeholder: "70", text: $weight, keyboardType: .decimalPad, icon: "scalemass", isRequired: true)
                 }
-            }.plumpyCard()
+            }
+            .padding(.top, PlumpyTheme.Spacing.large)
+            .plumpyCard()
         case 3:
             chipsCard(title: "Activity", items: ActivityLevel.allCases.map { $0.displayName }, selectionIndex: Binding(
                 get: { ActivityLevel.allCases.firstIndex(of: activity) ?? 0 },
@@ -99,7 +103,7 @@ struct OnboardingFlowView: View {
                 set: { goal = Goal.allCases[$0] }
             ))
         case 5:
-            VStack(spacing: PlumpyTheme.Spacing.medium) {
+            VStack(spacing: PlumpyTheme.Spacing.large) {
                 let recommended = recommendedCalories
                 Text("Recommended daily calories based on your data")
                     .font(PlumpyTheme.Typography.subheadline)
@@ -116,7 +120,9 @@ struct OnboardingFlowView: View {
                     Spacer()
                 }
                 PlumpyField(title: "Custom (optional)", placeholder: String(recommended), text: $customCalories, keyboardType: .numberPad, icon: "flame.fill", iconColor: PlumpyTheme.warning, isRequired: false)
-            }.plumpyCard()
+            }
+            .padding(.top, PlumpyTheme.Spacing.large)
+            .plumpyCard()
         case 6:
             summaryCard
         default:
