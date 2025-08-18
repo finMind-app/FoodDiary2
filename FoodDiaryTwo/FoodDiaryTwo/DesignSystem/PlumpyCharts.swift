@@ -75,6 +75,18 @@ struct PlumpyLineChart: View {
                     }
                 }
 
+                // X axis labels (sparse, provided by caller)
+                ForEach(Array(labels.enumerated()), id: \.offset) { index, label in
+                    if !label.isEmpty {
+                        let x = horizontalPadding + CGFloat(index) * stepX
+                        let y = height - verticalPadding * 0.4
+                        Text(label)
+                            .font(PlumpyTheme.Typography.caption2)
+                            .foregroundColor(PlumpyTheme.textSecondary)
+                            .position(x: x, y: y)
+                    }
+                }
+
                 // Tooltip
                 if let selectedIndex = selectedIndex, values.indices.contains(selectedIndex) {
                     let p = pointFor(index: selectedIndex, size: geo.size, stepX: stepX, minValue: minValue, range: range, hPad: horizontalPadding, vPad: verticalPadding)

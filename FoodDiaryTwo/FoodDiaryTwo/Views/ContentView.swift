@@ -27,11 +27,8 @@ struct ContentView: View {
                     StatisticsView()
                         .tag(2)
                     
-                    SettingsView()
-                        .tag(3)
-                    
                     ProfileView()
-                        .tag(4)
+                        .tag(3)
                 }
                 .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
                 .animation(.easeInOut(duration: 0.2), value: selectedTab)
@@ -42,7 +39,6 @@ struct ContentView: View {
                         PlumpyTabItem(icon: "house.fill", title: "Home", color: PlumpyTheme.primary),
                         PlumpyTabItem(icon: "clock.fill", title: "History", color: PlumpyTheme.primaryAccent),
                         PlumpyTabItem(icon: "chart.bar.fill", title: "Stats", color: PlumpyTheme.secondaryAccent),
-                        PlumpyTabItem(icon: "gear", title: "Settings", color: PlumpyTheme.tertiaryAccent),
                         PlumpyTabItem(icon: "person.fill", title: "Profile", color: PlumpyTheme.tertiary)
                     ]
                 )

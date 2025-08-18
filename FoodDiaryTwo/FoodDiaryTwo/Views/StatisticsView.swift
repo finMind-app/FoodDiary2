@@ -223,10 +223,13 @@ struct StatisticsView: View {
             let rawLabels = chartData.map { $0.dateLabel }
             let displayLabels: [String] = {
                 switch selectedPeriod {
-                case .week, .year:
+                case .week:
                     return rawLabels
                 case .month:
-                    return rawLabels.enumerated().map { i, l in i % 5 == 0 ? l : "" }
+                    // каждые 2 дня показываем число, остальное пусто
+                    return rawLabels.enumerated().map { i, l in i % 2 == 0 ? l : "" }
+                case .year:
+                    return rawLabels // месяцы короткие
                 case .custom:
                     return rawLabels.enumerated().map { i, l in i % 3 == 0 ? l : "" }
                 }
