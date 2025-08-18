@@ -28,12 +28,8 @@ struct OnboardingFlowView: View {
             VStack(spacing: 0) {
                 PlumpyNavigationBar(
                     title: flowTitle,
-                    leftButton: PlumpyNavigationButton(icon: step == 0 ? "xmark" : "chevron.left", title: step == 0 ? "Close" : "Back", style: .outline) {
-                        if step == 0 { dismiss() } else { withAnimation { step -= 1 } }
-                    },
-                    rightButton: PlumpyNavigationButton(icon: step == maxStep ? "checkmark" : "chevron.right", title: step == maxStep ? "Save" : "Next", style: .primary) {
-                        if step < maxStep { withAnimation { step += 1 } } else { saveAndExit() }
-                    }
+                    leftButton: PlumpyNavigationButton(icon: "xmark", title: "Close", style: .outline) { dismiss() },
+                    rightButton: PlumpyNavigationButton(icon: "forward.end", title: "Skip", style: .ghost) { saveAndExit(skip: true) }
                 )
 
                 // step progress
@@ -44,9 +40,26 @@ struct OnboardingFlowView: View {
                 content
                     .padding(.horizontal, PlumpyTheme.Spacing.medium)
                     .padding(.top, PlumpyTheme.Spacing.medium)
+
+                Spacer()
+
+                // Bottom next/save button
+                VStack(spacing: PlumpyTheme.Spacing.small) {
+                    PlumpyButton(
+                        title: step == maxStep ? "Save" : "Next",
+                        icon: step == maxStep ? "checkmark" : "chevron.right",
+                        style: .primary
+                    ) {
+                        if step < maxStep { withAnimation { step += 1 } } else { saveAndExit() }
+                    }
+                }
+                .padding(.horizontal, PlumpyTheme.Spacing.medium)
+                .padding(.top, PlumpyTheme.Spacing.medium)
+                .padding(.bottom, PlumpyTheme.Spacing.large)
             }
         }
         .onAppear { preloadUser() }
+        .navigationBarBackButtonHidden(true)
     }
 
     private var maxStep: Int { 6 }
@@ -64,11 +77,10 @@ struct OnboardingFlowView: View {
                 PlumpyField(title: "Age", placeholder: "Years", text: $age, keyboardType: .numberPad, icon: "number", isRequired: true)
             }.plumpyCard()
         case 1:
-            pickerCard(title: "Gender") {
-                Picker("Gender", selection: $gender) {
-                    ForEach(Gender.allCases, id: \.self) { g in Text(g.displayName).tag(g) }
-                }.pickerStyle(.segmented)
-            }
+            chipsCard(title: "Gender", items: Gender.allCases.map { $0.displayName }, selectionIndex: Binding(
+                get: { Gender.allCases.firstIndex(of: gender) ?? 0 },
+                set: { gender = Gender.allCases[$0] }
+            ))
         case 2:
             VStack(spacing: PlumpyTheme.Spacing.medium) {
                 HStack(spacing: PlumpyTheme.Spacing.medium) {
@@ -77,17 +89,15 @@ struct OnboardingFlowView: View {
                 }
             }.plumpyCard()
         case 3:
-            pickerCard(title: "Activity level") {
-                Picker("Activity", selection: $activity) {
-                    ForEach(ActivityLevel.allCases, id: \.self) { a in Text(a.displayName).tag(a) }
-                }
-            }
+            chipsCard(title: "Activity", items: ActivityLevel.allCases.map { $0.displayName }, selectionIndex: Binding(
+                get: { ActivityLevel.allCases.firstIndex(of: activity) ?? 0 },
+                set: { activity = ActivityLevel.allCases[$0] }
+            ))
         case 4:
-            pickerCard(title: "Goal") {
-                Picker("Goal", selection: $goal) {
-                    ForEach(Goal.allCases, id: \.self) { g in Text(g.displayName).tag(g) }
-                }.pickerStyle(.segmented)
-            }
+            chipsCard(title: "Goal", items: Goal.allCases.map { $0.displayName }, selectionIndex: Binding(
+                get: { Goal.allCases.firstIndex(of: goal) ?? 0 },
+                set: { goal = Goal.allCases[$0] }
+            ))
         case 5:
             VStack(spacing: PlumpyTheme.Spacing.medium) {
                 let recommended = recommendedCalories
@@ -164,6 +174,27 @@ struct OnboardingFlowView: View {
         }.plumpyCard()
     }
 
+    private func chipsCard(title: String, items: [String], selectionIndex: Binding<Int>) -> some View {
+        VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.small) {
+            Text(title)
+                .font(PlumpyTheme.Typography.subheadline)
+                .fontWeight(.medium)
+                .foregroundColor(PlumpyTheme.textPrimary)
+            HStack(spacing: PlumpyTheme.Spacing.small) {
+                ForEach(items.indices, id: \.self) { idx in
+                    PlumpyChip(
+                        title: items[idx],
+                        style: selectionIndex.wrappedValue == idx ? .primary : .outline,
+                        isSelected: selectionIndex.wrappedValue == idx
+                    ) {
+                        selectionIndex.wrappedValue = idx
+                    }
+                }
+            }
+        }
+        .plumpyCard()
+    }
+
     private func preloadUser() {
         if let u = users.first {
             name = u.name
@@ -188,7 +219,7 @@ struct OnboardingFlowView: View {
 
     private var finalCalories: Int { Int(customCalories) ?? recommendedCalories }
 
-    private func saveAndExit() {
+    private func saveAndExit(skip: Bool = false) {
         let a = Int(age) ?? 28
         let h = Double(height) ?? 175
         let w = Double(weight) ?? 70
@@ -200,12 +231,12 @@ struct OnboardingFlowView: View {
             u.weight = w
             u.activityLevel = activity
             u.goal = goal
-            u.dailyCalorieGoal = finalCalories
+            u.dailyCalorieGoal = skip ? u.dailyCalorieGoal : finalCalories
             u.updatedAt = Date()
             try? modelContext.save()
         } else {
             let new = UserProfile(name: name.isEmpty ? "User" : name, age: a, gender: gender, height: h, weight: w, activityLevel: activity, goal: goal)
-            new.dailyCalorieGoal = finalCalories
+            new.dailyCalorieGoal = skip ? new.dailyCalorieGoal : finalCalories
             modelContext.insert(new)
             try? modelContext.save()
         }

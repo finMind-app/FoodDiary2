@@ -50,6 +50,9 @@ struct ProfileView: View {
                         // Управление целями
                         goalsControls
                         
+                        // Мини-дэшборд с данными анкеты
+                        profileInfoDashboard
+                        
                         // Достижения
                         achievementsSection
                         
@@ -268,6 +271,37 @@ struct ProfileView: View {
             }
         }
         .plumpyCard()
+    }
+
+    private var profileInfoDashboard: some View {
+        let user = users.first
+        return VStack(spacing: PlumpyTheme.Spacing.medium) {
+            Text("Profile Summary")
+                .font(PlumpyTheme.Typography.subheadline)
+                .fontWeight(.semibold)
+                .foregroundColor(PlumpyTheme.textPrimary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            HStack(spacing: PlumpyTheme.Spacing.large) {
+                dashboardItem(title: "Goal", value: user?.goal.displayName ?? "-")
+                dashboardItem(title: "Calories", value: user != nil ? "\(user!.dailyCalorieGoal) cal" : "-")
+                dashboardItem(title: "Height", value: user != nil ? "\(Int(user!.height)) cm" : "-")
+                dashboardItem(title: "Weight", value: user != nil ? String(format: "%.1f kg", user!.weight) : "-")
+                dashboardItem(title: "BMI", value: user != nil ? String(format: "%.1f", user!.bmi) : "-")
+            }
+        }
+        .plumpyCard()
+    }
+
+    private func dashboardItem(title: String, value: String) -> some View {
+        VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.tiny) {
+            Text(value)
+                .font(PlumpyTheme.Typography.subheadline)
+                .fontWeight(.semibold)
+                .foregroundColor(PlumpyTheme.textPrimary)
+            Text(title)
+                .font(PlumpyTheme.Typography.caption2)
+                .foregroundColor(PlumpyTheme.textSecondary)
+        }
     }
 }
 
