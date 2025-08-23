@@ -39,7 +39,7 @@ struct SplashScreenView: View {
                         .fill(PlumpyTheme.surface)
                         .frame(width: 120, height: 120)
                         .shadow(
-                            color: PlumpyTheme.shadow.color.opacity(0.3),
+                            color: PlumpyTheme.shadow.opacity(0.3),
                             radius: 20,
                             x: 0,
                             y: 10
