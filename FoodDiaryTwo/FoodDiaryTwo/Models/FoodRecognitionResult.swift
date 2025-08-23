@@ -89,48 +89,7 @@ struct BoundingBox: Codable {
 }
 
 // MARK: - Категории еды
-enum FoodCategory: String, CaseIterable, Codable {
-    case fruits = "Фрукты"
-    case vegetables = "Овощи"
-    case grains = "Злаки"
-    case protein = "Белки"
-    case dairy = "Молочные продукты"
-    case fats = "Жиры"
-    case sweets = "Сладости"
-    case beverages = "Напитки"
-    case mixed = "Смешанные блюда"
-    case unknown = "Неизвестно"
-    
-    var icon: String {
-        switch self {
-        case .fruits: return "🍎"
-        case .vegetables: return "🥬"
-        case .grains: return "🌾"
-        case .protein: return "🥩"
-        case .dairy: return "🥛"
-        case .fats: return "🥑"
-        case .sweets: return "🍰"
-        case .beverages: return "🥤"
-        case .mixed: return "🍽️"
-        case .unknown: return "❓"
-        }
-    }
-    
-    var color: Color {
-        switch self {
-        case .fruits: return .red
-        case .vegetables: return .green
-        case .grains: return .yellow
-        case .protein: return .brown
-        case .dairy: return .blue
-        case .fats: return .orange
-        case .sweets: return .pink
-        case .beverages: return .cyan
-        case .mixed: return .purple
-        case .unknown: return .gray
-        }
-    }
-}
+// Используем FoodCategory из FoodProduct.swift
 
 // MARK: - Способы приготовления
 enum CookingMethod: String, CaseIterable, Codable {

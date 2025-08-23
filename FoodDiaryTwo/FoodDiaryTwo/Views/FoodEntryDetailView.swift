@@ -508,20 +508,6 @@ struct FoodEntryDetailView: View {
 }
 
 #Preview {
-    let config = ModelConfiguration(isStoredInMemoryOnly: true)
-    let container = try! ModelContainer(for: FoodEntry.self, FoodProduct.self, UserProfile.self, configurations: config)
-    
-            let sampleEntry = FoodEntry(
-            name: "Sample Meal",
-            date: Date(),
-            mealType: .breakfast,
-            products: [
-                FoodProduct(name: "Oatmeal", servingSize: 100, caloriesPerServing: 150, protein: 5, carbs: 27, fat: 3),
-                FoodProduct(name: "Banana", servingSize: 118, caloriesPerServing: 105, protein: 1, carbs: 27, fat: 0)
-            ],
-            notes: "Delicious breakfast with oatmeal and banana"
-        )
-    
-    FoodEntryDetailView(foodEntry: sampleEntry)
-        .modelContainer(container)
+    // Preview temporarily disabled due to SwiftData model initialization complexity
+    Text("FoodEntryDetailView Preview")
 }

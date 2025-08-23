@@ -279,7 +279,7 @@ class MockFoodDataGenerator {
             protein: 11,
             fat: 10,
             carbs: 33,
-            category: .mixed,
+            category: .other,
             isProcessed: true,
             cookingMethod: .baked,
             estimatedServingSize: "1 ломтик (100г)"
