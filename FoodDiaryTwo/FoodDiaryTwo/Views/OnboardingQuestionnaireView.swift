@@ -27,7 +27,7 @@ struct OnboardingQuestionnaireView: View {
 
             VStack(spacing: 0) {
                 PlumpyNavigationBar(
-                    title: "Questionnaire",
+                    title: "Questionnaire - UPDATED", // ОЧЕНЬ ЗАМЕТНОЕ ИЗМЕНЕНИЕ
                     leftButton: PlumpyNavigationButton(icon: "xmark", title: "Skip", style: .outline) {
                         dismiss()
                     },
@@ -195,6 +195,7 @@ struct OnboardingQuestionnaireView: View {
     }
 
     private func save() {
+        print("DEBUG: Save function called - CODE UPDATED!") // ОТЛАДОЧНАЯ ИНФОРМАЦИЯ
         guard let ageInt = Int(age), let h = Double(height), let w = Double(weight) else { dismiss(); return }
         if let u = users.first {
             u.name = name.isEmpty ? u.name : name
