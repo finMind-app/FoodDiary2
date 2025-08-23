@@ -23,14 +23,15 @@ struct SimpleSplashScreenView: View {
                 // Простой логотип
                 Image(systemName: "fork.knife.circle.fill")
                     .font(.system(size: 80))
-                    .foregroundColor(.white)
+                    .foregroundColor(PlumpyTheme.surface)
                     .scaleEffect(logoScale)
                     .opacity(logoOpacity)
                 
                 // Название приложения
                 Text("Food Diary")
-                    .font(.system(size: 28, weight: .bold))
-                    .foregroundColor(.white)
+                    .font(PlumpyTheme.Typography.title1)
+                    .fontWeight(.bold)
+                    .foregroundColor(PlumpyTheme.surface)
                 
                 Spacer()
             }

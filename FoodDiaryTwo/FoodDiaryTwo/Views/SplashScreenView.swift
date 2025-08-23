@@ -36,10 +36,10 @@ struct SplashScreenView: View {
                 ZStack {
                     // Круглый фон для логотипа
                     Circle()
-                        .fill(PlumpyTheme.surfacePrimary)
+                        .fill(PlumpyTheme.surface)
                         .frame(width: 120, height: 120)
                         .shadow(
-                            color: PlumpyTheme.shadow.opacity(0.3),
+                            color: PlumpyTheme.shadow.color.opacity(0.3),
                             radius: 20,
                             x: 0,
                             y: 10
@@ -56,11 +56,13 @@ struct SplashScreenView: View {
                 // Название приложения
                 VStack(spacing: PlumpyTheme.Spacing.small) {
                     Text("Food Diary")
-                        .font(.system(size: 32, weight: .bold, design: .rounded))
+                        .font(PlumpyTheme.Typography.largeTitle)
+                        .fontWeight(.bold)
                         .foregroundColor(PlumpyTheme.textInverse)
                     
                     Text("Track your nutrition journey")
-                        .font(.system(size: 16, weight: .medium, design: .rounded))
+                        .font(PlumpyTheme.Typography.body)
+                        .fontWeight(.medium)
                         .foregroundColor(PlumpyTheme.textInverse.opacity(0.8))
                         .multilineTextAlignment(.center)
                 }
@@ -70,9 +72,9 @@ struct SplashScreenView: View {
                 
                 // Индикатор загрузки
                 HStack(spacing: PlumpyTheme.Spacing.small) {
-                    ForEach(0..<3) { index in
+                    ForEach(0..<3, id: \.self) { index in
                         Circle()
-                            .fill(PlumpyTheme.surfacePrimary)
+                            .fill(PlumpyTheme.surface)
                             .frame(width: 8, height: 8)
                             .scaleEffect(isAnimating ? 1.2 : 0.8)
                             .animation(
