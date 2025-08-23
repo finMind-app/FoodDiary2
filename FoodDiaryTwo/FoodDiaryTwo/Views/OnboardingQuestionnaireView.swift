@@ -56,7 +56,8 @@ struct OnboardingQuestionnaireView: View {
                                             .minimumScaleFactor(0.8)
                                             .padding(.horizontal, PlumpyTheme.Spacing.medium)
                                             .padding(.vertical, PlumpyTheme.Spacing.small)
-                                            .frame(maxWidth: .infinity, minHeight: 44)
+                                            .frame(height: 60) // Фиксированная высота
+                                            .frame(maxWidth: .infinity)
                                             .background(
                                                 RoundedRectangle(cornerRadius: PlumpyTheme.Radius.small)
                                                     .fill(gender == g ? PlumpyTheme.primaryAccent : PlumpyTheme.surfaceSecondary)
@@ -78,22 +79,22 @@ struct OnboardingQuestionnaireView: View {
                         }
 
                         pickerCard(title: "Activity") {
-                            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: PlumpyTheme.Spacing.small), count: 2), spacing: PlumpyTheme.Spacing.small) {
+                            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: PlumpyTheme.Spacing.small), count: 3), spacing: PlumpyTheme.Spacing.small) {
                                 ForEach(ActivityLevel.allCases, id: \.self) { level in
                                     Button(action: {
                                         activity = level
                                     }) {
-                                        Text(level.displayName)
+                                        Text(level.shortName)
                                             .font(PlumpyTheme.Typography.caption1)
                                             .fontWeight(.medium)
                                             .foregroundColor(activity == level ? PlumpyTheme.textInverse : PlumpyTheme.textPrimary)
                                             .multilineTextAlignment(.center)
-                                            .lineLimit(4)
-                                            .minimumScaleFactor(0.6)
-                                            .fixedSize(horizontal: false, vertical: true)
-                                            .padding(.horizontal, PlumpyTheme.Spacing.small)
+                                            .lineLimit(2)
+                                            .minimumScaleFactor(0.8)
+                                            .padding(.horizontal, PlumpyTheme.Spacing.tiny)
                                             .padding(.vertical, PlumpyTheme.Spacing.small)
-                                            .frame(maxWidth: .infinity, minHeight: 70)
+                                            .frame(height: 60) // Фиксированная высота
+                                            .frame(maxWidth: .infinity)
                                             .background(
                                                 RoundedRectangle(cornerRadius: PlumpyTheme.Radius.small)
                                                     .fill(activity == level ? PlumpyTheme.primaryAccent : PlumpyTheme.surfaceSecondary)
@@ -107,6 +108,14 @@ struct OnboardingQuestionnaireView: View {
                                     .animation(.easeInOut(duration: 0.2), value: activity)
                                 }
                             }
+                            
+                            // Показываем полное описание выбранного уровня активности
+                            Text(activity.displayName)
+                                .font(PlumpyTheme.Typography.caption1)
+                                .foregroundColor(PlumpyTheme.textSecondary)
+                                .multilineTextAlignment(.center)
+                                .padding(.top, PlumpyTheme.Spacing.small)
+                                .animation(.easeInOut(duration: 0.3), value: activity)
                         }
 
                         pickerCard(title: "Goal") {
@@ -121,11 +130,11 @@ struct OnboardingQuestionnaireView: View {
                                             .foregroundColor(goal == goalType ? PlumpyTheme.textInverse : PlumpyTheme.textPrimary)
                                             .multilineTextAlignment(.center)
                                             .lineLimit(2)
-                                            .minimumScaleFactor(0.7)
-                                            .fixedSize(horizontal: false, vertical: true)
+                                            .minimumScaleFactor(0.8)
                                             .padding(.horizontal, PlumpyTheme.Spacing.small)
                                             .padding(.vertical, PlumpyTheme.Spacing.small)
-                                            .frame(maxWidth: .infinity, minHeight: 55)
+                                            .frame(height: 60) // Фиксированная высота
+                                            .frame(maxWidth: .infinity)
                                             .background(
                                                 RoundedRectangle(cornerRadius: PlumpyTheme.Radius.small)
                                                     .fill(goal == goalType ? PlumpyTheme.primaryAccent : PlumpyTheme.surfaceSecondary)

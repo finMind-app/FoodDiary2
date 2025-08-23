@@ -282,7 +282,7 @@ struct ProfileView: View {
                 .foregroundColor(PlumpyTheme.textPrimary)
                 .frame(maxWidth: .infinity, alignment: .leading)
             
-            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: PlumpyTheme.Spacing.medium), count: 2), spacing: PlumpyTheme.Spacing.medium) {
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: PlumpyTheme.Spacing.medium), count: 3), spacing: PlumpyTheme.Spacing.medium) {
                 dashboardCard(icon: "target", title: "Goal", value: user?.goal.displayName ?? "-")
                 dashboardCard(icon: "flame.fill", title: "Calories", value: user != nil ? "\(user!.dailyCalorieGoal) cal" : "-")
                 dashboardCard(icon: "ruler", title: "Height", value: user != nil ? "\(Int(user!.height)) cm" : "-")
@@ -290,6 +290,7 @@ struct ProfileView: View {
                 dashboardCard(icon: "heart.text.square", title: "BMI", value: user != nil ? String(format: "%.1f", user!.bmi) : "-")
                 dashboardCard(icon: "calendar", title: "Age", value: user != nil ? "\(user!.age) years" : "-")
             }
+            .frame(maxWidth: .infinity)
             .animation(.easeInOut(duration: 0.3), value: user?.goal)
             .animation(.easeInOut(duration: 0.3), value: user?.dailyCalorieGoal)
         }
@@ -320,6 +321,7 @@ struct ProfileView: View {
         }
         .padding(.horizontal, PlumpyTheme.Spacing.medium)
         .padding(.vertical, PlumpyTheme.Spacing.small)
+        .frame(width: 110, height: 80) // Фиксированные размеры для симметрии
         .background(PlumpyTheme.surfaceSecondary)
         .clipShape(RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium))
         .overlay(
