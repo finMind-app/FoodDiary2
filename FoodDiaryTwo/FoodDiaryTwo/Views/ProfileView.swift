@@ -282,7 +282,7 @@ struct ProfileView: View {
                 .foregroundColor(PlumpyTheme.textPrimary)
                 .frame(maxWidth: .infinity, alignment: .leading)
             
-            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: PlumpyTheme.Spacing.medium), count: 3), spacing: PlumpyTheme.Spacing.medium) {
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: PlumpyTheme.Spacing.medium), count: 2), spacing: PlumpyTheme.Spacing.medium) {
                 dashboardCard(icon: "target", title: "Goal", value: user?.goal.displayName ?? "-")
                 dashboardCard(icon: "flame.fill", title: "Calories", value: user != nil ? "\(user!.dailyCalorieGoal) cal" : "-")
                 dashboardCard(icon: "ruler", title: "Height", value: user != nil ? "\(Int(user!.height)) cm" : "-")
@@ -305,12 +305,13 @@ struct ProfileView: View {
                 .frame(width: 24, height: 24)
             VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.tiny) {
                 Text(value)
-                    .font(PlumpyTheme.Typography.subheadline)
+                    .font(PlumpyTheme.Typography.caption1)
                     .fontWeight(.semibold)
                     .foregroundColor(PlumpyTheme.textPrimary)
-                    .lineLimit(2)
-                    .minimumScaleFactor(0.7)
+                    .lineLimit(3)
+                    .minimumScaleFactor(0.6)
                     .fixedSize(horizontal: false, vertical: true)
+                    .multilineTextAlignment(.leading)
                 Text(title)
                     .font(PlumpyTheme.Typography.caption2)
                     .foregroundColor(PlumpyTheme.textSecondary)
@@ -321,7 +322,7 @@ struct ProfileView: View {
         }
         .padding(.horizontal, PlumpyTheme.Spacing.medium)
         .padding(.vertical, PlumpyTheme.Spacing.small)
-        .frame(width: 110, height: 80) // Фиксированные размеры для симметрии
+        .frame(height: 80) // Только фиксированная высота
         .background(PlumpyTheme.surfaceSecondary)
         .clipShape(RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium))
         .overlay(

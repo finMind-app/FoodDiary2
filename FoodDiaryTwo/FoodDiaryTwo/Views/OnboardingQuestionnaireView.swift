@@ -54,9 +54,9 @@ struct OnboardingQuestionnaireView: View {
                                             .multilineTextAlignment(.center)
                                             .lineLimit(1)
                                             .minimumScaleFactor(0.8)
-                                            .padding(.horizontal, PlumpyTheme.Spacing.medium)
+                                            .padding(.horizontal, PlumpyTheme.Spacing.small)
                                             .padding(.vertical, PlumpyTheme.Spacing.small)
-                                            .frame(height: 60) // Фиксированная высота
+                                            .frame(height: 50)
                                             .frame(maxWidth: .infinity)
                                             .background(
                                                 RoundedRectangle(cornerRadius: PlumpyTheme.Radius.small)
@@ -79,7 +79,7 @@ struct OnboardingQuestionnaireView: View {
                         }
 
                         pickerCard(title: "Activity") {
-                            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: PlumpyTheme.Spacing.small), count: 3), spacing: PlumpyTheme.Spacing.small) {
+                            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: PlumpyTheme.Spacing.small), count: 2), spacing: PlumpyTheme.Spacing.small) {
                                 ForEach(ActivityLevel.allCases, id: \.self) { level in
                                     Button(action: {
                                         activity = level
@@ -93,7 +93,7 @@ struct OnboardingQuestionnaireView: View {
                                             .minimumScaleFactor(0.8)
                                             .padding(.horizontal, PlumpyTheme.Spacing.tiny)
                                             .padding(.vertical, PlumpyTheme.Spacing.small)
-                                            .frame(height: 60) // Фиксированная высота
+                                            .frame(height: 50)
                                             .frame(maxWidth: .infinity)
                                             .background(
                                                 RoundedRectangle(cornerRadius: PlumpyTheme.Radius.small)
@@ -133,7 +133,7 @@ struct OnboardingQuestionnaireView: View {
                                             .minimumScaleFactor(0.8)
                                             .padding(.horizontal, PlumpyTheme.Spacing.small)
                                             .padding(.vertical, PlumpyTheme.Spacing.small)
-                                            .frame(height: 60) // Фиксированная высота
+                                            .frame(height: 50)
                                             .frame(maxWidth: .infinity)
                                             .background(
                                                 RoundedRectangle(cornerRadius: PlumpyTheme.Radius.small)
