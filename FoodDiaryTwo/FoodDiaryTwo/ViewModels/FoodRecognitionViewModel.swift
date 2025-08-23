@@ -100,15 +100,24 @@ class FoodRecognitionViewModel: ObservableObject {
     func applyResultsToMeal() -> FoodEntry? {
         guard let result = recognitionResult else { return nil }
         
+        // Создаем FoodProduct объекты из результатов распознавания
+        let products = result.recognizedFoods.map { food in
+            FoodProduct(
+                name: food.name,
+                servingSize: food.estimatedWeight,
+                caloriesPerServing: food.calories,
+                protein: food.protein,
+                carbs: food.carbs,
+                fat: food.fat
+            )
+        }
+        
         // Создаем запись о приеме пищи на основе результатов распознавания
         let meal = FoodEntry(
             name: generateMealName(from: result),
-            calories: result.totalCalories,
-            protein: result.totalProtein,
-            fat: result.totalFat,
-            carbs: result.totalCarbs,
             date: Date(),
             mealType: .lunch, // По умолчанию обед
+            products: products,
             notes: generateMealNotes(from: result)
         )
         

@@ -19,7 +19,7 @@ struct AddMealView: View {
     @State private var calories = ""
     @State private var notes = ""
     @State private var selectedPhotoItem: PhotosPickerItem?
-    @State private var selectedImage: UIImage?
+    @State private var selectedImage: UIImage? = nil
     
     // Новые состояния для распознавания еды
     @StateObject private var recognitionViewModel = FoodRecognitionViewModel()
