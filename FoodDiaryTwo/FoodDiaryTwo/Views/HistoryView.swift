@@ -182,6 +182,7 @@ struct HistoryView: View {
                 LazyVStack(spacing: PlumpyTheme.Spacing.small) {
                     ForEach(entries) { entry in
                         FoodEntryHistoryCard(entry: entry)
+                            .frame(height: 80)
                     }
                 }
             }
