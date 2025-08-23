@@ -288,7 +288,10 @@ struct ProfileView: View {
                 dashboardCard(icon: "ruler", title: "Height", value: user != nil ? "\(Int(user!.height)) cm" : "-")
                 dashboardCard(icon: "scalemass", title: "Weight", value: user != nil ? String(format: "%.1f kg", user!.weight) : "-")
                 dashboardCard(icon: "heart.text.square", title: "BMI", value: user != nil ? String(format: "%.1f", user!.bmi) : "-")
+                dashboardCard(icon: "calendar", title: "Age", value: user != nil ? "\(user!.age) years" : "-")
             }
+            .animation(.easeInOut(duration: 0.3), value: user?.goal)
+            .animation(.easeInOut(duration: 0.3), value: user?.dailyCalorieGoal)
         }
         .plumpyCard()
     }

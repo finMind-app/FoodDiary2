@@ -58,18 +58,31 @@ struct OnboardingQuestionnaireView: View {
                         pickerCard(title: "Activity") {
                             Picker("Activity", selection: $activity) {
                                 ForEach(ActivityLevel.allCases, id: \.self) { a in
-                                    Text(a.displayName).tag(a)
+                                    Text(a.shortName).tag(a)
                                 }
                             }
+                            .pickerStyle(.wheel)
+                            .frame(height: 120)
+                            .animation(.easeInOut(duration: 0.2), value: activity)
+                            
+                            // Показываем полное описание выбранного уровня активности
+                            Text(activity.displayName)
+                                .font(PlumpyTheme.Typography.caption1)
+                                .foregroundColor(PlumpyTheme.textSecondary)
+                                .multilineTextAlignment(.center)
+                                .padding(.top, PlumpyTheme.Spacing.small)
+                                .animation(.easeInOut(duration: 0.3), value: activity)
                         }
 
                         pickerCard(title: "Goal") {
                             Picker("Goal", selection: $goal) {
                                 ForEach(Goal.allCases, id: \.self) { g in
-                                    Text(g.displayName).tag(g)
+                                    Text(g.shortName).tag(g)
                                 }
                             }
                             .pickerStyle(.segmented)
+                            .frame(height: 44)
+                            .animation(.easeInOut(duration: 0.2), value: goal)
                         }
 
                         PlumpyField(

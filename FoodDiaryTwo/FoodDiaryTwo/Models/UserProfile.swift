@@ -160,6 +160,21 @@ enum ActivityLevel: String, CaseIterable, Codable {
             return "Very Active (very hard exercise, physical job)"
         }
     }
+    
+    var shortName: String {
+        switch self {
+        case .sedentary:
+            return "Sedentary"
+        case .light:
+            return "Light"
+        case .moderate:
+            return "Moderate"
+        case .active:
+            return "Active"
+        case .veryActive:
+            return "Very Active"
+        }
+    }
 }
 
 enum Goal: String, CaseIterable, Codable {
@@ -175,6 +190,17 @@ enum Goal: String, CaseIterable, Codable {
             return "Maintain Weight"
         case .gain:
             return "Gain Weight"
+        }
+    }
+    
+    var shortName: String {
+        switch self {
+        case .lose:
+            return "Lose"
+        case .maintain:
+            return "Maintain"
+        case .gain:
+            return "Gain"
         }
     }
 }
