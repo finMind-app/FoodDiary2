@@ -132,7 +132,7 @@ struct OnboardingFlowView: View {
                     .fontWeight(.medium)
                     .foregroundColor(PlumpyTheme.textPrimary)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: PlumpyTheme.Spacing.small), count: 2), spacing: PlumpyTheme.Spacing.small) {
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: PlumpyTheme.Spacing.small), count: 3), spacing: PlumpyTheme.Spacing.small) {
                     ForEach(ActivityLevel.allCases, id: \.self) { level in
                         Button(action: {
                             activity = level

@@ -221,6 +221,8 @@ struct ProfileView: View {
                                 .foregroundColor(PlumpyTheme.textPrimary)
                                 .multilineTextAlignment(.center)
                                 .lineLimit(2)
+                                .minimumScaleFactor(0.7)
+                                .fixedSize(horizontal: false, vertical: true)
                         }
                         .frame(width: 76)
                     }
