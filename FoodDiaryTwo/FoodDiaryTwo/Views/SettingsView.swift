@@ -9,234 +9,329 @@ import SwiftUI
 import SwiftData
 
 struct SettingsView: View {
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var modelContext
+    @Query private var users: [UserProfile]
+    
     @State private var notificationsEnabled = true
     @State private var darkModeEnabled = false
     @State private var selectedLanguage = "English"
-    @State private var dailyGoal = 2000
+    @State private var biometricsEnabled = false
+    @State private var dataExportEnabled = false
+    @State private var showingLanguagePicker = false
+    @State private var showingNotificationsSettings = false
+    @State private var showingPrivacySettings = false
     
     let languages = ["English", "Русский", "Español", "Français"]
     
     var body: some View {
-        ZStack {
-            PlumpyBackground(style: .primary)
-                .ignoresSafeArea()
-            
-            VStack(spacing: 0) {
-                // Navigation Bar
-                PlumpyNavigationBar(
-                    title: "Settings",
-                    subtitle: "App preferences"
-                )
-                
-                ScrollView {
-                    VStack(spacing: PlumpyTheme.Spacing.large) {
-                        // Профиль
-                        profileSection
-                        
-                        // Настройки приложения
-                        appSettingsSection
-                        
-                        // Цели
-                        goalsSection
-                        
-                        // О приложении
-                        aboutSection
-                        
-                        PlumpySpacer(size: .huge)
+        NavigationView {
+            List {
+                // MARK: - Notifications
+                Section {
+                    HStack {
+                        Image(systemName: "bell.fill")
+                            .foregroundColor(.blue)
+                            .frame(width: 24)
+                        Toggle("Notifications", isOn: $notificationsEnabled)
                     }
-                    .padding(.horizontal, PlumpyTheme.Spacing.medium)
-                    .padding(.top, PlumpyTheme.Spacing.medium)
-                }
-            }
-        }
-    }
-    
-    private var profileSection: some View {
-        VStack(spacing: PlumpyTheme.Spacing.medium) {
-            Text("Profile Settings")
-                .font(PlumpyTheme.Typography.headline)
-                .fontWeight(.semibold)
-                .foregroundColor(PlumpyTheme.textPrimary)
-                .frame(maxWidth: .infinity, alignment: .leading)
-            
-            VStack(spacing: PlumpyTheme.Spacing.small) {
-                PlumpyInfoCard(
-                    title: "Personal Information",
-                    subtitle: "Edit your name, email, and photo",
-                    icon: "person.circle",
-                    iconColor: PlumpyTheme.primaryAccent
-                ) {
-                    // Открытие редактирования профиля
-                }
-                
-                PlumpyInfoCard(
-                    title: "Goals & Targets",
-                    subtitle: "Set your daily calorie goals",
-                    icon: "target",
-                    iconColor: PlumpyTheme.success
-                ) {
-                    // Открытие настроек целей
+                    
+                    if notificationsEnabled {
+                        HStack {
+                            Image(systemName: "clock.fill")
+                                .foregroundColor(.orange)
+                                .frame(width: 24)
+                            Text("Reminder Time")
+                            Spacer()
+                            Text("9:00 AM")
+                                .foregroundColor(.secondary)
+                        }
+                        
+                        HStack {
+                            Image(systemName: "flame.fill")
+                                .foregroundColor(.red)
+                                .frame(width: 24)
+                            Text("Calorie Reminders")
+                            Spacer()
+                            Toggle("", isOn: .constant(true))
+                                .labelsHidden()
+                        }
+                    }
+                } header: {
+                    Text("Notifications")
+                } footer: {
+                    Text("Get reminded about your daily goals and meal tracking")
                 }
                 
-                PlumpyInfoCard(
-                    title: "Notifications",
-                    subtitle: "Manage your notification preferences",
-                    icon: "bell.fill",
-                    iconColor: PlumpyTheme.warning
-                ) {
-                    // Открытие настроек уведомлений
-                }
-                
-                PlumpyInfoCard(
-                    title: "Privacy & Security",
-                    subtitle: "Control your privacy settings",
-                    icon: "lock.fill",
-                    iconColor: PlumpyTheme.info
-                ) {
-                    // Открытие настроек приватности
-                }
-            }
-        }
-        .plumpyCard()
-    }
-    
-    private var appSettingsSection: some View {
-        VStack(spacing: PlumpyTheme.Spacing.medium) {
-            Text("App Settings")
-                .font(PlumpyTheme.Typography.headline)
-                .fontWeight(.semibold)
-                .foregroundColor(PlumpyTheme.textPrimary)
-                .frame(maxWidth: .infinity, alignment: .leading)
-            
-            VStack(spacing: PlumpyTheme.Spacing.small) {
-                PlumpyInfoCard(
-                    title: "Notifications",
-                    subtitle: notificationsEnabled ? "Enabled" : "Disabled",
-                    icon: "bell.fill",
-                    iconColor: notificationsEnabled ? PlumpyTheme.success : PlumpyTheme.textTertiary
-                ) {
-                    notificationsEnabled.toggle()
-                }
-                
-                PlumpyInfoCard(
-                    title: "Dark Mode",
-                    subtitle: darkModeEnabled ? "Enabled" : "Disabled",
-                    icon: "moon.fill",
-                    iconColor: darkModeEnabled ? PlumpyTheme.tertiaryAccent : PlumpyTheme.textTertiary
-                ) {
-                    darkModeEnabled.toggle()
-                }
-                
-                PlumpyInfoCard(
-                    title: "Language",
-                    subtitle: selectedLanguage,
-                    icon: "globe",
-                    iconColor: PlumpyTheme.info
-                ) {
-                    // Выбор языка
-                }
-            }
-        }
-        .plumpyCard()
-    }
-    
-    private var goalsSection: some View {
-        VStack(spacing: PlumpyTheme.Spacing.medium) {
-            Text("Goals")
-                .font(PlumpyTheme.Typography.headline)
-                .fontWeight(.semibold)
-                .foregroundColor(PlumpyTheme.textPrimary)
-                .frame(maxWidth: .infinity, alignment: .leading)
-            
-            VStack(spacing: PlumpyTheme.Spacing.medium) {
-                VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.small) {
-                    Text("Daily Calorie Goal")
-                        .font(PlumpyTheme.Typography.subheadline)
-                        .fontWeight(.medium)
-                        .foregroundColor(PlumpyTheme.textSecondary)
+                // MARK: - Appearance
+                Section {
+                    HStack {
+                        Image(systemName: "moon.fill")
+                            .foregroundColor(.purple)
+                            .frame(width: 24)
+                        Toggle("Dark Mode", isOn: $darkModeEnabled)
+                    }
                     
                     HStack {
-                        Text("\(dailyGoal)")
-                            .font(PlumpyTheme.Typography.title2)
-                            .fontWeight(.bold)
-                            .foregroundColor(PlumpyTheme.primaryAccent)
-                        
-                        Text("calories")
-                            .font(PlumpyTheme.Typography.caption1)
-                            .foregroundColor(PlumpyTheme.textSecondary)
-                        
+                        Image(systemName: "textformat.size")
+                            .foregroundColor(.green)
+                            .frame(width: 24)
+                        Text("Text Size")
                         Spacer()
-                        
-                        PlumpyButton(
-                            title: "Change",
-                            icon: "pencil",
-                            style: .outline
-                        ) {
-                            // Изменение цели
-                        }
-                        .frame(maxWidth: 100)
+                        Text("Default")
+                            .foregroundColor(.secondary)
                     }
+                } header: {
+                    Text("Appearance")
                 }
                 
-                PlumpyProgressBar(
-                    value: 1250,
-                    maxValue: Double(dailyGoal),
-                    title: "Today's Progress",
-                    showPercentage: true,
-                    style: .primary
-                )
+                // MARK: - Language & Region
+                Section {
+                    HStack {
+                        Image(systemName: "globe")
+                            .foregroundColor(.blue)
+                            .frame(width: 24)
+                        Text("Language")
+                        Spacer()
+                        Text(selectedLanguage)
+                            .foregroundColor(.secondary)
+                    }
+                    .onTapGesture {
+                        showingLanguagePicker = true
+                    }
+                    
+                    HStack {
+                        Image(systemName: "flag.fill")
+                            .foregroundColor(.orange)
+                            .frame(width: 24)
+                        Text("Region")
+                        Spacer()
+                        Text("United States")
+                            .foregroundColor(.secondary)
+                    }
+                } header: {
+                    Text("Language & Region")
+                }
+                
+                // MARK: - Privacy & Security
+                Section {
+                    HStack {
+                        Image(systemName: "lock.fill")
+                            .foregroundColor(.red)
+                            .frame(width: 24)
+                        Text("Face ID / Touch ID")
+                        Spacer()
+                        Toggle("", isOn: $biometricsEnabled)
+                            .labelsHidden()
+                    }
+                    
+                    HStack {
+                        Image(systemName: "eye.slash.fill")
+                            .foregroundColor(.gray)
+                            .frame(width: 24)
+                        Text("Hide Sensitive Data")
+                        Spacer()
+                        Toggle("", isOn: .constant(false))
+                            .labelsHidden()
+                    }
+                } header: {
+                    Text("Privacy & Security")
+                } footer: {
+                    Text("Secure your app with biometric authentication")
+                }
+                
+                // MARK: - Data & Storage
+                Section {
+                    HStack {
+                        Image(systemName: "icloud.fill")
+                            .foregroundColor(.blue)
+                            .frame(width: 24)
+                        Text("iCloud Sync")
+                        Spacer()
+                        Toggle("", isOn: .constant(true))
+                            .labelsHidden()
+                    }
+                    
+                    HStack {
+                        Image(systemName: "arrow.up.doc.fill")
+                            .foregroundColor(.green)
+                            .frame(width: 24)
+                        Text("Export Data")
+                        Spacer()
+                        Toggle("", isOn: $dataExportEnabled)
+                            .labelsHidden()
+                    }
+                    
+                    HStack {
+                        Image(systemName: "trash.fill")
+                            .foregroundColor(.red)
+                            .frame(width: 24)
+                        Text("Clear All Data")
+                        Spacer()
+                        Text("")
+                    }
+                    .foregroundColor(.red)
+                } header: {
+                    Text("Data & Storage")
+                } footer: {
+                    Text("Manage your data and storage preferences")
+                }
+                
+                // MARK: - About
+                Section {
+                    HStack {
+                        Image(systemName: "info.circle.fill")
+                            .foregroundColor(.blue)
+                            .frame(width: 24)
+                        Text("Version")
+                        Spacer()
+                        Text("1.0.0")
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    HStack {
+                        Image(systemName: "doc.text.fill")
+                            .foregroundColor(.gray)
+                            .frame(width: 24)
+                        Text("Terms of Service")
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    HStack {
+                        Image(systemName: "hand.raised.fill")
+                            .foregroundColor(.gray)
+                            .frame(width: 24)
+                        Text("Privacy Policy")
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                } header: {
+                    Text("About")
+                }
+            }
+            .navigationTitle("Settings")
+            .navigationBarTitleDisplayMode(.large)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Done") {
+                        dismiss()
+                    }
+                }
             }
         }
-        .plumpyCard()
+        .sheet(isPresented: $showingLanguagePicker) {
+            LanguagePickerView(selectedLanguage: $selectedLanguage, languages: languages)
+        }
+        .sheet(isPresented: $showingNotificationsSettings) {
+            NotificationsSettingsView()
+        }
+        .sheet(isPresented: $showingPrivacySettings) {
+            PrivacySettingsView()
+        }
     }
+}
+
+// MARK: - Language Picker View
+struct LanguagePickerView: View {
+    @Binding var selectedLanguage: String
+    let languages: [String]
+    @Environment(\.dismiss) private var dismiss
     
-    private var aboutSection: some View {
-        VStack(spacing: PlumpyTheme.Spacing.medium) {
-            Text("About")
-                .font(PlumpyTheme.Typography.headline)
-                .fontWeight(.semibold)
-                .foregroundColor(PlumpyTheme.textPrimary)
-                .frame(maxWidth: .infinity, alignment: .leading)
-            
-            VStack(spacing: PlumpyTheme.Spacing.small) {
-                PlumpyInfoCard(
-                    title: "Version",
-                    subtitle: "1.0.0",
-                    icon: "info.circle",
-                    iconColor: PlumpyTheme.info,
-                    action: {}
-                )
-                
-                PlumpyInfoCard(
-                    title: "Developer",
-                    subtitle: "Food Diary Team",
-                    icon: "person.2.fill",
-                    iconColor: PlumpyTheme.primaryAccent,
-                    action: {}
-                )
-                
-                PlumpyInfoCard(
-                    title: "Privacy Policy",
-                    subtitle: "Read our privacy policy",
-                    icon: "hand.raised.fill",
-                    iconColor: PlumpyTheme.secondaryAccent,
-                    action: {
-                        // Открытие политики конфиденциальности
+    var body: some View {
+        NavigationView {
+            List(languages, id: \.self) { language in
+                HStack {
+                    Text(language)
+                    Spacer()
+                    if language == selectedLanguage {
+                        Image(systemName: "checkmark")
+                            .foregroundColor(.blue)
                     }
-                )
-                
-                PlumpyInfoCard(
-                    title: "Terms of Service",
-                    subtitle: "Read our terms of service",
-                    icon: "doc.text.fill",
-                    iconColor: PlumpyTheme.tertiaryAccent,
-                    action: {
-                        // Открытие условий использования
+                }
+                .onTapGesture {
+                    selectedLanguage = language
+                    dismiss()
+                }
+            }
+            .navigationTitle("Language")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Done") {
+                        dismiss()
                     }
-                )
+                }
             }
         }
-        .plumpyCard()
+    }
+}
+
+// MARK: - Notifications Settings View
+struct NotificationsSettingsView: View {
+    @Environment(\.dismiss) private var dismiss
+    @State private var mealReminders = true
+    @State private var goalReminders = true
+    @State private var weeklyReports = false
+    
+    var body: some View {
+        NavigationView {
+            List {
+                Section {
+                    Toggle("Meal Reminders", isOn: $mealReminders)
+                    Toggle("Goal Reminders", isOn: $goalReminders)
+                    Toggle("Weekly Reports", isOn: $weeklyReports)
+                } header: {
+                    Text("Notification Types")
+                } footer: {
+                    Text("Choose which notifications you want to receive")
+                }
+            }
+            .navigationTitle("Notifications")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Done") {
+                        dismiss()
+                    }
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Privacy Settings View
+struct PrivacySettingsView: View {
+    @Environment(\.dismiss) private var dismiss
+    @State private var analyticsEnabled = true
+    @State private var crashReportsEnabled = true
+    
+    var body: some View {
+        NavigationView {
+            List {
+                Section {
+                    Toggle("Analytics", isOn: $analyticsEnabled)
+                    Toggle("Crash Reports", isOn: $crashReportsEnabled)
+                } header: {
+                    Text("Data Collection")
+                } footer: {
+                    Text("Help us improve the app by sharing anonymous usage data")
+                }
+            }
+            .navigationTitle("Privacy")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Done") {
+                        dismiss()
+                    }
+                }
+            }
+        }
     }
 }
 
