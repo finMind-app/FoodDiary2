@@ -56,7 +56,7 @@ struct OnboardingQuestionnaireView: View {
                                             .minimumScaleFactor(0.8)
                                             .padding(.horizontal, PlumpyTheme.Spacing.small)
                                             .padding(.vertical, PlumpyTheme.Spacing.small)
-                                            .frame(height: 50)
+                                            .frame(height: 55) // Увеличил высоту для лучшей видимости
                                             .frame(maxWidth: .infinity)
                                             .background(
                                                 RoundedRectangle(cornerRadius: PlumpyTheme.Radius.small)
@@ -93,7 +93,7 @@ struct OnboardingQuestionnaireView: View {
                                             .minimumScaleFactor(0.8)
                                             .padding(.horizontal, PlumpyTheme.Spacing.tiny)
                                             .padding(.vertical, PlumpyTheme.Spacing.small)
-                                            .frame(height: 50)
+                                            .frame(height: 55) // Увеличил высоту для лучшей видимости
                                             .frame(maxWidth: .infinity)
                                             .background(
                                                 RoundedRectangle(cornerRadius: PlumpyTheme.Radius.small)
@@ -133,7 +133,7 @@ struct OnboardingQuestionnaireView: View {
                                             .minimumScaleFactor(0.8)
                                             .padding(.horizontal, PlumpyTheme.Spacing.small)
                                             .padding(.vertical, PlumpyTheme.Spacing.small)
-                                            .frame(height: 50)
+                                            .frame(height: 55) // Увеличил высоту для лучшей видимости
                                             .frame(maxWidth: .infinity)
                                             .background(
                                                 RoundedRectangle(cornerRadius: PlumpyTheme.Radius.small)
