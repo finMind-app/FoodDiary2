@@ -21,6 +21,12 @@ struct AddMealView: View {
     @State private var selectedPhotoItem: PhotosPickerItem?
     @State private var selectedImage: UIImage?
     
+    // Новые состояния для распознавания еды
+    @StateObject private var recognitionViewModel = FoodRecognitionViewModel()
+    @State private var showRecognitionResults = false
+    @State private var showImagePicker = false
+    @State private var showCamera = false
+    
     init(mealType: MealType = .breakfast) {
         self._selectedMealType = State(initialValue: mealType)
     }
@@ -57,8 +63,8 @@ struct AddMealView: View {
                         // Основная информация
                         basicInfoSection
                         
-                        // Фото
-                        photoSection
+                        // Фото с распознаванием
+                        photoSectionWithRecognition
                         
                         // Заметки
                         notesSection
@@ -67,6 +73,36 @@ struct AddMealView: View {
                     }
                     .padding(.horizontal, PlumpyTheme.Spacing.medium)
                     .padding(.top, PlumpyTheme.Spacing.medium)
+                }
+            }
+        }
+        .sheet(isPresented: $showRecognitionResults) {
+            if let result = recognitionViewModel.recognitionResult {
+                NavigationView {
+                    FoodRecognitionResultView(
+                        result: result,
+                        onApply: {
+                            applyRecognitionResults(result)
+                            showRecognitionResults = false
+                        },
+                        onRetry: {
+                            showRecognitionResults = false
+                        }
+                    )
+                }
+            }
+        }
+        .alert("Ошибка", isPresented: $recognitionViewModel.showError) {
+            Button("OK") { }
+        } message: {
+            Text(recognitionViewModel.errorMessage ?? "Неизвестная ошибка")
+        }
+        .onChange(of: selectedPhotoItem) { _, newItem in
+            Task {
+                if let data = try? await newItem?.loadTransferable(type: Data.self),
+                   let image = UIImage(data: data) {
+                    selectedImage = image
+                    recognitionViewModel.selectedImage = image
                 }
             }
         }
@@ -141,89 +177,201 @@ struct AddMealView: View {
         .plumpyCard()
     }
     
-    private var photoSection: some View {
+    // MARK: - Секция фото с распознаванием
+    private var photoSectionWithRecognition: some View {
         VStack(spacing: PlumpyTheme.Spacing.medium) {
-            Text("Photo")
+            Text("Photo & Recognition")
                 .font(PlumpyTheme.Typography.headline)
                 .fontWeight(.semibold)
                 .foregroundColor(PlumpyTheme.textPrimary)
                 .frame(maxWidth: .infinity, alignment: .leading)
             
-            if let selectedImage = selectedImage {
-                VStack(spacing: PlumpyTheme.Spacing.medium) {
+            // Выбор фото
+            VStack(spacing: PlumpyTheme.Spacing.small) {
+                if let selectedImage = selectedImage {
+                    // Показать выбранное изображение
                     Image(uiImage: selectedImage)
                         .resizable()
                         .aspectRatio(contentMode: .fill)
                         .frame(height: 200)
-                        .clipShape(RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium))
-                        .shadow(
-                            color: PlumpyTheme.shadow.opacity(0.1),
-                            radius: PlumpyTheme.Shadow.medium.radius,
-                            x: PlumpyTheme.Shadow.medium.x,
-                            y: PlumpyTheme.Shadow.medium.y
+                        .clipped()
+                        .cornerRadius(PlumpyTheme.Radius.medium)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
+                                .stroke(PlumpyTheme.border, lineWidth: 1)
                         )
                     
+                    // Кнопки действий с фото
                     HStack(spacing: PlumpyTheme.Spacing.medium) {
-                        PhotosPicker(selection: $selectedPhotoItem, matching: .images) {
-                            PlumpyButton(
-                                title: "Change",
-                                icon: "camera.fill",
-                                style: .secondary,
-                                size: .small
-                            ) {
-                                // Action handled by PhotosPicker
+                        // Кнопка распознавания
+                        Button(action: {
+                            Task {
+                                await recognitionViewModel.recognizeFood()
+                                if recognitionViewModel.recognitionResult != nil {
+                                    showRecognitionResults = true
+                                }
                             }
+                        }) {
+                            HStack {
+                                if recognitionViewModel.isProcessing {
+                                    ProgressView()
+                                        .scaleEffect(0.8)
+                                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                } else {
+                                    Image(systemName: "camera.viewfinder")
+                                }
+                                Text(recognitionViewModel.recognitionButtonText)
+                                    .fontWeight(.medium)
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, PlumpyTheme.Spacing.small)
+                            .background(recognitionViewModel.recognitionButtonColor)
+                            .foregroundColor(.white)
+                            .cornerRadius(PlumpyTheme.Radius.medium)
                         }
+                        .disabled(!recognitionViewModel.canStartRecognition)
                         
-                        PlumpyButton(
-                            title: "Remove",
-                            icon: "trash.fill",
-                            style: .error,
-                            size: .small
-                        ) {
-                            self.selectedImage = nil
-                            self.selectedPhotoItem = nil
+                        // Кнопка сброса
+                        Button(action: {
+                            selectedImage = nil
+                            selectedPhotoItem = nil
+                            recognitionViewModel.resetResults()
+                        }) {
+                            Image(systemName: "trash")
+                                .foregroundColor(.red)
+                                .frame(width: 44, height: 44)
+                                .background(PlumpyTheme.surfaceSecondary)
+                                .cornerRadius(PlumpyTheme.Radius.medium)
                         }
                     }
-                }
-            } else {
-                PhotosPicker(selection: $selectedPhotoItem, matching: .images) {
-                    VStack(spacing: PlumpyTheme.Spacing.medium) {
-                        Image(systemName: "camera.fill")
-                            .font(.system(size: 40))
-                            .foregroundColor(PlumpyTheme.primaryAccent)
-                        
-                        Text("Add Photo")
-                            .font(PlumpyTheme.Typography.headline)
-                            .fontWeight(.medium)
-                            .foregroundColor(PlumpyTheme.primaryAccent)
-                        
-                        Text("Take a photo or choose from gallery")
+                    
+                    // Прогресс распознавания
+                    if recognitionViewModel.isProcessing {
+                        VStack(spacing: PlumpyTheme.Spacing.small) {
+                            ProgressView(value: recognitionViewModel.processingProgress)
+                                .progressViewStyle(LinearProgressViewStyle(tint: PlumpyTheme.primaryAccent))
+                            
+                            Text("Анализируем изображение...")
+                                .font(PlumpyTheme.Typography.caption1)
+                                .foregroundColor(PlumpyTheme.textSecondary)
+                        }
+                        .padding(.horizontal, PlumpyTheme.Spacing.medium)
+                    }
+                    
+                    // Статус
+                    HStack {
+                        Image(systemName: "info.circle.fill")
+                            .foregroundColor(recognitionViewModel.statusColor)
+                        Text(recognitionViewModel.statusText)
                             .font(PlumpyTheme.Typography.caption1)
-                            .foregroundColor(PlumpyTheme.textSecondary)
-                            .multilineTextAlignment(.center)
+                            .foregroundColor(recognitionViewModel.statusColor)
                     }
-                    .frame(maxWidth: .infinity)
-                    .padding(PlumpyTheme.Spacing.extraLarge)
-                    .plumpyCard(
-                        cornerRadius: PlumpyTheme.Radius.large,
-                        backgroundColor: PlumpyTheme.primary.opacity(0.1),
-                        borderColor: PlumpyTheme.primaryAccent,
-                        borderWidth: 2
-                    )
+                    .padding(.horizontal, PlumpyTheme.Spacing.medium)
+                    .padding(.vertical, PlumpyTheme.Spacing.small)
+                    .background(recognitionViewModel.statusColor.opacity(0.1))
+                    .cornerRadius(PlumpyTheme.Radius.small)
+                    
+                } else {
+                    // Показать кнопки выбора фото
+                    VStack(spacing: PlumpyTheme.Spacing.medium) {
+                        // Кнопка выбора из галереи
+                        PhotosPicker(selection: $selectedPhotoItem, matching: .images) {
+                            HStack {
+                                Image(systemName: "photo.on.rectangle")
+                                Text("Выбрать из галереи")
+                                    .fontWeight(.medium)
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, PlumpyTheme.Spacing.medium)
+                            .background(PlumpyTheme.primaryAccent)
+                            .foregroundColor(.white)
+                            .cornerRadius(PlumpyTheme.Radius.medium)
+                        }
+                        
+                        // Кнопка камеры
+                        Button(action: {
+                            recognitionViewModel.takePhoto()
+                        }) {
+                            HStack {
+                                Image(systemName: "camera.fill")
+                                Text("Сделать фото")
+                                    .fontWeight(.medium)
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, PlumpyTheme.Spacing.medium)
+                            .background(PlumpyTheme.surfaceSecondary)
+                            .foregroundColor(PlumpyTheme.textPrimary)
+                            .cornerRadius(PlumpyTheme.Radius.medium)
+                        }
+                        
+                        // Информация о распознавании
+                        VStack(spacing: PlumpyTheme.Spacing.small) {
+                            Image(systemName: "camera.viewfinder")
+                                .font(.title2)
+                                .foregroundColor(PlumpyTheme.primaryAccent)
+                            
+                            Text("Сфотографируйте еду для автоматического распознавания калорий и БЖУ")
+                                .font(PlumpyTheme.Typography.caption1)
+                                .foregroundColor(PlumpyTheme.textSecondary)
+                                .multilineTextAlignment(.center)
+                        }
+                        .padding(PlumpyTheme.Spacing.medium)
+                        .background(PlumpyTheme.surfaceSecondary)
+                        .cornerRadius(PlumpyTheme.Radius.medium)
+                    }
                 }
-                .buttonStyle(PlainButtonStyle())
             }
         }
         .plumpyCard()
-        .onChange(of: selectedPhotoItem) { _, newItem in
-            Task {
-                if let data = try? await newItem?.loadTransferable(type: Data.self),
-                   let image = UIImage(data: data) {
-                    selectedImage = image
-                }
-            }
+    }
+    
+    // MARK: - Применение результатов распознавания
+    private func applyRecognitionResults(_ result: FoodRecognitionResult) {
+        // Автозаполнение полей на основе результатов распознавания
+        if mealName.isEmpty {
+            mealName = generateMealName(from: result)
         }
+        
+        if calories.isEmpty {
+            calories = String(Int(result.totalCalories))
+        }
+        
+        if notes.isEmpty {
+            notes = generateMealNotes(from: result)
+        }
+        
+        // Показываем уведомление об успешном применении
+        // В реальном приложении здесь можно добавить haptic feedback
+    }
+    
+    private func generateMealName(from result: FoodRecognitionResult) -> String {
+        let foodNames = result.recognizedFoods.map { $0.name }
+        
+        if foodNames.count == 1 {
+            return foodNames[0]
+        } else if foodNames.count <= 3 {
+            return foodNames.joined(separator: " + ")
+        } else {
+            return "Смешанное блюдо"
+        }
+    }
+    
+    private func generateMealNotes(from result: FoodRecognitionResult) -> String {
+        var notes: [String] = []
+        
+        notes.append("📸 Распознано по фото")
+        notes.append("Уверенность: \(result.confidenceText)")
+        
+        for food in result.recognizedFoods {
+            let confidence = Int(food.confidence * 100)
+            notes.append("• \(food.name): \(confidence)% уверенность")
+        }
+        
+        if let cookingMethod = result.recognizedFoods.first?.cookingMethod {
+            notes.append("Способ приготовления: \(cookingMethod.rawValue)")
+        }
+        
+        return notes.joined(separator: "\n")
     }
     
     private var notesSection: some View {
