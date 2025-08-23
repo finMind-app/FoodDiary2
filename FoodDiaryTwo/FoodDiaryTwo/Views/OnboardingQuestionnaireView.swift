@@ -42,12 +42,34 @@ struct OnboardingQuestionnaireView: View {
                         PlumpyField(title: "Age", placeholder: "Years", text: $age, keyboardType: .numberPad, icon: "number", isRequired: true)
 
                         pickerCard(title: "Gender") {
-                            Picker("Gender", selection: $gender) {
+                            HStack(spacing: PlumpyTheme.Spacing.small) {
                                 ForEach(Gender.allCases, id: \.self) { g in
-                                    Text(g.displayName).tag(g)
+                                    Button(action: {
+                                        gender = g
+                                    }) {
+                                        Text(g.displayName)
+                                            .font(PlumpyTheme.Typography.caption1)
+                                            .fontWeight(.medium)
+                                            .foregroundColor(gender == g ? PlumpyTheme.textInverse : PlumpyTheme.textPrimary)
+                                            .multilineTextAlignment(.center)
+                                            .lineLimit(1)
+                                            .minimumScaleFactor(0.8)
+                                            .padding(.horizontal, PlumpyTheme.Spacing.medium)
+                                            .padding(.vertical, PlumpyTheme.Spacing.small)
+                                            .frame(maxWidth: .infinity, minHeight: 44)
+                                            .background(
+                                                RoundedRectangle(cornerRadius: PlumpyTheme.Radius.small)
+                                                    .fill(gender == g ? PlumpyTheme.primaryAccent : PlumpyTheme.surfaceSecondary)
+                                            )
+                                            .overlay(
+                                                RoundedRectangle(cornerRadius: PlumpyTheme.Radius.small)
+                                                    .stroke(gender == g ? PlumpyTheme.primaryAccent : PlumpyTheme.neutral200, lineWidth: 1)
+                                            )
+                                    }
+                                    .buttonStyle(PlainButtonStyle())
+                                    .animation(.easeInOut(duration: 0.2), value: gender)
                                 }
                             }
-                            .pickerStyle(.segmented)
                         }
 
                         HStack(spacing: PlumpyTheme.Spacing.medium) {
@@ -56,33 +78,67 @@ struct OnboardingQuestionnaireView: View {
                         }
 
                         pickerCard(title: "Activity") {
-                            Picker("Activity", selection: $activity) {
-                                ForEach(ActivityLevel.allCases, id: \.self) { a in
-                                    Text(a.shortName).tag(a)
+                            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: PlumpyTheme.Spacing.small), count: 2), spacing: PlumpyTheme.Spacing.small) {
+                                ForEach(ActivityLevel.allCases, id: \.self) { level in
+                                    Button(action: {
+                                        activity = level
+                                    }) {
+                                        Text(level.displayName)
+                                            .font(PlumpyTheme.Typography.caption1)
+                                            .fontWeight(.medium)
+                                            .foregroundColor(activity == level ? PlumpyTheme.textInverse : PlumpyTheme.textPrimary)
+                                            .multilineTextAlignment(.center)
+                                            .lineLimit(4)
+                                            .minimumScaleFactor(0.6)
+                                            .fixedSize(horizontal: false, vertical: true)
+                                            .padding(.horizontal, PlumpyTheme.Spacing.small)
+                                            .padding(.vertical, PlumpyTheme.Spacing.small)
+                                            .frame(maxWidth: .infinity, minHeight: 70)
+                                            .background(
+                                                RoundedRectangle(cornerRadius: PlumpyTheme.Radius.small)
+                                                    .fill(activity == level ? PlumpyTheme.primaryAccent : PlumpyTheme.surfaceSecondary)
+                                            )
+                                            .overlay(
+                                                RoundedRectangle(cornerRadius: PlumpyTheme.Radius.small)
+                                                    .stroke(activity == level ? PlumpyTheme.primaryAccent : PlumpyTheme.neutral200, lineWidth: 1)
+                                            )
+                                    }
+                                    .buttonStyle(PlainButtonStyle())
+                                    .animation(.easeInOut(duration: 0.2), value: activity)
                                 }
                             }
-                            .pickerStyle(.wheel)
-                            .frame(height: 120)
-                            .animation(.easeInOut(duration: 0.2), value: activity)
-                            
-                            // Показываем полное описание выбранного уровня активности
-                            Text(activity.displayName)
-                                .font(PlumpyTheme.Typography.caption1)
-                                .foregroundColor(PlumpyTheme.textSecondary)
-                                .multilineTextAlignment(.center)
-                                .padding(.top, PlumpyTheme.Spacing.small)
-                                .animation(.easeInOut(duration: 0.3), value: activity)
                         }
 
                         pickerCard(title: "Goal") {
-                            Picker("Goal", selection: $goal) {
-                                ForEach(Goal.allCases, id: \.self) { g in
-                                    Text(g.shortName).tag(g)
+                            HStack(spacing: PlumpyTheme.Spacing.small) {
+                                ForEach(Goal.allCases, id: \.self) { goalType in
+                                    Button(action: {
+                                        goal = goalType
+                                    }) {
+                                        Text(goalType.displayName)
+                                            .font(PlumpyTheme.Typography.caption1)
+                                            .fontWeight(.medium)
+                                            .foregroundColor(goal == goalType ? PlumpyTheme.textInverse : PlumpyTheme.textPrimary)
+                                            .multilineTextAlignment(.center)
+                                            .lineLimit(2)
+                                            .minimumScaleFactor(0.7)
+                                            .fixedSize(horizontal: false, vertical: true)
+                                            .padding(.horizontal, PlumpyTheme.Spacing.small)
+                                            .padding(.vertical, PlumpyTheme.Spacing.small)
+                                            .frame(maxWidth: .infinity, minHeight: 55)
+                                            .background(
+                                                RoundedRectangle(cornerRadius: PlumpyTheme.Radius.small)
+                                                    .fill(goal == goalType ? PlumpyTheme.primaryAccent : PlumpyTheme.surfaceSecondary)
+                                            )
+                                            .overlay(
+                                                RoundedRectangle(cornerRadius: PlumpyTheme.Radius.small)
+                                                    .stroke(goal == goalType ? PlumpyTheme.primaryAccent : PlumpyTheme.neutral200, lineWidth: 1)
+                                            )
+                                    }
+                                    .buttonStyle(PlainButtonStyle())
+                                    .animation(.easeInOut(duration: 0.2), value: goal)
                                 }
                             }
-                            .pickerStyle(.segmented)
-                            .frame(height: 44)
-                            .animation(.easeInOut(duration: 0.2), value: goal)
                         }
 
                         PlumpyField(

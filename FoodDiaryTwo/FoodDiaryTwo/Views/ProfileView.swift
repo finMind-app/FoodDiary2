@@ -307,11 +307,14 @@ struct ProfileView: View {
                     .font(PlumpyTheme.Typography.subheadline)
                     .fontWeight(.semibold)
                     .foregroundColor(PlumpyTheme.textPrimary)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.9)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.7)
+                    .fixedSize(horizontal: false, vertical: true)
                 Text(title)
                     .font(PlumpyTheme.Typography.caption2)
                     .foregroundColor(PlumpyTheme.textSecondary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
             }
             Spacer()
         }
