@@ -79,10 +79,43 @@ struct OnboardingFlowView: View {
                 PlumpyField(title: "Age", placeholder: "Years", text: $age, keyboardType: .numberPad, icon: "number", isRequired: true)
             }.plumpyCard()
         case 1:
-            chipsCard(title: "Gender", items: Gender.allCases.map { $0.displayName }, selectionIndex: Binding(
-                get: { Gender.allCases.firstIndex(of: gender) ?? 0 },
-                set: { gender = Gender.allCases[$0] }
-            ))
+            VStack(spacing: PlumpyTheme.Spacing.small) {
+                Text("Gender")
+                    .font(PlumpyTheme.Typography.subheadline)
+                    .fontWeight(.medium)
+                    .foregroundColor(PlumpyTheme.textPrimary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                HStack(spacing: PlumpyTheme.Spacing.small) {
+                    ForEach(Gender.allCases, id: \.self) { g in
+                        Button(action: {
+                            gender = g
+                        }) {
+                            Text(g.displayName)
+                                .font(PlumpyTheme.Typography.caption1)
+                                .fontWeight(.medium)
+                                .foregroundColor(gender == g ? PlumpyTheme.textInverse : PlumpyTheme.textPrimary)
+                                .multilineTextAlignment(.center)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.8)
+                                .padding(.horizontal, PlumpyTheme.Spacing.small)
+                                .padding(.vertical, PlumpyTheme.Spacing.small)
+                                .frame(height: 55)
+                                .frame(maxWidth: .infinity)
+                                .background(
+                                    RoundedRectangle(cornerRadius: PlumpyTheme.Radius.small)
+                                        .fill(gender == g ? PlumpyTheme.primaryAccent : PlumpyTheme.surfaceSecondary)
+                                )
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: PlumpyTheme.Radius.small)
+                                        .stroke(gender == g ? PlumpyTheme.primaryAccent : PlumpyTheme.neutral200, lineWidth: 1)
+                                )
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                        .animation(.easeInOut(duration: 0.2), value: gender)
+                    }
+                }
+            }
+            .plumpyCard()
         case 2:
             VStack(spacing: PlumpyTheme.Spacing.large) {
                 HStack(spacing: PlumpyTheme.Spacing.medium) {
@@ -93,15 +126,89 @@ struct OnboardingFlowView: View {
             .padding(.top, PlumpyTheme.Spacing.large)
             .plumpyCard()
         case 3:
-            chipsCard(title: "Activity", items: ActivityLevel.allCases.map { $0.displayName }, selectionIndex: Binding(
-                get: { ActivityLevel.allCases.firstIndex(of: activity) ?? 0 },
-                set: { activity = ActivityLevel.allCases[$0] }
-            ))
+            VStack(spacing: PlumpyTheme.Spacing.small) {
+                Text("Activity")
+                    .font(PlumpyTheme.Typography.subheadline)
+                    .fontWeight(.medium)
+                    .foregroundColor(PlumpyTheme.textPrimary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: PlumpyTheme.Spacing.small), count: 2), spacing: PlumpyTheme.Spacing.small) {
+                    ForEach(ActivityLevel.allCases, id: \.self) { level in
+                        Button(action: {
+                            activity = level
+                        }) {
+                            Text(level.shortName)
+                                .font(PlumpyTheme.Typography.caption1)
+                                .fontWeight(.medium)
+                                .foregroundColor(activity == level ? PlumpyTheme.textInverse : PlumpyTheme.textPrimary)
+                                .multilineTextAlignment(.center)
+                                .lineLimit(2)
+                                .minimumScaleFactor(0.8)
+                                .padding(.horizontal, PlumpyTheme.Spacing.tiny)
+                                .padding(.vertical, PlumpyTheme.Spacing.small)
+                                .frame(height: 55)
+                                .frame(maxWidth: .infinity)
+                                .background(
+                                    RoundedRectangle(cornerRadius: PlumpyTheme.Radius.small)
+                                        .fill(activity == level ? PlumpyTheme.primaryAccent : PlumpyTheme.surfaceSecondary)
+                                )
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: PlumpyTheme.Radius.small)
+                                        .stroke(activity == level ? PlumpyTheme.primaryAccent : PlumpyTheme.neutral200, lineWidth: 1)
+                                )
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                        .animation(.easeInOut(duration: 0.2), value: activity)
+                    }
+                }
+                
+                // Показываем полное описание выбранного уровня активности
+                Text(activity.displayName)
+                    .font(PlumpyTheme.Typography.caption1)
+                    .foregroundColor(PlumpyTheme.textSecondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.top, PlumpyTheme.Spacing.small)
+                    .animation(.easeInOut(duration: 0.3), value: activity)
+            }
+            .plumpyCard()
         case 4:
-            chipsCard(title: "Goal", items: Goal.allCases.map { $0.displayName }, selectionIndex: Binding(
-                get: { Goal.allCases.firstIndex(of: goal) ?? 0 },
-                set: { goal = Goal.allCases[$0] }
-            ))
+            VStack(spacing: PlumpyTheme.Spacing.small) {
+                Text("Goal")
+                    .font(PlumpyTheme.Typography.subheadline)
+                    .fontWeight(.medium)
+                    .foregroundColor(PlumpyTheme.textPrimary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                HStack(spacing: PlumpyTheme.Spacing.small) {
+                    ForEach(Goal.allCases, id: \.self) { goalType in
+                        Button(action: {
+                            goal = goalType
+                        }) {
+                            Text(goalType.displayName)
+                                .font(PlumpyTheme.Typography.caption1)
+                                .fontWeight(.medium)
+                                .foregroundColor(goal == goalType ? PlumpyTheme.textInverse : PlumpyTheme.textPrimary)
+                                .multilineTextAlignment(.center)
+                                .lineLimit(2)
+                                .minimumScaleFactor(0.8)
+                                .padding(.horizontal, PlumpyTheme.Spacing.small)
+                                .padding(.vertical, PlumpyTheme.Spacing.small)
+                                .frame(height: 55)
+                                .frame(maxWidth: .infinity)
+                                .background(
+                                    RoundedRectangle(cornerRadius: PlumpyTheme.Radius.small)
+                                        .fill(goal == goalType ? PlumpyTheme.primaryAccent : PlumpyTheme.surfaceSecondary)
+                                )
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: PlumpyTheme.Radius.small)
+                                        .stroke(goal == goalType ? PlumpyTheme.primaryAccent : PlumpyTheme.neutral200, lineWidth: 1)
+                                )
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                        .animation(.easeInOut(duration: 0.2), value: goal)
+                    }
+                }
+            }
+            .plumpyCard()
         case 5:
             VStack(spacing: PlumpyTheme.Spacing.large) {
                 let recommended = recommendedCalories
