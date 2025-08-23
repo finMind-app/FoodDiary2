@@ -10,7 +10,7 @@ import SwiftUI
 
 // MARK: - Результат распознавания еды
 struct FoodRecognitionResult: Identifiable, Codable {
-    let id = UUID()
+    var id = UUID()
     let confidence: Double // Уверенность в распознавании (0.0 - 1.0)
     let recognizedFoods: [RecognizedFood]
     let totalCalories: Double
@@ -37,7 +37,7 @@ struct FoodRecognitionResult: Identifiable, Codable {
 
 // MARK: - Распознанная еда
 struct RecognizedFood: Identifiable, Codable {
-    let id = UUID()
+    var id = UUID()
     let name: String
     let confidence: Double
     let estimatedWeight: Double // в граммах

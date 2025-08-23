@@ -9,6 +9,7 @@ import Foundation
 import SwiftUI
 import Vision
 import CoreML
+import CoreGraphics
 
 // MARK: - Протокол для сервиса распознавания
 protocol FoodRecognitionServiceProtocol {
@@ -123,7 +124,7 @@ class FoodRecognitionService: FoodRecognitionServiceProtocol, ObservableObject {
                 fat: food.fat,
                 carbs: food.carbs,
                 category: food.category,
-                boundingBox: food.boundingBox.map { BoundingBox(from: $0) },
+                boundingBox: BoundingBox(from: food.boundingBox),
                 isProcessed: food.isProcessed,
                 cookingMethod: food.cookingMethod,
                 estimatedServingSize: food.estimatedServingSize
