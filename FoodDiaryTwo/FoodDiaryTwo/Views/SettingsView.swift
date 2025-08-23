@@ -16,11 +16,8 @@ struct SettingsView: View {
     @State private var notificationsEnabled = true
     @State private var darkModeEnabled = false
     @State private var selectedLanguage = "English"
-    @State private var biometricsEnabled = false
     @State private var dataExportEnabled = false
     @State private var showingLanguagePicker = false
-    @State private var showingNotificationsSettings = false
-    @State private var showingPrivacySettings = false
     
     let languages = ["English", "Русский", "Español", "Français"]
     
@@ -71,16 +68,6 @@ struct SettingsView: View {
                             .frame(width: 24)
                         Toggle("Dark Mode", isOn: $darkModeEnabled)
                     }
-                    
-                    HStack {
-                        Image(systemName: "textformat.size")
-                            .foregroundColor(.green)
-                            .frame(width: 24)
-                        Text("Text Size")
-                        Spacer()
-                        Text("Default")
-                            .foregroundColor(.secondary)
-                    }
                 } header: {
                     Text("Appearance")
                 }
@@ -113,45 +100,8 @@ struct SettingsView: View {
                     Text("Language & Region")
                 }
                 
-                // MARK: - Privacy & Security
+                // MARK: - Data Management
                 Section {
-                    HStack {
-                        Image(systemName: "lock.fill")
-                            .foregroundColor(.red)
-                            .frame(width: 24)
-                        Text("Face ID / Touch ID")
-                        Spacer()
-                        Toggle("", isOn: $biometricsEnabled)
-                            .labelsHidden()
-                    }
-                    
-                    HStack {
-                        Image(systemName: "eye.slash.fill")
-                            .foregroundColor(.gray)
-                            .frame(width: 24)
-                        Text("Hide Sensitive Data")
-                        Spacer()
-                        Toggle("", isOn: .constant(false))
-                            .labelsHidden()
-                    }
-                } header: {
-                    Text("Privacy & Security")
-                } footer: {
-                    Text("Secure your app with biometric authentication")
-                }
-                
-                // MARK: - Data & Storage
-                Section {
-                    HStack {
-                        Image(systemName: "icloud.fill")
-                            .foregroundColor(.blue)
-                            .frame(width: 24)
-                        Text("iCloud Sync")
-                        Spacer()
-                        Toggle("", isOn: .constant(true))
-                            .labelsHidden()
-                    }
-                    
                     HStack {
                         Image(systemName: "arrow.up.doc.fill")
                             .foregroundColor(.green)
@@ -172,9 +122,9 @@ struct SettingsView: View {
                     }
                     .foregroundColor(.red)
                 } header: {
-                    Text("Data & Storage")
+                    Text("Data Management")
                 } footer: {
-                    Text("Manage your data and storage preferences")
+                    Text("Export your food diary data or reset the app")
                 }
                 
                 // MARK: - About
@@ -227,12 +177,6 @@ struct SettingsView: View {
         .sheet(isPresented: $showingLanguagePicker) {
             LanguagePickerView(selectedLanguage: $selectedLanguage, languages: languages)
         }
-        .sheet(isPresented: $showingNotificationsSettings) {
-            NotificationsSettingsView()
-        }
-        .sheet(isPresented: $showingPrivacySettings) {
-            PrivacySettingsView()
-        }
     }
 }
 
@@ -259,70 +203,6 @@ struct LanguagePickerView: View {
                 }
             }
             .navigationTitle("Language")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Done") {
-                        dismiss()
-                    }
-                }
-            }
-        }
-    }
-}
-
-// MARK: - Notifications Settings View
-struct NotificationsSettingsView: View {
-    @Environment(\.dismiss) private var dismiss
-    @State private var mealReminders = true
-    @State private var goalReminders = true
-    @State private var weeklyReports = false
-    
-    var body: some View {
-        NavigationView {
-            List {
-                Section {
-                    Toggle("Meal Reminders", isOn: $mealReminders)
-                    Toggle("Goal Reminders", isOn: $goalReminders)
-                    Toggle("Weekly Reports", isOn: $weeklyReports)
-                } header: {
-                    Text("Notification Types")
-                } footer: {
-                    Text("Choose which notifications you want to receive")
-                }
-            }
-            .navigationTitle("Notifications")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Done") {
-                        dismiss()
-                    }
-                }
-            }
-        }
-    }
-}
-
-// MARK: - Privacy Settings View
-struct PrivacySettingsView: View {
-    @Environment(\.dismiss) private var dismiss
-    @State private var analyticsEnabled = true
-    @State private var crashReportsEnabled = true
-    
-    var body: some View {
-        NavigationView {
-            List {
-                Section {
-                    Toggle("Analytics", isOn: $analyticsEnabled)
-                    Toggle("Crash Reports", isOn: $crashReportsEnabled)
-                } header: {
-                    Text("Data Collection")
-                } footer: {
-                    Text("Help us improve the app by sharing anonymous usage data")
-                }
-            }
-            .navigationTitle("Privacy")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
