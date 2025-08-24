@@ -97,12 +97,14 @@ class AppSettingsManager: ObservableObject {
             let settings = try modelContext.fetch(descriptor)
             if let firstSettings = settings.first {
                 self.settings = firstSettings
+                applyTheme() // Применяем тему при загрузке
             } else {
                 // Создаем настройки по умолчанию
                 let newSettings = AppSettings()
                 modelContext.insert(newSettings)
                 try modelContext.save()
                 self.settings = newSettings
+                applyTheme() // Применяем тему по умолчанию
             }
         } catch {
             print("Error loading app settings: \(error)")
@@ -112,6 +114,7 @@ class AppSettingsManager: ObservableObject {
             do {
                 try modelContext.save()
                 self.settings = newSettings
+                applyTheme() // Применяем тему по умолчанию
             } catch {
                 print("Error saving default settings: \(error)")
             }
@@ -138,6 +141,22 @@ class AppSettingsManager: ObservableObject {
     func updateAppearanceSettings(darkMode: Bool) {
         settings?.updateAppearanceSettings(darkMode: darkMode)
         saveSettings()
+        applyTheme()
+    }
+    
+    // MARK: - Theme Application
+    
+    private func applyTheme() {
+        guard let settings = settings else { return }
+        
+        // Применяем тему к основному окну приложения
+        DispatchQueue.main.async {
+            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+                windowScene.windows.forEach { window in
+                    window.overrideUserInterfaceStyle = settings.darkModeEnabled ? .dark : .light
+                }
+            }
+        }
     }
     
     // MARK: - Language & Region Settings

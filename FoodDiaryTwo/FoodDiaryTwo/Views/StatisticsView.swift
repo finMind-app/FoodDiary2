@@ -87,6 +87,10 @@ struct StatisticsView: View {
             CalendarView(selectedDate: $selectedDate)
         }
         .onAppear {
+            // Инициализируем месяц для хитмепа текущим месяцем
+            let calendar = Calendar.current
+            selectedHeatmapMonth = calendar.dateInterval(of: .month, for: Date())?.start ?? Date()
+            print("🔍 Heatmap Debug: Initialized with month \(selectedHeatmapMonth)")
             loadData()
         }
         .onChange(of: selectedPeriod) { _, newPeriod in
@@ -442,15 +446,24 @@ struct StatisticsView: View {
                 let allEntries = getAllEntriesForHeatmap()
                 let heatmapData = PlumpyHeatmap.generateHeatmapData(from: allEntries, for: selectedHeatmapMonth)
                 
+                print("🔍 Heatmap Debug: Generated \(heatmapData.count) data points for month \(selectedHeatmapMonth)")
+                print("🔍 Heatmap Debug: Found \(allEntries.count) entries in total")
+                
                 PlumpyHeatmap(
                     data: heatmapData,
                     selectedMonth: selectedHeatmapMonth,
                     onMonthChanged: { newMonth in
+                        print("🔍 Heatmap Debug: Month changed from \(selectedHeatmapMonth) to \(newMonth)")
                         selectedHeatmapMonth = newMonth
+                        // Принудительно обновляем UI
+                        DispatchQueue.main.async {
+                            // Это заставит SwiftUI перерисовать view
+                        }
                     }
                 )
                 .frame(height: 240)
                 .frame(maxWidth: .infinity)
+                .id("heatmap-\(selectedHeatmapMonth)") // Добавляем уникальный ID для принудительного обновления
             }
         }
         .statisticsCard()

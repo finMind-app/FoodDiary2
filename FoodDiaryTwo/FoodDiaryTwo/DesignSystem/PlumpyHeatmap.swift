@@ -55,6 +55,8 @@ struct PlumpyHeatmap: View {
             }
             .padding(.horizontal, PlumpyTheme.Spacing.small)
             
+            print("🔍 PlumpyHeatmap Debug: Rendering for month \(selectedMonth), data count: \(data.count)")
+            
             // Дни недели (слева)
             HStack(spacing: PlumpyTheme.Spacing.small) {
                 VStack(spacing: 2) {
@@ -159,32 +161,27 @@ struct PlumpyHeatmap: View {
     
     private func previousMonth() {
         let calendar = Calendar.current
-        if let newDate = calendar.date(byAdding: .month, value: -1, to: selectedMonth) {
-            onMonthChanged(newDate)
+        if let newMonth = calendar.date(byAdding: .month, value: -1, to: selectedMonth) {
+            print("🔍 PlumpyHeatmap Debug: Previous month pressed, changing from \(selectedMonth) to \(newMonth)")
+            onMonthChanged(newMonth)
         }
     }
     
     private func nextMonth() {
         let calendar = Calendar.current
-        let today = Date()
-        
-        // Проверяем, не пытаемся ли мы переключиться в будущее
-        if calendar.isDate(selectedMonth, inSameDayAs: today) || selectedMonth > today {
-            return
-        }
-        
-        if let newDate = calendar.date(byAdding: .month, value: 1, to: selectedMonth) {
-            // Проверяем, не выходим ли мы за пределы текущего месяца
-            if calendar.isDate(newDate, inSameDayAs: today) || newDate <= today {
-                onMonthChanged(newDate)
-            }
+        if let newMonth = calendar.date(byAdding: .month, value: 1, to: selectedMonth) {
+            print("🔍 PlumpyHeatmap Debug: Next month pressed, changing from \(selectedMonth) to \(newMonth)")
+            onMonthChanged(newMonth)
         }
     }
     
     private var canGoToNextMonth: Bool {
         let calendar = Calendar.current
         let today = Date()
-        return !calendar.isDate(selectedMonth, inSameDayAs: today) && selectedMonth < today
+        let currentMonth = calendar.dateInterval(of: .month, for: today)?.start ?? today
+        
+        // Можно перейти к следующему месяцу, если выбранный месяц не является текущим
+        return !calendar.isDate(selectedMonth, equalTo: currentMonth, toGranularity: .month)
     }
 }
 
@@ -242,15 +239,21 @@ extension PlumpyHeatmap {
     static func generateHeatmapData(from entries: [FoodEntry], for month: Date) -> [HeatmapDataPoint] {
         let calendar = Calendar.current
         
+        print("🔍 generateHeatmapData Debug: Called with \(entries.count) entries for month \(month)")
+        
         // Получаем начало и конец месяца
         let monthInterval = calendar.dateInterval(of: .month, for: month) ?? DateInterval()
         let startOfMonth = monthInterval.start
         let endOfMonth = monthInterval.end
         
+        print("🔍 generateHeatmapData Debug: Month interval: \(startOfMonth) to \(endOfMonth)")
+        
         // Получаем начало недели для первого дня месяца
         let firstWeekday = calendar.component(.weekday, from: startOfMonth)
         let daysFromStartOfWeek = (firstWeekday - calendar.firstWeekday + 7) % 7
         let startDate = calendar.date(byAdding: .day, value: -daysFromStartOfWeek, to: startOfMonth) ?? startOfMonth
+        
+        print("🔍 generateHeatmapData Debug: Start date for grid: \(startDate)")
         
         // Группируем записи по дням
         var dailyCounts: [Date: Int] = [:]
@@ -261,6 +264,8 @@ extension PlumpyHeatmap {
                 dailyCounts[entryDate, default: 0] += 1
             }
         }
+        
+        print("🔍 generateHeatmapData Debug: Daily counts: \(dailyCounts)")
         
         // Находим максимальное количество приемов пищи за день
         let maxCount = dailyCounts.values.max() ?? 1
@@ -286,6 +291,7 @@ extension PlumpyHeatmap {
             }
         }
         
+        print("🔍 generateHeatmapData Debug: Generated \(heatmapData.count) data points")
         return heatmapData
     }
 }

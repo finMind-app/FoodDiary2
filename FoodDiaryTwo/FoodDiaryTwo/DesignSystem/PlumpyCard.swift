@@ -10,14 +10,14 @@ import SwiftUI
 struct PlumpyCard<Content: View>: View {
     let content: Content
     let cornerRadius: CGFloat
-    let shadowStyle: PlumpyTheme.ShadowStyle
+    let shadowStyle: PlumpyTheme.Shadow
     let backgroundColor: Color
     let borderColor: Color?
     let borderWidth: CGFloat
     
     init(
         cornerRadius: CGFloat = PlumpyTheme.Radius.medium,
-        shadowStyle: PlumpyTheme.ShadowStyle = PlumpyTheme.Shadow.small,
+        shadowStyle: PlumpyTheme.Shadow = PlumpyTheme.Shadow.small,
         backgroundColor: Color = PlumpyTheme.surface,
         borderColor: Color? = nil,
         borderWidth: CGFloat = 0,
@@ -46,7 +46,7 @@ struct PlumpyCard<Content: View>: View {
                 }
             )
             .shadow(
-                color: shadowStyle.color.opacity(shadowStyle.opacity),
+                color: PlumpyTheme.shadow.opacity(shadowStyle.opacity),
                 radius: shadowStyle.radius,
                 x: shadowStyle.x,
                 y: shadowStyle.y
@@ -58,14 +58,14 @@ struct PlumpyCard<Content: View>: View {
 
 struct PlumpyCardModifier: ViewModifier {
     let cornerRadius: CGFloat
-    let shadowStyle: PlumpyTheme.ShadowStyle
+    let shadowStyle: PlumpyTheme.Shadow
     let backgroundColor: Color
     let borderColor: Color?
     let borderWidth: CGFloat
     
     init(
         cornerRadius: CGFloat = PlumpyTheme.Radius.medium,
-        shadowStyle: PlumpyTheme.ShadowStyle = PlumpyTheme.Shadow.small,
+        shadowStyle: PlumpyTheme.Shadow = PlumpyTheme.Shadow.small,
         backgroundColor: Color = PlumpyTheme.surface,
         borderColor: Color? = nil,
         borderWidth: CGFloat = 0
@@ -92,7 +92,7 @@ struct PlumpyCardModifier: ViewModifier {
                 }
             )
             .shadow(
-                color: shadowStyle.color.opacity(shadowStyle.opacity),
+                color: PlumpyTheme.shadow.opacity(shadowStyle.opacity),
                 radius: shadowStyle.radius,
                 x: shadowStyle.x,
                 y: shadowStyle.y
@@ -105,7 +105,7 @@ struct PlumpyCardModifier: ViewModifier {
 extension View {
     func plumpyCard(
         cornerRadius: CGFloat = PlumpyTheme.Radius.medium,
-        shadowStyle: PlumpyTheme.ShadowStyle = PlumpyTheme.Shadow.small,
+        shadowStyle: PlumpyTheme.Shadow = PlumpyTheme.Shadow.small,
         backgroundColor: Color = PlumpyTheme.surface,
         borderColor: Color? = nil,
         borderWidth: CGFloat = 0

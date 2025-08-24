@@ -33,17 +33,55 @@ enum PlumpyTheme {
     static let neutral800 = Color(hex: "#262626")
     static let neutral900 = Color(hex: "#171717")
     
-    // Фоновые цвета
-    static let background = Color(hex: "#FFFFFF")       // Белый
-    static let surface = Color(hex: "#FFFFFF")          // Белый
-    static let surfaceSecondary = Color(hex: "#FAFAFA") // Светло-серый
-    static let surfaceTertiary = Color(hex: "#F5F5F5")  // Очень светлый серый
+    // Фоновые цвета (адаптивные)
+    static var background: Color {
+        Color(UIColor { traitCollection in
+            traitCollection.userInterfaceStyle == .dark ? UIColor(hex: "#0F0F0F") : UIColor(hex: "#FFFFFF")
+        })
+    }
     
-    // Текстовые цвета
-    static let textPrimary = Color(hex: "#171717")      // Почти черный
-    static let textSecondary = Color(hex: "#525252")    // Средний серый
-    static let textTertiary = Color(hex: "#A3A3A3")     // Светло-серый
-    static let textInverse = Color(hex: "#FFFFFF")       // Белый для тёмных фонов
+    static var surface: Color {
+        Color(UIColor { traitCollection in
+            traitCollection.userInterfaceStyle == .dark ? UIColor(hex: "#1A1A1A") : UIColor(hex: "#FFFFFF")
+        })
+    }
+    
+    static var surfaceSecondary: Color {
+        Color(UIColor { traitCollection in
+            traitCollection.userInterfaceStyle == .dark ? UIColor(hex: "#262626") : UIColor(hex: "#FAFAFA")
+        })
+    }
+    
+    static var surfaceTertiary: Color {
+        Color(UIColor { traitCollection in
+            traitCollection.userInterfaceStyle == .dark ? UIColor(hex: "#404040") : UIColor(hex: "#F5F5F5")
+        })
+    }
+    
+    // Текстовые цвета (адаптивные)
+    static var textPrimary: Color {
+        Color(UIColor { traitCollection in
+            traitCollection.userInterfaceStyle == .dark ? UIColor(hex: "#FFFFFF") : UIColor(hex: "#171717")
+        })
+    }
+    
+    static var textSecondary: Color {
+        Color(UIColor { traitCollection in
+            traitCollection.userInterfaceStyle == .dark ? UIColor(hex: "#A3A3A3") : UIColor(hex: "#525252")
+        })
+    }
+    
+    static var textTertiary: Color {
+        Color(UIColor { traitCollection in
+            traitCollection.userInterfaceStyle == .dark ? UIColor(hex: "#737373") : UIColor(hex: "#A3A3A3")
+        })
+    }
+    
+    static var textInverse: Color {
+        Color(UIColor { traitCollection in
+            traitCollection.userInterfaceStyle == .dark ? UIColor(hex: "#171717") : UIColor(hex: "#FFFFFF")
+        })
+    }
     
     // Семантические цвета
     static let success = Color(hex: "#10B981")          // Зелёный
@@ -51,9 +89,18 @@ enum PlumpyTheme {
     static let error = Color(hex: "#EF4444")            // Красный
     static let info = Color(hex: "#3B82F6")             // Синий
     
-    // Границы и разделители
-    static let border = Color(hex: "#E5E5E5")           // Светло-серый
-    static let borderLight = Color(hex: "#F5F5F5")      // Очень светлый серый
+    // Границы и разделители (адаптивные)
+    static var border: Color {
+        Color(UIColor { traitCollection in
+            traitCollection.userInterfaceStyle == .dark ? UIColor(hex: "#404040") : UIColor(hex: "#E5E5E5")
+        })
+    }
+    
+    static var borderLight: Color {
+        Color(UIColor { traitCollection in
+            traitCollection.userInterfaceStyle == .dark ? UIColor(hex: "#525252") : UIColor(hex: "#F5F5F5")
+        })
+    }
     
     // Тени
     static let shadow = Color(hex: "#000000")            // Чёрный для теней
@@ -102,33 +149,40 @@ enum PlumpyTheme {
     
     // MARK: - Shadows 
     
-    struct ShadowStyle {
-        let color: Color
-        let radius: CGFloat
-        let x: CGFloat
-        let y: CGFloat
-        let opacity: Double
-        
-        init(
-            color: Color = PlumpyTheme.shadow,
-            radius: CGFloat,
-            x: CGFloat = 0,
-            y: CGFloat,
-            opacity: Double = 1.0
-        ) {
-            self.color = color
-            self.radius = radius
-            self.x = x
-            self.y = y
-            self.opacity = opacity
-        }
-    }
-    
     enum Shadow {
-        static let small = ShadowStyle(radius: 2, y: 1, opacity: 0.05)
-        static let medium = ShadowStyle(radius: 4, y: 2, opacity: 0.08)
-        static let large = ShadowStyle(radius: 8, y: 4, opacity: 0.12)
-        static let extraLarge = ShadowStyle(radius: 16, y: 8, opacity: 0.16)
+        case small, medium, large
+        
+        var radius: CGFloat {
+            switch self {
+            case .small: return 2
+            case .medium: return 4
+            case .large: return 8
+            }
+        }
+        
+        var x: CGFloat {
+            switch self {
+            case .small: return 0
+            case .medium: return 0
+            case .large: return 0
+            }
+        }
+        
+        var y: CGFloat {
+            switch self {
+            case .small: return 1
+            case .medium: return 2
+            case .large: return 4
+            }
+        }
+        
+        var opacity: Double {
+            switch self {
+            case .small: return 0.1
+            case .medium: return 0.15
+            case .large: return 0.2
+            }
+        }
     }
     
     // MARK: - Animation
@@ -167,6 +221,34 @@ extension Color {
             green: Double(g) / 255,
             blue: Double(b) / 255,
             opacity: Double(a) / 255
+        )
+    }
+}
+
+// MARK: - UIColor Extension for Hex Support
+
+extension UIColor {
+    convenience init(hex: String) {
+        let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
+        var int: UInt64 = 0
+        Scanner(string: hex).scanHexInt64(&int)
+        let a, r, g, b: UInt64
+        switch hex.count {
+        case 3: // RGB (12-bit)
+            (a, r, g, b) = (255, (int >> 8) * 17, (int >> 4 & 0xF) * 17, (int & 0xF) * 17)
+        case 6: // RGB (24-bit)
+            (a, r, g, b) = (255, int >> 16, int >> 8 & 0xFF, int & 0xFF)
+        case 8: // ARGB (32-bit)
+            (a, r, g, b) = (int >> 24, int >> 16 & 0xFF, int >> 8 & 0xFF, int & 0xFF)
+        default:
+            (a, r, g, b) = (1, 1, 1, 0)
+        }
+        
+        self.init(
+            red: Double(r) / 255,
+            green: Double(g) / 255,
+            blue: Double(b) / 255,
+            alpha: Double(a) / 255
         )
     }
 }
