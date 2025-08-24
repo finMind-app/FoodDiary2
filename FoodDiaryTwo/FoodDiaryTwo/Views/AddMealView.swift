@@ -282,25 +282,66 @@ struct AddMealView: View {
         .plumpyCard()
     }
     
+    private func recognizeCalories() {
+        // Используем центральный сервис для распознавания
+        Task {
+            if let image = selectedImage {
+                let result = await FoodDataService.shared.recognizeFoodFromImage(image)
+                await MainActor.run {
+                    applyRecognitionResults(result)
+                }
+            }
+        }
+    }
+    
     // MARK: - Применение результатов распознавания
     private func applyRecognitionResults(_ result: FoodRecognitionResult) {
         // Автозаполнение полей на основе результатов распознавания
         if mealName.isEmpty {
-            mealName = "Овсяная каша с яблоком"
+            mealName = generateMealName(from: result)
         }
         
         if calories.isEmpty {
-            calories = "500"
+            calories = String(Int(result.totalCalories))
         }
         
         if notes.isEmpty {
-            notes = "📸 Распознано по фото\n• Овсяная каша: 150 ккал\n• Яблоко: 50 ккал\nУверенность: 95%"
+            notes = generateMealNotes(from: result)
         }
         
         // Показываем уведомление об успешном применении
         print("Калории распознаны и применены!")
     }
     
+    private func generateMealName(from result: FoodRecognitionResult) -> String {
+        let foodNames = result.recognizedFoods.map { $0.name }
+        
+        if foodNames.count == 1 {
+            return foodNames[0]
+        } else if foodNames.count <= 3 {
+            return foodNames.joined(separator: " + ")
+        } else {
+            return "Смешанное блюдо"
+        }
+    }
+    
+    private func generateMealNotes(from result: FoodRecognitionResult) -> String {
+        var notes: [String] = []
+        
+        notes.append("📸 Распознано по фото")
+        notes.append("Уверенность: \(result.confidenceText)")
+        
+        for food in result.recognizedFoods {
+            let confidence = Int(food.confidence * 100)
+            notes.append("• \(food.name): \(confidence)% уверенность")
+        }
+        
+        if let cookingMethod = result.recognizedFoods.first?.cookingMethod {
+            notes.append("Способ приготовления: \(cookingMethod.rawValue)")
+        }
+        
+        return notes.joined(separator: "\n")
+    }
 
     
     private var notesSection: some View {
@@ -402,25 +443,6 @@ struct AddMealView: View {
             print("Error saving meal: \(error)")
             // Можно добавить алерт для пользователя
         }
-    }
-    
-    private func recognizeCalories() {
-        // Мокап для распознавания калорий
-        // Автозаполнение полей тестовыми данными
-        if mealName.isEmpty {
-            mealName = "Овсяная каша с яблоком"
-        }
-        
-        if calories.isEmpty {
-            calories = "500"
-        }
-        
-        if notes.isEmpty {
-            notes = "📸 Распознано по фото\n• Овсяная каша: 150 ккал\n• Яблоко: 50 ккал\nУверенность: 95%"
-        }
-        
-        // Показываем уведомление об успешном применении
-        print("Калории распознаны и применены!")
     }
 
 }
