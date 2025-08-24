@@ -46,5 +46,10 @@ struct ImagePicker: UIViewControllerRepresentable {
         func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
             picker.dismiss(animated: true)
         }
+        
+        func imagePickerController(_ picker: UIImagePickerController, didFailWithError error: Error) {
+            print("ImagePicker error: \(error.localizedDescription)")
+            picker.dismiss(animated: true)
+        }
     }
 }

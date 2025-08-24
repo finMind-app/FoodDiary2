@@ -98,25 +98,21 @@ struct AddMealView: View {
             }
         }
         .sheet(isPresented: $showImagePicker) {
-            ImagePicker(selectedImage: $selectedImage, sourceType: sourceType)
-                .onDisappear {
-                    if selectedImage != nil {
-                        recognitionViewModel.selectedImage = selectedImage
-                        imageError = nil
-                    }
+            ImagePicker(
+                selectedImage: $selectedImage, 
+                sourceType: sourceType
+            )
+            .onDisappear {
+                if selectedImage != nil {
+                    recognitionViewModel.selectedImage = selectedImage
+                    imageError = nil
                 }
+            }
         }
         .alert("Ошибка", isPresented: $recognitionViewModel.showError) {
             Button("OK") { }
         } message: {
             Text(recognitionViewModel.errorMessage ?? "Неизвестная ошибка")
-        }
-        .alert("Ошибка изображения", isPresented: .constant(imageError != nil)) {
-            Button("OK") { imageError = nil }
-        } message: {
-            if let error = imageError {
-                Text(error)
-            }
         }
         .onChange(of: selectedPhotoItem) { _, newItem in
             Task {
