@@ -65,6 +65,9 @@ struct StatisticsView: View {
                         // График калорий
                         caloriesChart
                         
+                        // Heatmap активности
+                        activityHeatmap
+                        
                         // Дополнительная статистика
                         additionalStats
                         
@@ -391,6 +394,65 @@ struct StatisticsView: View {
         .statisticsCard()
     }
     
+    private var activityHeatmap: some View {
+        VStack(spacing: PlumpyTheme.Spacing.medium) {
+            HStack {
+                Text("Activity Heatmap")
+                    .font(PlumpyTheme.Typography.headline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(PlumpyTheme.textPrimary)
+                
+                Spacer()
+                
+                Text("Last 7 weeks")
+                    .font(PlumpyTheme.Typography.caption1)
+                    .foregroundColor(PlumpyTheme.textSecondary)
+            }
+            
+            if isLoading {
+                RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
+                    .fill(PlumpyTheme.surfaceSecondary)
+                    .frame(height: 200)
+                    .frame(maxWidth: .infinity)
+                    .overlay(
+                        VStack(spacing: PlumpyTheme.Spacing.medium) {
+                            ProgressView()
+                                .foregroundColor(PlumpyTheme.primary)
+                            
+                            Text("Loading data...")
+                                .font(PlumpyTheme.Typography.caption1)
+                                .foregroundColor(PlumpyTheme.textSecondary)
+                        }
+                    )
+            } else if cachedPeriodEntries.isEmpty {
+                RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
+                    .fill(PlumpyTheme.surfaceSecondary)
+                    .frame(height: 200)
+                    .frame(maxWidth: .infinity)
+                    .overlay(
+                        VStack(spacing: PlumpyTheme.Spacing.medium) {
+                            Image(systemName: "chart.bar.fill")
+                                .font(.system(size: 40))
+                                .foregroundColor(PlumpyTheme.textTertiary)
+                            
+                            Text("No data for this period")
+                                .font(PlumpyTheme.Typography.caption1)
+                                .foregroundColor(PlumpyTheme.textTertiary)
+                        }
+                    )
+            } else {
+                // Получаем все записи за последние 49 дней для heatmap
+                let allEntries = getAllEntriesForHeatmap()
+                let heatmapData = PlumpyHeatmap.generateHeatmapData(from: allEntries)
+                
+                PlumpyHeatmap(data: heatmapData)
+                    .frame(height: 160)
+                    .frame(maxWidth: .infinity)
+            }
+        }
+        .statisticsCard()
+    }
+    
     private var additionalStats: some View {
         VStack(spacing: PlumpyTheme.Spacing.medium) {
             Text("Additional Insights")
@@ -707,6 +769,27 @@ struct StatisticsView: View {
         }
         
         return streak
+    }
+    
+    /// Получить все записи за последние 49 дней для heatmap
+    private func getAllEntriesForHeatmap() -> [FoodEntry] {
+        let calendar = Calendar.current
+        let today = Date()
+        let endDate = calendar.startOfDay(for: today)
+        let startDate = calendar.date(byAdding: .day, value: -48, to: endDate) ?? endDate
+        
+        let descriptor = FetchDescriptor<FoodEntry>(
+            predicate: #Predicate<FoodEntry> { entry in
+                entry.date >= startDate && entry.date <= endDate
+            },
+            sortBy: [SortDescriptor(\.date, order: .forward)]
+        )
+        
+        do {
+            return try modelContext.fetch(descriptor)
+        } catch {
+            return []
+        }
     }
     
     /// Получить среднее количество калорий за день
