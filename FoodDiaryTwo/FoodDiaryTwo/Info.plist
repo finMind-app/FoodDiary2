@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>NSCameraUsageDescription</key>
+    <string>Приложению необходим доступ к камере для фотографирования еды и автоматического распознавания калорий</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>Приложению необходим доступ к галерее для выбора фотографий еды и автоматического распознавания калорий</string>
+    <key>NSPhotoLibraryAddUsageDescription</key>
+    <string>Приложению необходим доступ к галерее для сохранения фотографий еды</string>
+</dict>
+</plist>

@@ -35,16 +35,16 @@ class FoodRecognitionViewModel: ObservableObject {
     
     /// Выбор изображения из галереи
     func selectImage() {
-        // Здесь будет логика выбора изображения
-        // Пока что используем моковое изображение
-        loadMockImage()
+        // Этот метод теперь вызывается из AddMealView через PhotosPicker
+        // Здесь можно добавить дополнительную логику при необходимости
+        print("Image selection handled by PhotosPicker")
     }
     
     /// Сделать фото
     func takePhoto() {
-        // Здесь будет логика камеры
-        // Пока что используем моковое изображение
-        loadMockImage()
+        // Этот метод теперь вызывается из AddMealView через ImagePicker
+        // Здесь можно добавить дополнительную логику при необходимости
+        print("Camera capture handled by ImagePicker")
     }
     
     /// Распознать еду на изображении
