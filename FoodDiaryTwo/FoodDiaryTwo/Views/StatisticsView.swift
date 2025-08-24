@@ -170,7 +170,7 @@ struct StatisticsView: View {
             
             StatisticsCard(
                 title: "Avg. Daily",
-                value: String(averageDailyCalories),
+                value: String(format: "%.0f", averageDailyCalories),
                 subtitle: "Calories",
                 icon: "chart.line.uptrend.xyaxis",
                 iconColor: PlumpyTheme.secondaryAccent,
@@ -197,9 +197,8 @@ struct StatisticsView: View {
         cachedPeriodEntries.reduce(0) { $0 + $1.totalCalories }
     }
     
-    private var averageDailyCalories: Int {
-        let days = max(1, uniqueDayCount)
-        return totalCalories / days
+    private var averageDailyCalories: Double {
+        return uniqueDayCount > 0 ? Double(totalCalories) / Double(uniqueDayCount) : 0.0
     }
     
     private var uniqueDayCount: Int {
@@ -435,7 +434,7 @@ struct StatisticsView: View {
                 let averageCalories = getAverageCalories()
                 StatisticsInfoCard(
                     title: "Average Daily Calories",
-                    subtitle: "\(averageCalories) cal",
+                    subtitle: String(format: "%.0f cal", averageCalories),
                     icon: "chart.bar.fill",
                     iconColor: PlumpyTheme.primary,
                     action: {}
@@ -710,14 +709,45 @@ struct StatisticsView: View {
         return streak
     }
     
-    /// Получить среднее количество калорий за период
-    private func getAverageCalories() -> Int {
-        guard !cachedPeriodEntries.isEmpty else { return 0 }
-        
+    /// Получить среднее количество калорий за день
+    private func getAverageCalories() -> Double {
         let totalCalories = cachedPeriodEntries.reduce(0) { $0 + $1.totalCalories }
-        let uniqueDays = Set(cachedPeriodEntries.map { Calendar.current.startOfDay(for: $0.date) })
+        return uniqueDayCount > 0 ? Double(totalCalories) / Double(uniqueDayCount) : 0.0
+    }
+    
+    /// Получить среднее количество калорий за предыдущий период
+    private func getPreviousPeriodAverageCalories() -> Double {
+        let calendar = Calendar.current
+        let currentStartDate: Date
         
-        return uniqueDays.isEmpty ? 0 : totalCalories / uniqueDays.count
+        switch selectedPeriod {
+        case .week:
+            currentStartDate = calendar.date(byAdding: .day, value: -7, to: Date()) ?? Date()
+        case .month:
+            currentStartDate = calendar.date(byAdding: .month, value: -1, to: Date()) ?? Date()
+        case .year:
+            currentStartDate = calendar.date(byAdding: .year, value: -1, to: Date()) ?? Date()
+        case .custom:
+            return 2000.0 // Для кастомного периода используем дефолт
+        }
+        
+        let previousStartDate = calendar.date(byAdding: .day, value: -7, to: currentStartDate) ?? currentStartDate
+        let previousEndDate = currentStartDate
+        
+        let descriptor = FetchDescriptor<FoodEntry>(
+            predicate: #Predicate<FoodEntry> { entry in
+                entry.date >= previousStartDate && entry.date < previousEndDate
+            }
+        )
+        
+        do {
+            let previousEntries = try modelContext.fetch(descriptor)
+            let totalCalories = previousEntries.reduce(0) { $0 + $1.totalCalories }
+            let uniqueDays = Set(previousEntries.map { calendar.startOfDay(for: $0.date) })
+            return uniqueDays.isEmpty ? 2000.0 : Double(totalCalories) / Double(uniqueDays.count)
+        } catch {
+            return 2000.0
+        }
     }
     
     /// Получить самый калорийный прием пищи
@@ -810,45 +840,6 @@ struct StatisticsView: View {
             return .down
         } else {
             return .neutral
-        }
-    }
-    
-    /// Получить среднее количество калорий за предыдущий период
-    private func getPreviousPeriodAverageCalories() -> Int {
-        let calendar = Calendar.current
-        let currentStartDate: Date
-        let currentEndDate: Date
-        
-        switch selectedPeriod {
-        case .week:
-            currentStartDate = calendar.date(byAdding: .day, value: -7, to: Date()) ?? Date()
-            currentEndDate = Date()
-        case .month:
-            currentStartDate = calendar.date(byAdding: .month, value: -1, to: Date()) ?? Date()
-            currentEndDate = Date()
-        case .year:
-            currentStartDate = calendar.date(byAdding: .year, value: -1, to: Date()) ?? Date()
-            currentEndDate = Date()
-        case .custom:
-            return 2000 // Для кастомного периода используем дефолт
-        }
-        
-        let previousStartDate = calendar.date(byAdding: .day, value: -7, to: currentStartDate) ?? currentStartDate
-        let previousEndDate = currentStartDate
-        
-        let descriptor = FetchDescriptor<FoodEntry>(
-            predicate: #Predicate<FoodEntry> { entry in
-                entry.date >= previousStartDate && entry.date < previousEndDate
-            }
-        )
-        
-        do {
-            let previousEntries = try modelContext.fetch(descriptor)
-            let totalCalories = previousEntries.reduce(0) { $0 + $1.totalCalories }
-            let uniqueDays = Set(previousEntries.map { calendar.startOfDay(for: $0.date) })
-            return uniqueDays.isEmpty ? 2000 : totalCalories / uniqueDays.count
-        } catch {
-            return 2000
         }
     }
     
