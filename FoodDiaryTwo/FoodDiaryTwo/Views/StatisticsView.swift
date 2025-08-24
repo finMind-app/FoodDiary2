@@ -758,7 +758,7 @@ struct StatisticsView: View {
     // MARK: - Trend Calculations
     
     /// Получить тренд для калорий (сравнение с предыдущим периодом)
-    private func getCaloriesTrend() -> PlumpyCard.PlumpyTrend {
+    private func getCaloriesTrend() -> PlumpyStatsCard.PlumpyTrend {
         let currentAvg = getAverageCalories()
         let previousAvg = getPreviousPeriodAverageCalories()
         
@@ -772,7 +772,7 @@ struct StatisticsView: View {
     }
     
     /// Получить тренд для количества приемов пищи
-    private func getMealsTrend() -> PlumpyCard.PlumpyTrend {
+    private func getMealsTrend() -> PlumpyStatsCard.PlumpyTrend {
         let currentAvg = Double(totalMeals) / Double(max(1, uniqueDayCount))
         let previousAvg = getPreviousPeriodAverageMeals()
         
@@ -786,7 +786,7 @@ struct StatisticsView: View {
     }
     
     /// Получить тренд для достижения цели
-    private func getGoalTrend() -> PlumpyCard.PlumpyTrend {
+    private func getGoalTrend() -> PlumpyStatsCard.PlumpyTrend {
         let currentRate = getGoalAchievementRate()
         let previousRate = getPreviousPeriodGoalRate()
         
@@ -800,7 +800,7 @@ struct StatisticsView: View {
     }
     
     /// Получить тренд для средних дневных калорий
-    private func getAverageDailyCaloriesTrend() -> PlumpyCard.PlumpyTrend {
+    private func getAverageDailyCaloriesTrend() -> PlumpyStatsCard.PlumpyTrend {
         let currentAvg = averageDailyCalories
         let previousAvg = getPreviousPeriodAverageCalories()
         
@@ -1011,29 +1011,7 @@ struct StatisticsCard: View {
     let subtitle: String?
     let icon: String
     let iconColor: Color
-    let trend: PlumpyCard.PlumpyTrend
-    
-    enum PlumpyTrend {
-        case up
-        case down
-        case neutral
-        
-        var icon: String {
-            switch self {
-            case .up: return "arrow.up.right"
-            case .down: return "arrow.down.right"
-            case .neutral: return "minus"
-            }
-        }
-        
-        var color: Color {
-            switch self {
-            case .up: return PlumpyTheme.success
-            case .down: return PlumpyTheme.error
-            case .neutral: return PlumpyTheme.textTertiary
-            }
-        }
-    }
+    let trend: PlumpyStatsCard.PlumpyTrend
     
     var body: some View {
         VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.medium) {
