@@ -180,12 +180,12 @@ class AppSettingsManager: ObservableObject {
             
             for entry in entries {
                 exportString += "Date: \(dateFormatter.string(from: entry.date))\n"
-                exportString += "Meal Type: \(entry.mealType)\n"
-                exportString += "Food: \(entry.foodName)\n"
+                exportString += "Meal Type: \(entry.mealType.displayName)\n"
+                exportString += "Food: \(entry.name)\n"
                 exportString += "Calories: \(entry.totalCalories) cal\n"
-                exportString += "Protein: \(String(format: "%.1f", entry.protein))g\n"
-                exportString += "Carbs: \(String(format: "%.1f", entry.carbs))g\n"
-                exportString += "Fat: \(String(format: "%.1f", entry.fat))g\n"
+                exportString += "Protein: \(String(format: "%.1f", entry.totalProtein))g\n"
+                exportString += "Carbs: \(String(format: "%.1f", entry.totalCarbs))g\n"
+                exportString += "Fat: \(String(format: "%.1f", entry.totalFat))g\n"
                 if let notes = entry.notes, !notes.isEmpty {
                     exportString += "Notes: \(notes)\n"
                 }
