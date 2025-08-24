@@ -225,62 +225,6 @@ struct HomeView: View {
                 .foregroundColor(PlumpyTheme.textPrimary)
                 .frame(maxWidth: .infinity, alignment: .leading)
             
-            VStack(spacing: PlumpyTheme.Spacing.small) {
-                // Прогноз на день
-                let forecast = DailyGoalsService.shared.getDailyForecast(for: selectedDate, context: modelContext)
-                HStack {
-                    Image(systemName: "lightbulb.fill")
-                        .foregroundColor(.yellow)
-                    Text(forecast.message)
-                        .font(PlumpyTheme.Typography.caption1)
-                        .foregroundColor(PlumpyTheme.textSecondary)
-                        .multilineTextAlignment(.leading)
-                    Spacer()
-                }
-                .padding(.horizontal, PlumpyTheme.Spacing.small)
-                .padding(.vertical, PlumpyTheme.Spacing.tiny)
-                .background(PlumpyTheme.surfaceSecondary)
-                .clipShape(RoundedRectangle(cornerRadius: PlumpyTheme.Radius.small))
-                
-                // Рекомендации
-                let recommendations = DailyGoalsService.shared.getRecommendations(for: selectedDate, context: modelContext)
-                if !recommendations.isEmpty {
-                    VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.tiny) {
-                        Text("Рекомендации:")
-                            .font(PlumpyTheme.Typography.caption2)
-                            .fontWeight(.medium)
-                            .foregroundColor(PlumpyTheme.textSecondary)
-                        
-                        ForEach(recommendations.prefix(3), id: \.self) { recommendation in
-                            HStack {
-                                Image(systemName: "checkmark.circle.fill")
-                                    .foregroundColor(.green)
-                                    .font(.caption2)
-                                Text(recommendation)
-                                    .font(PlumpyTheme.Typography.caption2)
-                                    .foregroundColor(PlumpyTheme.textSecondary)
-                                    .multilineTextAlignment(.leading)
-                                Spacer()
-                            }
-                        }
-                    }
-                    .padding(.horizontal, PlumpyTheme.Spacing.small)
-                    .padding(.vertical, PlumpyTheme.Spacing.tiny)
-                    .background(PlumpyTheme.surfaceSecondary)
-                    .clipShape(RoundedRectangle(cornerRadius: PlumpyTheme.Radius.small))
-                }
-            }
-            
-            HStack(spacing: PlumpyTheme.Spacing.medium) {
-                PlumpyButton(title: "Add Meal", icon: "plus.circle.fill", style: .primary, size: .small) {
-                    showingAddFoodEntry = true
-                }
-                
-                PlumpyButton(title: "View History", icon: "clock.fill", style: .outline, size: .small) {
-                    // Navigate to history
-                }
-            }
-            
             // Кнопки для быстрого добавления разных типов приемов пищи
             VStack(spacing: PlumpyTheme.Spacing.small) {
                 Text("Quick Add")
@@ -315,12 +259,6 @@ struct HomeView: View {
                 PlumpyButton(title: "📸 Photo Recognition", icon: "camera.fill", style: .primary, size: .medium) {
                     selectedMealType = .snack // По умолчанию для фото
                     showingAddFoodEntry = true
-                }
-                .frame(maxWidth: .infinity)
-                
-                // Кнопка для статистики
-                PlumpyButton(title: "📊 View Statistics", icon: "chart.bar.fill", style: .outline, size: .medium) {
-                    // Navigate to statistics
                 }
                 .frame(maxWidth: .infinity)
             }
