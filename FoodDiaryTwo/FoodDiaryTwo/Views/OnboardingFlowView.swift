@@ -317,7 +317,7 @@ struct OnboardingFlowView: View {
             weight = String(format: "%.1f", u.weight)
             activity = u.activityLevel
             goal = u.goal
-            customCalories = String(u.dailyCalorieGoal)
+            customCalories = String(DailyGoalsService.shared.getDailyCalorieGoal(from: modelContext))
         }
     }
 
@@ -344,12 +344,15 @@ struct OnboardingFlowView: View {
             u.weight = w
             u.activityLevel = activity
             u.goal = goal
-            u.dailyCalorieGoal = skip ? u.dailyCalorieGoal : finalCalories
-            u.updatedAt = Date()
+            if !skip {
+                u.updateDailyCalorieGoal(finalCalories)
+            }
             try? modelContext.save()
         } else {
             let new = UserProfile(name: name.isEmpty ? "User" : name, age: a, gender: gender, height: h, weight: w, activityLevel: activity, goal: goal)
-            new.dailyCalorieGoal = skip ? new.dailyCalorieGoal : finalCalories
+            if !skip {
+                new.updateDailyCalorieGoal(finalCalories)
+            }
             modelContext.insert(new)
             try? modelContext.save()
         }

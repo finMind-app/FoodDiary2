@@ -57,15 +57,14 @@ struct CalorieGoalEditor: View {
             }
         }
         .onAppear {
-            if let u = users.first { calorieGoalText = String(u.dailyCalorieGoal) }
+            calorieGoalText = String(DailyGoalsService.shared.getDailyCalorieGoal(from: modelContext))
         }
     }
 
     private func save() {
         guard let goal = Int(calorieGoalText), goal > 800, goal < 10000 else { return }
         if let u = users.first {
-            u.dailyCalorieGoal = goal
-            u.updatedAt = Date()
+            u.updateDailyCalorieGoal(goal)
             try? modelContext.save()
         }
         dismiss()

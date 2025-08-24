@@ -120,7 +120,61 @@ final class UserProfile {
             return "Obese"
         }
     }
+    
+    // MARK: - Методы для работы с суточными нормами
+    
+    /// Обновить суточную норму калорий и пересчитать макронутриенты
+    func updateDailyCalorieGoal(_ newGoal: Int) {
+        self.dailyCalorieGoal = newGoal
+        
+        // Пересчитываем макронутриенты (25% protein, 45% carbs, 30% fat)
+        self.dailyProteinGoal = Double(newGoal) * 0.25 / 4.0 // 4 calories per gram of protein
+        self.dailyCarbsGoal = Double(newGoal) * 0.45 / 4.0 // 4 calories per gram of carbs
+        self.dailyFatGoal = Double(newGoal) * 0.30 / 9.0 // 9 calories per gram of fat
+        
+        self.updatedAt = Date()
+    }
+    
+    /// Пересчитать суточные нормы на основе текущих параметров
+    func recalculateDailyGoals() {
+        let bmr = Self.calculateBMR(weight: weight, height: height, age: age, gender: gender)
+        let tdee = Self.calculateTDEE(bmr: bmr, activityLevel: activityLevel)
+        let calorieGoal = Self.calculateCalorieGoal(tdee: tdee, goal: goal)
+        
+        updateDailyCalorieGoal(calorieGoal)
+    }
+    
+    /// Получить процент выполнения суточной нормы калорий
+    func getCalorieCompletionPercentage(currentCalories: Int) -> Double {
+        guard dailyCalorieGoal > 0 else { return 0.0 }
+        return min(Double(currentCalories) / Double(dailyCalorieGoal), 1.0)
+    }
+    
+    /// Получить оставшиеся калории на день
+    func getRemainingCalories(currentCalories: Int) -> Int {
+        return max(dailyCalorieGoal - currentCalories, 0)
+    }
+    
+    /// Получить статус выполнения суточной нормы
+    func getCalorieStatus(currentCalories: Int) -> CalorieStatus {
+        let percentage = getCalorieCompletionPercentage(currentCalories: currentCalories)
+        
+        switch percentage {
+        case 0.0..<0.5:
+            return .low
+        case 0.5..<0.8:
+            return .moderate
+        case 0.8..<1.0:
+            return .good
+        case 1.0..<1.2:
+            return .excellent
+        default:
+            return .exceeded
+        }
+    }
 }
+
+// MARK: - Enums
 
 enum Gender: String, CaseIterable, Codable {
     case male = "male"
@@ -192,15 +246,42 @@ enum Goal: String, CaseIterable, Codable {
             return "Gain Weight"
         }
     }
+}
+
+enum CalorieStatus: String, CaseIterable {
+    case low = "low"
+    case moderate = "moderate"
+    case good = "good"
+    case excellent = "excellent"
+    case exceeded = "exceeded"
     
-    var shortName: String {
+    var displayName: String {
         switch self {
-        case .lose:
-            return "Lose"
-        case .maintain:
-            return "Maintain"
-        case .gain:
-            return "Gain"
+        case .low:
+            return "Низкое потребление"
+        case .moderate:
+            return "Умеренное потребление"
+        case .good:
+            return "Хорошее потребление"
+        case .excellent:
+            return "Отличное потребление"
+        case .exceeded:
+            return "Превышение нормы"
+        }
+    }
+    
+    var color: String {
+        switch self {
+        case .low:
+            return "warning"
+        case .moderate:
+            return "info"
+        case .good:
+            return "success"
+        case .excellent:
+            return "primary"
+        case .exceeded:
+            return "error"
         }
     }
 }

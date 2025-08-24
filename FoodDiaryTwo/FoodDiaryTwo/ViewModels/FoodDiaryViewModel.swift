@@ -153,34 +153,15 @@ class FoodDiaryViewModel: ObservableObject {
     }
     
     func getDailyCalorieGoal() -> Int {
-        if let profile = getUserProfile() {
-            return profile.dailyCalorieGoal
-        }
-        return 2000 // Default goal
+        return DailyGoalsService.shared.getDailyCalorieGoal(from: modelContext)
     }
     
     func getCalorieProgress(for date: Date) -> Double {
-        let total = getTotalCaloriesForDate(date)
-        let goal = getDailyCalorieGoal()
-        return goal > 0 ? Double(total) / Double(goal) : 0.0
+        return DailyGoalsService.shared.getCalorieProgress(for: date, context: modelContext)
     }
     
     func getMacroProgress(for date: Date) -> (protein: Double, carbs: Double, fat: Double) {
-        let entries = getFoodEntriesForDate(date)
-        let totalProtein = entries.reduce(0.0) { $0 + $1.totalProtein }
-        let totalCarbs = entries.reduce(0.0) { $0 + $1.totalCarbs }
-        let totalFat = entries.reduce(0.0) { $0 + $1.totalFat }
-        
-        let profile = getUserProfile()
-        let proteinGoal = profile?.dailyProteinGoal ?? 150.0
-        let carbsGoal = profile?.dailyCarbsGoal ?? 250.0
-        let fatGoal = profile?.dailyFatGoal ?? 67.0
-        
-        return (
-            protein: proteinGoal > 0 ? totalProtein / proteinGoal : 0.0,
-            carbs: carbsGoal > 0 ? totalCarbs / carbsGoal : 0.0,
-            fat: fatGoal > 0 ? totalFat / fatGoal : 0.0
-        )
+        return DailyGoalsService.shared.getMacroProgress(for: date, context: modelContext)
     }
     
     // MARK: - Search

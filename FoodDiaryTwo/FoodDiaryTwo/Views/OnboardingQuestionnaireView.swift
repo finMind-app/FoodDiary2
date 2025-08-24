@@ -190,7 +190,7 @@ struct OnboardingQuestionnaireView: View {
             weight = String(format: "%.1f", u.weight)
             activity = u.activityLevel
             goal = u.goal
-            customCalories = String(u.dailyCalorieGoal)
+            customCalories = String(DailyGoalsService.shared.getDailyCalorieGoal(from: modelContext))
         }
     }
 
@@ -209,14 +209,15 @@ struct OnboardingQuestionnaireView: View {
             let tdee = UserProfile.calculateTDEE(bmr: bmr, activityLevel: activity)
             let auto = UserProfile.calculateCalorieGoal(tdee: tdee, goal: goal)
             let final = Int(customCalories) ?? auto
-            u.dailyCalorieGoal = final
-            u.updatedAt = Date()
+            u.updateDailyCalorieGoal(final)
             try? modelContext.save()
         } else {
             let g = gender
             let a = ageInt
             let new = UserProfile(name: name.isEmpty ? "User" : name, age: a, gender: g, height: h, weight: w, activityLevel: activity, goal: goal)
-            if let override = Int(customCalories) { new.dailyCalorieGoal = override }
+            if let override = Int(customCalories) { 
+                new.updateDailyCalorieGoal(override)
+            }
             modelContext.insert(new)
             try? modelContext.save()
         }

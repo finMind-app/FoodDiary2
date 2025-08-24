@@ -199,7 +199,7 @@ struct HomeView: View {
                 // Кольцевая диаграмма
                 PlumpyCircularProgressBar(
                     value: Double(totalCaloriesForSelectedDate),
-                    maxValue: Double(getDailyCalorieGoal()),
+                    maxValue: Double(DailyGoalsService.shared.getDailyCalorieGoal(from: modelContext)),
                     size: 120,
                     lineWidth: 10,
                     style: .primary
@@ -208,8 +208,8 @@ struct HomeView: View {
             
             PlumpyProgressBar(
                 value: Double(totalCaloriesForSelectedDate),
-                maxValue: Double(getDailyCalorieGoal()),
-                title: "Goal: \(getDailyCalorieGoal()) cal",
+                maxValue: Double(DailyGoalsService.shared.getDailyCalorieGoal(from: modelContext)),
+                title: "Goal: \(DailyGoalsService.shared.getDailyCalorieGoal(from: modelContext)) cal",
                 showPercentage: true,
                 style: .primary
             )
@@ -218,46 +218,66 @@ struct HomeView: View {
     }
     
     private var quickActionsSection: some View {
-        VStack(spacing: PlumpyTheme.Spacing.large) {
+        VStack(spacing: PlumpyTheme.Spacing.medium) {
             Text("Quick Actions")
                 .font(PlumpyTheme.Typography.subheadline)
                 .fontWeight(.semibold)
                 .foregroundColor(PlumpyTheme.textPrimary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            
+            VStack(spacing: PlumpyTheme.Spacing.small) {
+                // Прогноз на день
+                let forecast = DailyGoalsService.shared.getDailyForecast(for: selectedDate, context: modelContext)
+                HStack {
+                    Image(systemName: "lightbulb.fill")
+                        .foregroundColor(.yellow)
+                    Text(forecast.message)
+                        .font(PlumpyTheme.Typography.caption1)
+                        .foregroundColor(PlumpyTheme.textSecondary)
+                        .multilineTextAlignment(.leading)
+                    Spacer()
+                }
+                .padding(.horizontal, PlumpyTheme.Spacing.small)
+                .padding(.vertical, PlumpyTheme.Spacing.tiny)
+                .background(PlumpyTheme.surfaceSecondary)
+                .clipShape(RoundedRectangle(cornerRadius: PlumpyTheme.Radius.small))
+                
+                // Рекомендации
+                let recommendations = DailyGoalsService.shared.getRecommendations(for: selectedDate, context: modelContext)
+                if !recommendations.isEmpty {
+                    VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.tiny) {
+                        Text("Рекомендации:")
+                            .font(PlumpyTheme.Typography.caption2)
+                            .fontWeight(.medium)
+                            .foregroundColor(PlumpyTheme.textSecondary)
+                        
+                        ForEach(recommendations.prefix(3), id: \.self) { recommendation in
+                            HStack {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .foregroundColor(.green)
+                                    .font(.caption2)
+                                Text(recommendation)
+                                    .font(PlumpyTheme.Typography.caption2)
+                                    .foregroundColor(PlumpyTheme.textSecondary)
+                                    .multilineTextAlignment(.leading)
+                                Spacer()
+                            }
+                        }
+                    }
+                    .padding(.horizontal, PlumpyTheme.Spacing.small)
+                    .padding(.vertical, PlumpyTheme.Spacing.tiny)
+                    .background(PlumpyTheme.surfaceSecondary)
+                    .clipShape(RoundedRectangle(cornerRadius: PlumpyTheme.Radius.small))
+                }
+            }
             
             HStack(spacing: PlumpyTheme.Spacing.medium) {
-                ForEach(MealType.allCases, id: \.self) { mealType in
-                    Button(action: {
-                        selectedMealType = mealType
-                        showingAddFoodEntry = true
-                    }) {
-                        VStack(spacing: PlumpyTheme.Spacing.small) {
-                            Image(systemName: mealType.icon)
-                                .font(.title2)
-                                .foregroundColor(.white)
-                            
-                            Text(mealType.displayName)
-                                .font(PlumpyTheme.Typography.caption1)
-                                .fontWeight(.semibold)
-                                .foregroundColor(.white)
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, PlumpyTheme.Spacing.large)
-                        .background(
-                            LinearGradient(
-                                gradient: mealType.gradient,
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
-                        .clipShape(RoundedRectangle(cornerRadius: PlumpyTheme.Radius.large))
-                        .shadow(
-                            color: mealType.color.opacity(0.3),
-                            radius: 8,
-                            x: 0,
-                            y: 4
-                        )
-                    }
-                    .buttonStyle(PlainButtonStyle())
+                PlumpyButton(title: "Add Meal", icon: "plus.circle.fill", style: .primary, size: .small) {
+                    showingAddFoodEntry = true
+                }
+                
+                PlumpyButton(title: "View History", icon: "clock.fill", style: .outline, size: .small) {
+                    // Navigate to history
                 }
             }
         }

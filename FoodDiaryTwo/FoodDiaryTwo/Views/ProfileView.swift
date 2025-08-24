@@ -286,7 +286,7 @@ struct ProfileView: View {
             
             LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: PlumpyTheme.Spacing.medium), count: 2), spacing: PlumpyTheme.Spacing.medium) {
                 dashboardCard(icon: "target", title: "Goal", value: user?.goal.displayName ?? "-")
-                dashboardCard(icon: "flame.fill", title: "Calories", value: user != nil ? "\(user!.dailyCalorieGoal) cal" : "-")
+                dashboardCard(icon: "flame.fill", title: "Calories", value: user != nil ? "\(DailyGoalsService.shared.getDailyCalorieGoal(from: modelContext)) cal" : "-")
                 dashboardCard(icon: "ruler", title: "Height", value: user != nil ? "\(Int(user!.height)) cm" : "-")
                 dashboardCard(icon: "scalemass", title: "Weight", value: user != nil ? String(format: "%.1f kg", user!.weight) : "-")
                 dashboardCard(icon: "heart.text.square", title: "BMI", value: user != nil ? String(format: "%.1f", user!.bmi) : "-")
@@ -294,7 +294,7 @@ struct ProfileView: View {
             }
             .frame(maxWidth: .infinity)
             .animation(.easeInOut(duration: 0.3), value: user?.goal)
-            .animation(.easeInOut(duration: 0.3), value: user?.dailyCalorieGoal)
+            .animation(.easeInOut(duration: 0.3), value: DailyGoalsService.shared.getDailyCalorieGoal(from: modelContext))
         }
         .plumpyCard()
     }
