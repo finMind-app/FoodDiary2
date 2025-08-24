@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import DailyGoalsService
 
 struct StatisticsView: View {
     @Environment(\.modelContext) private var modelContext
@@ -156,7 +157,7 @@ struct StatisticsView: View {
                 subtitle: "This period",
                 icon: "flame.fill",
                 iconColor: PlumpyTheme.warning,
-                trend: .up
+                trend: getCaloriesTrend()
             )
             
             StatisticsCard(
@@ -165,7 +166,7 @@ struct StatisticsView: View {
                 subtitle: "This period",
                 icon: "fork.knife",
                 iconColor: PlumpyTheme.primaryAccent,
-                trend: .up
+                trend: getMealsTrend()
             )
             
             StatisticsCard(
@@ -174,16 +175,16 @@ struct StatisticsView: View {
                 subtitle: "Calories",
                 icon: "chart.line.uptrend.xyaxis",
                 iconColor: PlumpyTheme.secondaryAccent,
-                trend: .neutral
+                trend: getAverageDailyCaloriesTrend()
             )
             
             StatisticsCard(
                 title: "Goal Met",
-                value: "85%",
+                value: String(format: "%.0f%%", getGoalAchievementRate()),
                 subtitle: "Of days",
                 icon: "target",
                 iconColor: PlumpyTheme.success,
-                trend: .up
+                trend: getGoalTrend()
             )
         }
         // убран фиксированный размер, чтобы сетка не накладывалась
@@ -401,27 +402,63 @@ struct StatisticsView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             
             VStack(spacing: PlumpyTheme.Spacing.small) {
+                // Самый частый тип приема пищи
+                let mostCommonMeal = getMostCommonMeal()
                 StatisticsInfoCard(
                     title: "Most Common Meal",
-                    subtitle: "Breakfast - 15 times",
+                    subtitle: "\(mostCommonMeal.type) - \(mostCommonMeal.count) times",
                     icon: "sunrise.fill",
                     iconColor: PlumpyTheme.warning,
                     action: {}
                 )
                 
+                // Лучший день по калориям
+                let bestDay = getBestDay()
                 StatisticsInfoCard(
                     title: "Best Day",
-                    subtitle: "Wednesday - 1,450 cal",
+                    subtitle: "\(bestDay.day) - \(bestDay.calories) cal",
                     icon: "star.fill",
                     iconColor: PlumpyTheme.warning,
                     action: {}
                 )
                 
+                // Текущая серия дней подряд
+                let currentStreak = getCurrentStreak()
                 StatisticsInfoCard(
-                    title: "Streak",
-                    subtitle: "7 days in a row",
+                    title: "Current Streak",
+                    subtitle: "\(currentStreak) days in a row",
                     icon: "flame.fill",
                     iconColor: PlumpyTheme.error,
+                    action: {}
+                )
+                
+                // Среднее количество калорий
+                let averageCalories = getAverageCalories()
+                StatisticsInfoCard(
+                    title: "Average Daily Calories",
+                    subtitle: "\(averageCalories) cal",
+                    icon: "chart.bar.fill",
+                    iconColor: PlumpyTheme.primary,
+                    action: {}
+                )
+                
+                // Процент достижения цели
+                let goalRate = getGoalAchievementRate()
+                StatisticsInfoCard(
+                    title: "Goal Achievement",
+                    subtitle: String(format: "%.1f%%", goalRate),
+                    icon: "target",
+                    iconColor: PlumpyTheme.success,
+                    action: {}
+                )
+                
+                // Самый калорийный прием пищи
+                let mostCaloricMeal = getMostCaloricMeal()
+                StatisticsInfoCard(
+                    title: "Most Caloric Meal",
+                    subtitle: "\(mostCaloricMeal.type) - \(mostCaloricMeal.calories) cal",
+                    icon: "bolt.fill",
+                    iconColor: PlumpyTheme.warning,
                     action: {}
                 )
             }
@@ -612,6 +649,303 @@ struct StatisticsView: View {
         }
         
         return data
+    }
+    
+    // MARK: - Additional Statistics Calculations
+    
+    /// Получить самый частый тип приема пищи
+    private func getMostCommonMeal() -> (type: String, count: Int) {
+        var mealCounts: [String: Int] = [:]
+        
+        for entry in cachedPeriodEntries {
+            let mealType = entry.mealType.displayName
+            mealCounts[mealType, default: 0] += 1
+        }
+        
+        let mostCommon = mealCounts.max { $0.value < $1.value }
+        return (mostCommon?.key ?? "None", mostCommon?.value ?? 0)
+    }
+    
+    /// Получить лучший день по калориям
+    private func getBestDay() -> (day: String, calories: Int) {
+        let calendar = Calendar.current
+        let formatter = DateFormatter()
+        formatter.dateFormat = "EEEE"
+        
+        var dailyCalories: [Date: Int] = [:]
+        
+        for entry in cachedPeriodEntries {
+            let startOfDay = calendar.startOfDay(for: entry.date)
+            dailyCalories[startOfDay, default: 0] += entry.totalCalories
+        }
+        
+        let bestDay = dailyCalories.max { $0.value < $1.value }
+        let dayName = bestDay != nil ? formatter.string(from: bestDay!.key) : "None"
+        
+        return (dayName, bestDay?.value ?? 0)
+    }
+    
+    /// Получить текущую серию дней подряд
+    private func getCurrentStreak() -> Int {
+        let calendar = Calendar.current
+        let today = Date()
+        var streak = 0
+        var currentDate = today
+        
+        while true {
+            let startOfDay = calendar.startOfDay(for: currentDate)
+            let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay) ?? startOfDay
+            
+            let dayEntries = cachedPeriodEntries.filter { entry in
+                entry.date >= startOfDay && entry.date < endOfDay
+            }
+            
+            if dayEntries.isEmpty {
+                break
+            }
+            
+            streak += 1
+            currentDate = calendar.date(byAdding: .day, value: -1, to: currentDate) ?? currentDate
+        }
+        
+        return streak
+    }
+    
+    /// Получить среднее количество калорий за период
+    private func getAverageCalories() -> Int {
+        guard !cachedPeriodEntries.isEmpty else { return 0 }
+        
+        let totalCalories = cachedPeriodEntries.reduce(0) { $0 + $1.totalCalories }
+        let uniqueDays = Set(cachedPeriodEntries.map { Calendar.current.startOfDay(for: $0.date) })
+        
+        return uniqueDays.isEmpty ? 0 : totalCalories / uniqueDays.count
+    }
+    
+    /// Получить самый калорийный прием пищи
+    private func getMostCaloricMeal() -> (type: String, calories: Int) {
+        let mostCaloric = cachedPeriodEntries.max { $0.totalCalories < $1.totalCalories }
+        let mealType = mostCaloric?.mealType.displayName ?? "None"
+        let calories = mostCaloric?.totalCalories ?? 0
+        
+        return (mealType, calories)
+    }
+    
+    /// Получить процент дней, когда достигнута цель по калориям
+    private func getGoalAchievementRate() -> Double {
+        let calendar = Calendar.current
+        let calorieGoal = DailyGoalsService.shared.getDailyCalorieGoal(from: modelContext)
+        
+        var uniqueDays = Set<Date>()
+        for entry in cachedPeriodEntries {
+            uniqueDays.insert(calendar.startOfDay(for: entry.date))
+        }
+        
+        var daysWithGoal = 0
+        for day in uniqueDays {
+            let endOfDay = calendar.date(byAdding: .day, value: 1, to: day) ?? day
+            let dayEntries = cachedPeriodEntries.filter { entry in
+                entry.date >= day && entry.date < endOfDay
+            }
+            
+            let dayCalories = dayEntries.reduce(0) { $0 + $1.totalCalories }
+            if dayCalories >= calorieGoal {
+                daysWithGoal += 1
+            }
+        }
+        
+        return uniqueDays.isEmpty ? 0.0 : Double(daysWithGoal) / Double(uniqueDays.count) * 100.0
+    }
+    
+    // MARK: - Trend Calculations
+    
+    /// Получить тренд для калорий (сравнение с предыдущим периодом)
+    private func getCaloriesTrend() -> PlumpyTrend {
+        let currentAvg = getAverageCalories()
+        let previousAvg = getPreviousPeriodAverageCalories()
+        
+        if currentAvg > previousAvg * 1.1 {
+            return .up
+        } else if currentAvg < previousAvg * 0.9 {
+            return .down
+        } else {
+            return .neutral
+        }
+    }
+    
+    /// Получить тренд для количества приемов пищи
+    private func getMealsTrend() -> PlumpyTrend {
+        let currentAvg = Double(totalMeals) / Double(max(1, uniqueDayCount))
+        let previousAvg = getPreviousPeriodAverageMeals()
+        
+        if currentAvg > previousAvg * 1.1 {
+            return .up
+        } else if currentAvg < previousAvg * 0.9 {
+            return .down
+        } else {
+            return .neutral
+        }
+    }
+    
+    /// Получить тренд для достижения цели
+    private func getGoalTrend() -> PlumpyTrend {
+        let currentRate = getGoalAchievementRate()
+        let previousRate = getPreviousPeriodGoalRate()
+        
+        if currentRate > previousRate + 5 {
+            return .up
+        } else if currentRate < previousRate - 5 {
+            return .down
+        } else {
+            return .neutral
+        }
+    }
+    
+    /// Получить тренд для средних дневных калорий
+    private func getAverageDailyCaloriesTrend() -> PlumpyTrend {
+        let currentAvg = averageDailyCalories
+        let previousAvg = getPreviousPeriodAverageCalories()
+        
+        if currentAvg > previousAvg * 1.05 {
+            return .up
+        } else if currentAvg < previousAvg * 0.95 {
+            return .down
+        } else {
+            return .neutral
+        }
+    }
+    
+    /// Получить среднее количество калорий за предыдущий период
+    private func getPreviousPeriodAverageCalories() -> Int {
+        let calendar = Calendar.current
+        let currentStartDate: Date
+        let currentEndDate: Date
+        
+        switch selectedPeriod {
+        case .week:
+            currentStartDate = calendar.date(byAdding: .day, value: -7, to: Date()) ?? Date()
+            currentEndDate = Date()
+        case .month:
+            currentStartDate = calendar.date(byAdding: .month, value: -1, to: Date()) ?? Date()
+            currentEndDate = Date()
+        case .year:
+            currentStartDate = calendar.date(byAdding: .year, value: -1, to: Date()) ?? Date()
+            currentEndDate = Date()
+        case .custom:
+            return 2000 // Для кастомного периода используем дефолт
+        }
+        
+        let previousStartDate = calendar.date(byAdding: .day, value: -7, to: currentStartDate) ?? currentStartDate
+        let previousEndDate = currentStartDate
+        
+        let descriptor = FetchDescriptor<FoodEntry>(
+            predicate: #Predicate<FoodEntry> { entry in
+                entry.date >= previousStartDate && entry.date < previousEndDate
+            }
+        )
+        
+        do {
+            let previousEntries = try modelContext.fetch(descriptor)
+            let totalCalories = previousEntries.reduce(0) { $0 + $1.totalCalories }
+            let uniqueDays = Set(previousEntries.map { calendar.startOfDay(for: $0.date) })
+            return uniqueDays.isEmpty ? 2000 : totalCalories / uniqueDays.count
+        } catch {
+            return 2000
+        }
+    }
+    
+    /// Получить среднее количество приемов пищи за предыдущий период
+    private func getPreviousPeriodAverageMeals() -> Double {
+        let calendar = Calendar.current
+        let currentStartDate: Date
+        let currentEndDate: Date
+        
+        switch selectedPeriod {
+        case .week:
+            currentStartDate = calendar.date(byAdding: .day, value: -7, to: Date()) ?? Date()
+            currentEndDate = Date()
+        case .month:
+            currentStartDate = calendar.date(byAdding: .month, value: -1, to: Date()) ?? Date()
+            currentEndDate = Date()
+        case .year:
+            currentStartDate = calendar.date(byAdding: .year, value: -1, to: Date()) ?? Date()
+            currentEndDate = Date()
+        case .custom:
+            return 3.0 // Для кастомного периода используем дефолт
+        }
+        
+        let previousStartDate = calendar.date(byAdding: .day, value: -7, to: currentStartDate) ?? currentStartDate
+        let previousEndDate = currentStartDate
+        
+        let descriptor = FetchDescriptor<FoodEntry>(
+            predicate: #Predicate<FoodEntry> { entry in
+                entry.date >= previousStartDate && entry.date < previousEndDate
+            }
+        )
+        
+        do {
+            let previousEntries = try modelContext.fetch(descriptor)
+            let uniqueDays = Set(previousEntries.map { calendar.startOfDay(for: $0.date) })
+            return uniqueDays.isEmpty ? 3.0 : Double(previousEntries.count) / Double(uniqueDays.count)
+        } catch {
+            return 3.0
+        }
+    }
+    
+    /// Получить процент достижения цели за предыдущий период
+    private func getPreviousPeriodGoalRate() -> Double {
+        let calendar = Calendar.current
+        let currentStartDate: Date
+        let currentEndDate: Date
+        
+        switch selectedPeriod {
+        case .week:
+            currentStartDate = calendar.date(byAdding: .day, value: -7, to: Date()) ?? Date()
+            currentEndDate = Date()
+        case .month:
+            currentStartDate = calendar.date(byAdding: .month, value: -1, to: Date()) ?? Date()
+            currentEndDate = Date()
+        case .year:
+            currentStartDate = calendar.date(byAdding: .year, value: -1, to: Date()) ?? Date()
+            currentEndDate = Date()
+        case .custom:
+            return 80.0 // Для кастомного периода используем дефолт
+        }
+        
+        let previousStartDate = calendar.date(byAdding: .day, value: -7, to: currentStartDate) ?? currentStartDate
+        let previousEndDate = currentStartDate
+        
+        let descriptor = FetchDescriptor<FoodEntry>(
+            predicate: #Predicate<FoodEntry> { entry in
+                entry.date >= previousStartDate && entry.date < previousEndDate
+            }
+        )
+        
+        do {
+            let previousEntries = try modelContext.fetch(descriptor)
+            let calorieGoal = DailyGoalsService.shared.getDailyCalorieGoal(from: modelContext)
+            
+            var uniqueDays = Set<Date>()
+            for entry in previousEntries {
+                uniqueDays.insert(calendar.startOfDay(for: entry.date))
+            }
+            
+            var daysWithGoal = 0
+            for day in uniqueDays {
+                let endOfDay = calendar.date(byAdding: .day, value: 1, to: day) ?? day
+                let dayEntries = previousEntries.filter { entry in
+                    entry.date >= day && entry.date < endOfDay
+                }
+                
+                let dayCalories = dayEntries.reduce(0) { $0 + $1.totalCalories }
+                if dayCalories >= calorieGoal {
+                    daysWithGoal += 1
+                }
+            }
+            
+            return uniqueDays.isEmpty ? 80.0 : Double(daysWithGoal) / Double(uniqueDays.count) * 100.0
+        } catch {
+            return 80.0
+        }
     }
 }
 
