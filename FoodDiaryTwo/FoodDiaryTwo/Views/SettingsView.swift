@@ -12,14 +12,21 @@ struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     @Query private var users: [UserProfile]
+    @Query private var appSettings: [AppSettings]
     
-    @State private var notificationsEnabled = true
-    @State private var darkModeEnabled = false
-    @State private var selectedLanguage = "English"
-    @State private var dataExportEnabled = false
+    @State private var settingsManager: AppSettingsManager?
     @State private var showingLanguagePicker = false
+    @State private var showingTimePicker = false
+    @State private var showingClearDataAlert = false
+    @State private var showingExportSheet = false
+    @State private var exportData: String?
     
     let languages = ["English", "Русский", "Español", "Français"]
+    let regions = ["United States", "Russia", "Spain", "France", "Germany", "United Kingdom"]
+    
+    init(modelContext: ModelContext) {
+        self.settingsManager = AppSettingsManager(modelContext: modelContext)
+    }
     
     var body: some View {
         NavigationView {
@@ -30,18 +37,30 @@ struct SettingsView: View {
                         Image(systemName: "bell.fill")
                             .foregroundColor(.blue)
                             .frame(width: 24)
-                        Toggle("Notifications", isOn: $notificationsEnabled)
+                        Toggle("Notifications", isOn: Binding(
+                            get: { settingsManager?.settings?.notificationsEnabled ?? true },
+                            set: { newValue in
+                                settingsManager?.updateNotificationSettings(
+                                    enabled: newValue,
+                                    time: settingsManager?.settings?.reminderTime ?? Date(),
+                                    calorieReminders: settingsManager?.settings?.calorieRemindersEnabled ?? true
+                                )
+                            }
+                        ))
                     }
                     
-                    if notificationsEnabled {
+                    if settingsManager?.settings?.notificationsEnabled == true {
                         HStack {
                             Image(systemName: "clock.fill")
                                 .foregroundColor(.orange)
                                 .frame(width: 24)
                             Text("Reminder Time")
                             Spacer()
-                            Text("9:00 AM")
+                            Text(settingsManager?.settings?.reminderTimeString ?? "9:00 AM")
                                 .foregroundColor(.secondary)
+                        }
+                        .onTapGesture {
+                            showingTimePicker = true
                         }
                         
                         HStack {
@@ -50,8 +69,17 @@ struct SettingsView: View {
                                 .frame(width: 24)
                             Text("Calorie Reminders")
                             Spacer()
-                            Toggle("", isOn: .constant(true))
-                                .labelsHidden()
+                            Toggle("", isOn: Binding(
+                                get: { settingsManager?.settings?.calorieRemindersEnabled ?? true },
+                                set: { newValue in
+                                    settingsManager?.updateNotificationSettings(
+                                        enabled: settingsManager?.settings?.notificationsEnabled ?? true,
+                                        time: settingsManager?.settings?.reminderTime ?? Date(),
+                                        calorieReminders: newValue
+                                    )
+                                }
+                            ))
+                            .labelsHidden()
                         }
                     }
                 } header: {
@@ -66,7 +94,12 @@ struct SettingsView: View {
                         Image(systemName: "moon.fill")
                             .foregroundColor(.purple)
                             .frame(width: 24)
-                        Toggle("Dark Mode", isOn: $darkModeEnabled)
+                        Toggle("Dark Mode", isOn: Binding(
+                            get: { settingsManager?.settings?.darkModeEnabled ?? false },
+                            set: { newValue in
+                                settingsManager?.updateAppearanceSettings(darkMode: newValue)
+                            }
+                        ))
                     }
                 } header: {
                     Text("Appearance")
@@ -80,7 +113,7 @@ struct SettingsView: View {
                             .frame(width: 24)
                         Text("Language")
                         Spacer()
-                        Text(selectedLanguage)
+                        Text(settingsManager?.settings?.selectedLanguage ?? "English")
                             .foregroundColor(.secondary)
                     }
                     .onTapGesture {
@@ -93,7 +126,7 @@ struct SettingsView: View {
                             .frame(width: 24)
                         Text("Region")
                         Spacer()
-                        Text("United States")
+                        Text(settingsManager?.settings?.region ?? "United States")
                             .foregroundColor(.secondary)
                     }
                 } header: {
@@ -108,8 +141,17 @@ struct SettingsView: View {
                             .frame(width: 24)
                         Text("Export Data")
                         Spacer()
-                        Toggle("", isOn: $dataExportEnabled)
-                            .labelsHidden()
+                        Toggle("", isOn: Binding(
+                            get: { settingsManager?.settings?.dataExportEnabled ?? false },
+                            set: { newValue in
+                                settingsManager?.updateDataExportSettings(enabled: newValue)
+                            }
+                        ))
+                        .labelsHidden()
+                    }
+                    .onTapGesture {
+                        exportData = settingsManager?.exportData()
+                        showingExportSheet = true
                     }
                     
                     HStack {
@@ -121,6 +163,9 @@ struct SettingsView: View {
                         Text("")
                     }
                     .foregroundColor(.red)
+                    .onTapGesture {
+                        showingClearDataAlert = true
+                    }
                 } header: {
                     Text("Data Management")
                 } footer: {
@@ -135,7 +180,7 @@ struct SettingsView: View {
                             .frame(width: 24)
                         Text("Version")
                         Spacer()
-                        Text("1.0.0")
+                        Text(settingsManager?.settings?.appVersion ?? "1.0.0")
                             .foregroundColor(.secondary)
                     }
                     
@@ -175,7 +220,51 @@ struct SettingsView: View {
             }
         }
         .sheet(isPresented: $showingLanguagePicker) {
-            LanguagePickerView(selectedLanguage: $selectedLanguage, languages: languages)
+            LanguagePickerView(
+                selectedLanguage: Binding(
+                    get: { settingsManager?.settings?.selectedLanguage ?? "English" },
+                    set: { newValue in
+                        settingsManager?.updateLanguageSettings(
+                            language: newValue,
+                            region: settingsManager?.settings?.region ?? "United States"
+                        )
+                    }
+                ),
+                languages: languages
+            )
+        }
+        .sheet(isPresented: $showingTimePicker) {
+            TimePickerView(
+                selectedTime: Binding(
+                    get: { settingsManager?.settings?.reminderTime ?? Date() },
+                    set: { newValue in
+                        settingsManager?.updateNotificationSettings(
+                            enabled: settingsManager?.settings?.notificationsEnabled ?? true,
+                            time: newValue,
+                            calorieReminders: settingsManager?.settings?.calorieRemindersEnabled ?? true
+                        )
+                    }
+                )
+            )
+        }
+        .alert("Clear All Data", isPresented: $showingClearDataAlert) {
+            Button("Cancel", role: .cancel) { }
+            Button("Clear All", role: .destructive) {
+                settingsManager?.clearAllData()
+            }
+        } message: {
+            Text("This will permanently delete all your food diary data. This action cannot be undone.")
+        }
+        .sheet(isPresented: $showingExportSheet) {
+            if let exportData = exportData {
+                ExportDataView(data: exportData)
+            }
+        }
+        .onAppear {
+            // Инициализируем settingsManager с правильным modelContext
+            if settingsManager == nil {
+                settingsManager = AppSettingsManager(modelContext: modelContext)
+            }
         }
     }
 }
@@ -215,7 +304,86 @@ struct LanguagePickerView: View {
     }
 }
 
+// MARK: - Time Picker View
+struct TimePickerView: View {
+    @Binding var selectedTime: Date
+    @Environment(\.dismiss) private var dismiss
+    
+    var body: some View {
+        NavigationView {
+            VStack {
+                DatePicker(
+                    "Reminder Time",
+                    selection: $selectedTime,
+                    displayedComponents: .hourAndMinute
+                )
+                .datePickerStyle(WheelDatePickerStyle())
+                .labelsHidden()
+                .padding()
+                
+                Spacer()
+            }
+            .navigationTitle("Reminder Time")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Done") {
+                        dismiss()
+                    }
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Export Data View
+struct ExportDataView: View {
+    let data: String
+    @Environment(\.dismiss) private var dismiss
+    
+    var body: some View {
+        NavigationView {
+            VStack {
+                ScrollView {
+                    Text(data)
+                        .font(.system(.body, design: .monospaced))
+                        .padding()
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                
+                Button("Share") {
+                    let activityVC = UIActivityViewController(
+                        activityItems: [data],
+                        applicationActivities: nil
+                    )
+                    
+                    if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                       let window = windowScene.windows.first {
+                        window.rootViewController?.present(activityVC, animated: true)
+                    }
+                }
+                .buttonStyle(.borderedProminent)
+                .padding()
+            }
+            .navigationTitle("Export Data")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Done") {
+                        dismiss()
+                    }
+                }
+            }
+        }
+    }
+}
+
 #Preview {
-    SettingsView()
-        .modelContainer(for: [FoodEntry.self, FoodProduct.self, UserProfile.self], inMemory: true)
+    SettingsView(modelContext: try! ModelContainer(for: [AppSettings.self, FoodEntry.self, FoodProduct.self, UserProfile.self]).mainContext)
+        .modelContainer(for: [AppSettings.self, FoodEntry.self, FoodProduct.self, UserProfile.self], inMemory: true)
 }

@@ -72,7 +72,7 @@ struct ProfileView: View {
             EditProfileView()
         }
         .sheet(isPresented: $showingSettings) {
-            SettingsView()
+            SettingsView(modelContext: modelContext)
         }
         .sheet(isPresented: $showingCalorieEditor) {
             CalorieGoalEditor()
