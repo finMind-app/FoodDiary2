@@ -280,6 +280,50 @@ struct HomeView: View {
                     // Navigate to history
                 }
             }
+            
+            // Кнопки для быстрого добавления разных типов приемов пищи
+            VStack(spacing: PlumpyTheme.Spacing.small) {
+                Text("Quick Add")
+                    .font(PlumpyTheme.Typography.caption1)
+                    .fontWeight(.medium)
+                    .foregroundColor(PlumpyTheme.textSecondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: PlumpyTheme.Spacing.small), count: 2), spacing: PlumpyTheme.Spacing.small) {
+                    PlumpyButton(title: "Breakfast", icon: "sunrise.fill", style: .outline, size: .small) {
+                        selectedMealType = .breakfast
+                        showingAddFoodEntry = true
+                    }
+                    
+                    PlumpyButton(title: "Lunch", icon: "sun.max.fill", style: .outline, size: .small) {
+                        selectedMealType = .lunch
+                        showingAddFoodEntry = true
+                    }
+                    
+                    PlumpyButton(title: "Dinner", icon: "moon.fill", style: .outline, size: .small) {
+                        selectedMealType = .dinner
+                        showingAddFoodEntry = true
+                    }
+                    
+                    PlumpyButton(title: "Snack", icon: "leaf.fill", style: .outline, size: .small) {
+                        selectedMealType = .snack
+                        showingAddFoodEntry = true
+                    }
+                }
+                
+                // Кнопка для фото и распознавания
+                PlumpyButton(title: "📸 Photo Recognition", icon: "camera.fill", style: .primary, size: .medium) {
+                    selectedMealType = .snack // По умолчанию для фото
+                    showingAddFoodEntry = true
+                }
+                .frame(maxWidth: .infinity)
+                
+                // Кнопка для статистики
+                PlumpyButton(title: "📊 View Statistics", icon: "chart.bar.fill", style: .outline, size: .medium) {
+                    // Navigate to statistics
+                }
+                .frame(maxWidth: .infinity)
+            }
         }
         .plumpyCard()
     }
