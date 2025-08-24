@@ -11,6 +11,7 @@ struct PlumpyHeatmap: View {
     let data: [HeatmapDataPoint]
     let columns: Int
     let rows: Int
+    let period: HeatmapPeriod
     @State private var selectedCell: HeatmapDataPoint?
     
     struct HeatmapDataPoint: Identifiable {
@@ -20,39 +21,85 @@ struct PlumpyHeatmap: View {
         let intensity: Double // 0.0 to 1.0
     }
     
-    init(data: [HeatmapDataPoint], columns: Int = 7, rows: Int = 7) {
+    enum HeatmapPeriod {
+        case week
+        case month
+        case year
+        
+        var columns: Int {
+            switch self {
+            case .week: return 7
+            case .month: return 7
+            case .year: return 53 // 53 недели в году
+            }
+        }
+        
+        var rows: Int {
+            switch self {
+            case .week: return 7
+            case .month: return 4
+            case .year: return 7
+            }
+        }
+        
+        var displayName: String {
+            switch self {
+            case .week: return "Last 7 days"
+            case .month: return "Last 4 weeks"
+            case .year: return "Last year"
+            }
+        }
+    }
+    
+    init(data: [HeatmapDataPoint], period: HeatmapPeriod = .year) {
         self.data = data
-        self.columns = columns
-        self.rows = rows
+        self.period = period
+        self.columns = period.columns
+        self.rows = period.rows
     }
     
     var body: some View {
-        VStack(spacing: PlumpyTheme.Spacing.small) {
-            // Дни недели (слева)
-            HStack(spacing: PlumpyTheme.Spacing.small) {
-                VStack(spacing: 2) {
+        VStack(spacing: PlumpyTheme.Spacing.medium) {
+            // Заголовок с периодом
+            HStack {
+                Text("Activity Heatmap")
+                    .font(PlumpyTheme.Typography.headline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(PlumpyTheme.textPrimary)
+                
+                Spacer()
+                
+                Text(period.displayName)
+                    .font(PlumpyTheme.Typography.caption1)
+                    .foregroundColor(PlumpyTheme.textSecondary)
+            }
+            
+            // Основной контент
+            HStack(spacing: PlumpyTheme.Spacing.medium) {
+                // Дни недели (слева)
+                VStack(spacing: 3) {
                     ForEach(getDayLabels(), id: \.self) { day in
                         Text(day)
-                            .font(.system(size: 10, weight: .medium))
+                            .font(.system(size: 11, weight: .medium))
                             .foregroundColor(PlumpyTheme.textSecondary)
-                            .frame(width: 20, height: 20)
+                            .frame(width: 25, height: 25)
                     }
                 }
                 
                 // Сетка квадратиков
-                VStack(spacing: 2) {
+                VStack(spacing: 3) {
                     // Месяцы (сверху)
-                    HStack(spacing: 2) {
+                    HStack(spacing: 3) {
                         ForEach(getMonthLabels(), id: \.self) { month in
                             Text(month)
-                                .font(.system(size: 10, weight: .medium))
+                                .font(.system(size: 11, weight: .medium))
                                 .foregroundColor(PlumpyTheme.textSecondary)
-                                .frame(width: 20, height: 20)
+                                .frame(width: 25, height: 25)
                         }
                     }
                     
                     // Сетка квадратиков
-                    LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 2), count: columns), spacing: 2) {
+                    LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 3), count: columns), spacing: 3) {
                         ForEach(0..<(columns * rows), id: \.self) { index in
                             let dataPoint = getDataPoint(for: index)
                             HeatmapCell(dataPoint: dataPoint)
@@ -89,11 +136,11 @@ struct PlumpyHeatmap: View {
                     .font(PlumpyTheme.Typography.caption2)
                     .foregroundColor(PlumpyTheme.textSecondary)
                 
-                HStack(spacing: 2) {
+                HStack(spacing: 3) {
                     ForEach(0..<5) { level in
-                        RoundedRectangle(cornerRadius: 2)
+                        RoundedRectangle(cornerRadius: 3)
                             .fill(getColorForIntensity(Double(level) / 4.0))
-                            .frame(width: 12, height: 12)
+                            .frame(width: 15, height: 15)
                     }
                 }
                 
@@ -135,7 +182,9 @@ struct PlumpyHeatmap: View {
         formatter.dateFormat = "MMM"
         
         var months: [String] = []
-        for i in 0..<7 {
+        let weekCount = period == .year ? 53 : 7
+        
+        for i in 0..<weekCount {
             if let date = calendar.date(byAdding: .weekOfYear, value: -i, to: today) {
                 let month = formatter.string(from: date)
                 if !months.contains(month) {
@@ -157,16 +206,16 @@ struct HeatmapCell: View {
     let dataPoint: PlumpyHeatmap.HeatmapDataPoint?
     
     var body: some View {
-        RoundedRectangle(cornerRadius: 2)
+        RoundedRectangle(cornerRadius: 3)
             .fill(getCellColor())
-            .frame(width: 20, height: 20)
+            .frame(width: 25, height: 25)
             .overlay(
                 Group {
                     if let dataPoint = dataPoint, dataPoint.count > 0 {
-                        // Показываем число только при наведении или для очень активных дней
-                        if dataPoint.count >= 3 {
+                        // Показываем число только для очень активных дней
+                        if dataPoint.count >= 4 {
                             Text("\(dataPoint.count)")
-                                .font(.system(size: 8, weight: .bold))
+                                .font(.system(size: 9, weight: .bold))
                                 .foregroundColor(.white)
                         }
                     }
@@ -189,21 +238,36 @@ struct HeatmapCell: View {
 // MARK: - Heatmap Data Generator
 
 extension PlumpyHeatmap {
-    static func generateHeatmapData(from entries: [FoodEntry], days: Int = 49) -> [HeatmapDataPoint] {
+    static func generateHeatmapData(from entries: [FoodEntry], period: HeatmapPeriod = .year) -> [HeatmapDataPoint] {
         let calendar = Calendar.current
         let today = Date()
         let endDate = calendar.startOfDay(for: today)
         
-        // Начинаем с понедельника 7 недель назад
-        let startOfWeek = calendar.dateInterval(of: .weekOfYear, for: endDate)?.start ?? endDate
-        let startDate = calendar.date(byAdding: .weekOfYear, value: -7, to: startOfWeek) ?? endDate
+        // Определяем период в зависимости от типа
+        let startDate: Date
+        let weekCount: Int
+        
+        switch period {
+        case .week:
+            weekCount = 1
+            startDate = calendar.date(byAdding: .weekOfYear, value: -1, to: endDate) ?? endDate
+        case .month:
+            weekCount = 4
+            startDate = calendar.date(byAdding: .weekOfYear, value: -4, to: endDate) ?? endDate
+        case .year:
+            weekCount = 53
+            startDate = calendar.date(byAdding: .weekOfYear, value: -53, to: endDate) ?? endDate
+        }
+        
+        // Начинаем с понедельника
+        let startOfWeek = calendar.dateInterval(of: .weekOfYear, for: startDate)?.start ?? startDate
         
         // Группируем записи по дням
         var dailyCounts: [Date: Int] = [:]
         
         for entry in entries {
             let entryDate = calendar.startOfDay(for: entry.date)
-            if entryDate >= startDate && entryDate <= endDate {
+            if entryDate >= startOfWeek && entryDate <= endDate {
                 dailyCounts[entryDate, default: 0] += 1
             }
         }
@@ -211,11 +275,11 @@ extension PlumpyHeatmap {
         // Находим максимальное количество приемов пищи за день
         let maxCount = dailyCounts.values.max() ?? 1
         
-        // Создаем массив данных для heatmap (7x7 сетка)
+        // Создаем массив данных для heatmap
         var heatmapData: [HeatmapDataPoint] = []
         
         // Заполняем сетку по дням недели (воскресенье - суббота)
-        for weekOffset in 0..<7 {
+        for weekOffset in 0..<weekCount {
             for dayOffset in 0..<7 {
                 // Вычисляем дату для текущей ячейки
                 let weekStart = calendar.date(byAdding: .weekOfYear, value: -weekOffset, to: startOfWeek) ?? startDate
@@ -239,16 +303,16 @@ extension PlumpyHeatmap {
 
 #Preview {
     VStack(spacing: PlumpyTheme.Spacing.large) {
-        // Создаем тестовые данные
-        let testData = (0..<49).map { index in
+        // Создаем тестовые данные для года (53 недели * 7 дней = 371 день)
+        let testData = (0..<371).map { index in
             PlumpyHeatmap.HeatmapDataPoint(
                 date: Calendar.current.date(byAdding: .day, value: -index, to: Date()) ?? Date(),
-                count: Int.random(in: 0...5),
+                count: Int.random(in: 0...6),
                 intensity: Double.random(in: 0...1)
             )
         }
         
-        PlumpyHeatmap(data: testData)
+        PlumpyHeatmap(data: testData, period: .year)
             .padding()
             .background(PlumpyTheme.surface)
             .clipShape(RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium))

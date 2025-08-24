@@ -396,23 +396,10 @@ struct StatisticsView: View {
     
     private var activityHeatmap: some View {
         VStack(spacing: PlumpyTheme.Spacing.medium) {
-            HStack {
-                Text("Activity Heatmap")
-                    .font(PlumpyTheme.Typography.headline)
-                    .fontWeight(.semibold)
-                    .foregroundColor(PlumpyTheme.textPrimary)
-                
-                Spacer()
-                
-                Text("Last 7 weeks")
-                    .font(PlumpyTheme.Typography.caption1)
-                    .foregroundColor(PlumpyTheme.textSecondary)
-            }
-            
             if isLoading {
                 RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
                     .fill(PlumpyTheme.surfaceSecondary)
-                    .frame(height: 200)
+                    .frame(height: 300)
                     .frame(maxWidth: .infinity)
                     .overlay(
                         VStack(spacing: PlumpyTheme.Spacing.medium) {
@@ -427,7 +414,7 @@ struct StatisticsView: View {
             } else if cachedPeriodEntries.isEmpty {
                 RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
                     .fill(PlumpyTheme.surfaceSecondary)
-                    .frame(height: 200)
+                    .frame(height: 300)
                     .frame(maxWidth: .infinity)
                     .overlay(
                         VStack(spacing: PlumpyTheme.Spacing.medium) {
@@ -441,12 +428,12 @@ struct StatisticsView: View {
                         }
                     )
             } else {
-                // Получаем все записи за последние 49 дней для heatmap
+                // Получаем все записи за последний год для heatmap
                 let allEntries = getAllEntriesForHeatmap()
-                let heatmapData = PlumpyHeatmap.generateHeatmapData(from: allEntries)
+                let heatmapData = PlumpyHeatmap.generateHeatmapData(from: allEntries, period: .year)
                 
-                PlumpyHeatmap(data: heatmapData)
-                    .frame(height: 160)
+                PlumpyHeatmap(data: heatmapData, period: .year)
+                    .frame(height: 280)
                     .frame(maxWidth: .infinity)
             }
         }
@@ -771,12 +758,12 @@ struct StatisticsView: View {
         return streak
     }
     
-    /// Получить все записи за последние 49 дней для heatmap
+    /// Получить все записи за последний год для heatmap
     private func getAllEntriesForHeatmap() -> [FoodEntry] {
         let calendar = Calendar.current
         let today = Date()
         let endDate = calendar.startOfDay(for: today)
-        let startDate = calendar.date(byAdding: .day, value: -48, to: endDate) ?? endDate
+        let startDate = calendar.date(byAdding: .year, value: -1, to: endDate) ?? endDate
         
         let descriptor = FetchDescriptor<FoodEntry>(
             predicate: #Predicate<FoodEntry> { entry in
