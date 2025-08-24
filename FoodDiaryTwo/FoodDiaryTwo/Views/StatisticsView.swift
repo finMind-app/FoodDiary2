@@ -412,7 +412,7 @@ struct StatisticsView: View {
             if isLoading {
                 RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
                     .fill(PlumpyTheme.surfaceSecondary)
-                    .frame(height: 300)
+                    .frame(height: 200)
                     .frame(maxWidth: .infinity)
                     .overlay(
                         VStack(spacing: PlumpyTheme.Spacing.medium) {
@@ -427,7 +427,7 @@ struct StatisticsView: View {
             } else if cachedPeriodEntries.isEmpty {
                 RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
                     .fill(PlumpyTheme.surfaceSecondary)
-                    .frame(height: 300)
+                    .frame(height: 200)
                     .frame(maxWidth: .infinity)
                     .overlay(
                         VStack(spacing: PlumpyTheme.Spacing.medium) {
@@ -442,11 +442,11 @@ struct StatisticsView: View {
                     )
             } else {
                 // Получаем все записи за последний год для heatmap
-                let allEntries = getAllEntriesForHeatmap()
-                let heatmapData = PlumpyHeatmap.generateHeatmapData(from: allEntries)
+                let allEntries = getAllEntriesForYearlyHeatmap()
+                let heatmapData = PlumpyHeatmap.generateYearlyHeatmapData(from: allEntries)
                 
                 PlumpyHeatmap(data: heatmapData)
-                    .frame(height: 280)
+                    .frame(height: 160)
                     .frame(maxWidth: .infinity)
             }
         }
@@ -772,7 +772,7 @@ struct StatisticsView: View {
     }
     
     /// Получить все записи за последний год для heatmap
-    private func getAllEntriesForHeatmap() -> [FoodEntry] {
+    private func getAllEntriesForYearlyHeatmap() -> [FoodEntry] {
         let calendar = Calendar.current
         let today = Date()
         let endDate = calendar.startOfDay(for: today)
