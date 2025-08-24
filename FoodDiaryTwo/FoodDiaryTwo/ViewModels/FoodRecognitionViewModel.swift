@@ -49,19 +49,14 @@ class FoodRecognitionViewModel: ObservableObject {
             return
         }
         
-        do {
-            isProcessing = true
-            processingProgress = 0.0
-            
-            // Используем центральный сервис для распознавания
-            let result = await FoodDataService.shared.recognizeFoodFromImage(image)
-            
-            recognitionResult = result
-            errorMessage = nil
-            
-        } catch {
-            showError(message: error.localizedDescription)
-        }
+        isProcessing = true
+        processingProgress = 0.0
+        
+        // Используем центральный сервис для распознавания
+        let result = await FoodDataService.shared.recognizeFoodFromImage(image)
+        
+        recognitionResult = result
+        errorMessage = nil
         
         isProcessing = false
         processingProgress = 0.0

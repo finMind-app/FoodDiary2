@@ -162,7 +162,6 @@ extension DailyGoalsService {
     func getWeeklyStats(context: ModelContext) -> WeeklyStats {
         let calendar = Calendar.current
         let today = Date()
-        let weekAgo = calendar.date(byAdding: .day, value: -7, to: today)!
         
         var dailyStats: [DailyStats] = []
         var totalCalories = 0
@@ -224,11 +223,11 @@ extension DailyGoalsService {
         
         if currentCalories == 0 {
             recommendations.append("Начните день с завтрака! Рекомендуется 400-600 ккал")
-        } else if currentCalories < calorieGoal * 0.3 {
+        } else if currentCalories < Int(Double(calorieGoal) * 0.3) {
             recommendations.append("Добавьте больше еды. Осталось \(remainingCalories) ккал")
-        } else if currentCalories > calorieGoal * 1.2 {
+        } else if currentCalories > Int(Double(calorieGoal) * 1.2) {
             recommendations.append("Попробуйте уменьшить порции. Превышение нормы на \(currentCalories - calorieGoal) ккал")
-        } else if currentCalories >= calorieGoal * 0.8 && currentCalories <= calorieGoal {
+        } else if currentCalories >= Int(Double(calorieGoal) * 0.8) && currentCalories <= calorieGoal {
             recommendations.append("Отличный прогресс! Осталось \(remainingCalories) ккал до цели")
         }
         
@@ -268,7 +267,7 @@ extension DailyGoalsService {
             if currentCalories == 0 {
                 forecast = "У вас есть \(calorieGoal) ккал на весь день. Начните с питательного завтрака!"
                 confidence = 0.9
-            } else if currentCalories < calorieGoal * 0.3 {
+            } else if currentCalories < Int(Double(calorieGoal) * 0.3) {
                 forecast = "Хорошее начало! Осталось \(remainingCalories) ккал. Планируйте обед и ужин"
                 confidence = 0.8
             } else {
@@ -277,7 +276,7 @@ extension DailyGoalsService {
             }
         } else if hour < 18 {
             // День
-            if currentCalories < calorieGoal * 0.6 {
+            if currentCalories < Int(Double(calorieGoal) * 0.6) {
                 forecast = "Половина дня прошла. Осталось \(remainingCalories) ккал. Планируйте ужин"
                 confidence = 0.8
             } else if currentCalories < calorieGoal {
@@ -289,7 +288,7 @@ extension DailyGoalsService {
             }
         } else {
             // Вечер
-            if currentCalories < calorieGoal * 0.8 {
+            if currentCalories < Int(Double(calorieGoal) * 0.8) {
                 forecast = "День подходит к концу. Осталось \(remainingCalories) ккал. Легкий ужин"
                 confidence = 0.7
             } else if currentCalories <= calorieGoal {
