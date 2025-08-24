@@ -7,7 +7,6 @@
 
 import SwiftUI
 import SwiftData
-import DailyGoalsService
 
 struct StatisticsView: View {
     @Environment(\.modelContext) private var modelContext
