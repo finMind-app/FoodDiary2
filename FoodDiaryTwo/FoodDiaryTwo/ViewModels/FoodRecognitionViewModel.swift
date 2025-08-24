@@ -105,10 +105,11 @@ class FoodRecognitionViewModel: ObservableObject {
             FoodProduct(
                 name: food.name,
                 servingSize: food.estimatedWeight,
-                caloriesPerServing: food.calories,
+                caloriesPerServing: Int(food.calories),
                 protein: food.protein,
                 carbs: food.carbs,
-                fat: food.fat
+                fat: food.fat,
+                category: food.category
             )
         }
         
