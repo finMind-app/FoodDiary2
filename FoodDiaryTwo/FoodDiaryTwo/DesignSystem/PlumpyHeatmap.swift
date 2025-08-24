@@ -9,9 +9,6 @@ import SwiftUI
 
 struct PlumpyHeatmap: View {
     let data: [HeatmapDataPoint]
-    let columns: Int
-    let rows: Int
-    let period: HeatmapPeriod
     @State private var selectedCell: HeatmapDataPoint?
     
     struct HeatmapDataPoint: Identifiable {
@@ -21,59 +18,12 @@ struct PlumpyHeatmap: View {
         let intensity: Double // 0.0 to 1.0
     }
     
-    enum HeatmapPeriod {
-        case week
-        case month
-        case year
-        
-        var columns: Int {
-            switch self {
-            case .week: return 7
-            case .month: return 7
-            case .year: return 53 // 53 недели в году
-            }
-        }
-        
-        var rows: Int {
-            switch self {
-            case .week: return 7
-            case .month: return 4
-            case .year: return 7
-            }
-        }
-        
-        var displayName: String {
-            switch self {
-            case .week: return "Last 7 days"
-            case .month: return "Last 4 weeks"
-            case .year: return "Last year"
-            }
-        }
-    }
-    
-    init(data: [HeatmapDataPoint], period: HeatmapPeriod = .year) {
+    init(data: [HeatmapDataPoint]) {
         self.data = data
-        self.period = period
-        self.columns = period.columns
-        self.rows = period.rows
     }
     
     var body: some View {
         VStack(spacing: PlumpyTheme.Spacing.medium) {
-            // Заголовок с периодом
-            HStack {
-                Text("Activity Heatmap")
-                    .font(PlumpyTheme.Typography.headline)
-                    .fontWeight(.semibold)
-                    .foregroundColor(PlumpyTheme.textPrimary)
-                
-                Spacer()
-                
-                Text(period.displayName)
-                    .font(PlumpyTheme.Typography.caption1)
-                    .foregroundColor(PlumpyTheme.textSecondary)
-            }
-            
             // Основной контент
             HStack(spacing: PlumpyTheme.Spacing.medium) {
                 // Дни недели (слева)
@@ -98,9 +48,9 @@ struct PlumpyHeatmap: View {
                         }
                     }
                     
-                    // Сетка квадратиков
-                    LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 3), count: columns), spacing: 3) {
-                        ForEach(0..<(columns * rows), id: \.self) { index in
+                    // Сетка квадратиков (53 недели x 7 дней)
+                    LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 3), count: 53), spacing: 3) {
+                        ForEach(0..<(53 * 7), id: \.self) { index in
                             let dataPoint = getDataPoint(for: index)
                             HeatmapCell(dataPoint: dataPoint)
                                 .onTapGesture {
@@ -182,16 +132,36 @@ struct PlumpyHeatmap: View {
         formatter.dateFormat = "MMM"
         
         var months: [String] = []
-        let weekCount = period == .year ? 53 : 7
+        var currentMonth = ""
+        var monthCount = 0
         
-        for i in 0..<weekCount {
+        // Проходим по всем 53 неделям и группируем месяцы
+        for i in 0..<53 {
             if let date = calendar.date(byAdding: .weekOfYear, value: -i, to: today) {
                 let month = formatter.string(from: date)
-                if !months.contains(month) {
-                    months.append(month)
+                
+                if month != currentMonth {
+                    if !currentMonth.isEmpty {
+                        // Добавляем предыдущий месяц с правильным количеством недель
+                        for _ in 0..<monthCount {
+                            months.append(currentMonth)
+                        }
+                    }
+                    currentMonth = month
+                    monthCount = 1
+                } else {
+                    monthCount += 1
                 }
             }
         }
+        
+        // Добавляем последний месяц
+        if !currentMonth.isEmpty {
+            for _ in 0..<monthCount {
+                months.append(currentMonth)
+            }
+        }
+        
         return months.reversed()
     }
     
@@ -238,36 +208,21 @@ struct HeatmapCell: View {
 // MARK: - Heatmap Data Generator
 
 extension PlumpyHeatmap {
-    static func generateHeatmapData(from entries: [FoodEntry], period: HeatmapPeriod = .year) -> [HeatmapDataPoint] {
+    static func generateHeatmapData(from entries: [FoodEntry]) -> [HeatmapDataPoint] {
         let calendar = Calendar.current
         let today = Date()
         let endDate = calendar.startOfDay(for: today)
         
-        // Определяем период в зависимости от типа
-        let startDate: Date
-        let weekCount: Int
-        
-        switch period {
-        case .week:
-            weekCount = 1
-            startDate = calendar.date(byAdding: .weekOfYear, value: -1, to: endDate) ?? endDate
-        case .month:
-            weekCount = 4
-            startDate = calendar.date(byAdding: .weekOfYear, value: -4, to: endDate) ?? endDate
-        case .year:
-            weekCount = 53
-            startDate = calendar.date(byAdding: .weekOfYear, value: -53, to: endDate) ?? endDate
-        }
-        
-        // Начинаем с понедельника
-        let startOfWeek = calendar.dateInterval(of: .weekOfYear, for: startDate)?.start ?? startDate
+        // Начинаем с понедельника 53 недели назад (год)
+        let startOfWeek = calendar.dateInterval(of: .weekOfYear, for: endDate)?.start ?? endDate
+        let startDate = calendar.date(byAdding: .weekOfYear, value: -53, to: startOfWeek) ?? endDate
         
         // Группируем записи по дням
         var dailyCounts: [Date: Int] = [:]
         
         for entry in entries {
             let entryDate = calendar.startOfDay(for: entry.date)
-            if entryDate >= startOfWeek && entryDate <= endDate {
+            if entryDate >= startDate && entryDate <= endDate {
                 dailyCounts[entryDate, default: 0] += 1
             }
         }
@@ -275,11 +230,11 @@ extension PlumpyHeatmap {
         // Находим максимальное количество приемов пищи за день
         let maxCount = dailyCounts.values.max() ?? 1
         
-        // Создаем массив данных для heatmap
+        // Создаем массив данных для heatmap (53 недели x 7 дней)
         var heatmapData: [HeatmapDataPoint] = []
         
         // Заполняем сетку по дням недели (воскресенье - суббота)
-        for weekOffset in 0..<weekCount {
+        for weekOffset in 0..<53 {
             for dayOffset in 0..<7 {
                 // Вычисляем дату для текущей ячейки
                 let weekStart = calendar.date(byAdding: .weekOfYear, value: -weekOffset, to: startOfWeek) ?? startDate
@@ -312,7 +267,7 @@ extension PlumpyHeatmap {
             )
         }
         
-        PlumpyHeatmap(data: testData, period: .year)
+        PlumpyHeatmap(data: testData)
             .padding()
             .background(PlumpyTheme.surface)
             .clipShape(RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium))

@@ -396,6 +396,19 @@ struct StatisticsView: View {
     
     private var activityHeatmap: some View {
         VStack(spacing: PlumpyTheme.Spacing.medium) {
+            HStack {
+                Text("Activity Heatmap")
+                    .font(PlumpyTheme.Typography.headline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(PlumpyTheme.textPrimary)
+                
+                Spacer()
+                
+                Text("Last year")
+                    .font(PlumpyTheme.Typography.caption1)
+                    .foregroundColor(PlumpyTheme.textSecondary)
+            }
+            
             if isLoading {
                 RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
                     .fill(PlumpyTheme.surfaceSecondary)
@@ -430,9 +443,9 @@ struct StatisticsView: View {
             } else {
                 // Получаем все записи за последний год для heatmap
                 let allEntries = getAllEntriesForHeatmap()
-                let heatmapData = PlumpyHeatmap.generateHeatmapData(from: allEntries, period: .year)
+                let heatmapData = PlumpyHeatmap.generateHeatmapData(from: allEntries)
                 
-                PlumpyHeatmap(data: heatmapData, period: .year)
+                PlumpyHeatmap(data: heatmapData)
                     .frame(height: 280)
                     .frame(maxWidth: .infinity)
             }
