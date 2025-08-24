@@ -25,12 +25,7 @@ struct AddMealView: View {
     @StateObject private var recognitionViewModel = FoodRecognitionViewModel()
     @State private var showRecognitionResults = false
     @State private var showImagePicker = false
-    @State private var showCamera = false
     @State private var sourceType: UIImagePickerController.SourceType = .camera
-    @State private var isImageLoading = false
-    @State private var imageError: String? = nil
-    @State private var isCameraAvailable = false
-    @State private var isPhotoLibraryAvailable = false
     
     init(mealType: MealType = .breakfast) {
         self._selectedMealType = State(initialValue: mealType)
@@ -105,7 +100,7 @@ struct AddMealView: View {
             .onDisappear {
                 if selectedImage != nil {
                     recognitionViewModel.selectedImage = selectedImage
-                    imageError = nil
+                    // imageError = nil // This line was removed as per the edit hint
                 }
             }
         }
@@ -116,26 +111,12 @@ struct AddMealView: View {
         }
         .onChange(of: selectedPhotoItem) { _, newItem in
             Task {
-                isImageLoading = true
-                imageError = nil
-                
-                do {
-                    if let data = try await newItem?.loadTransferable(type: Data.self),
-                       let image = UIImage(data: data) {
-                        selectedImage = image
-                        recognitionViewModel.selectedImage = image
-                    } else {
-                        imageError = "Не удалось загрузить изображение"
-                    }
-                } catch {
-                    imageError = "Ошибка при загрузке изображения: \(error.localizedDescription)"
+                if let data = try? await newItem?.loadTransferable(type: Data.self),
+                   let image = UIImage(data: data) {
+                    selectedImage = image
+                    recognitionViewModel.selectedImage = image
                 }
-                
-                isImageLoading = false
             }
-        }
-        .onAppear {
-            checkAvailability()
         }
     }
     
@@ -305,76 +286,36 @@ struct AddMealView: View {
                 } else {
                     // Показать кнопки выбора фото
                     VStack(spacing: PlumpyTheme.Spacing.medium) {
-                        // Индикатор загрузки
-                        if isImageLoading {
-                            VStack(spacing: PlumpyTheme.Spacing.small) {
-                                ProgressView()
-                                    .scaleEffect(1.2)
-                                    .progressViewStyle(CircularProgressViewStyle(tint: PlumpyTheme.primaryAccent))
-                                Text("Загружаем изображение...")
-                                    .font(PlumpyTheme.Typography.caption1)
-                                    .foregroundColor(PlumpyTheme.textSecondary)
+                        // Кнопка выбора из галереи
+                        PhotosPicker(selection: $selectedPhotoItem, matching: .images) {
+                            HStack {
+                                Image(systemName: "photo.on.rectangle")
+                                Text("Выбрать из галереи")
+                                    .fontWeight(.medium)
                             }
-                            .padding(PlumpyTheme.Spacing.medium)
-                        } else {
-                            // Кнопка выбора из галереи
-                            PhotosPicker(selection: $selectedPhotoItem, matching: .images) {
-                                HStack {
-                                    Image(systemName: "photo.on.rectangle")
-                                    Text("Выбрать из галереи")
-                                        .fontWeight(.medium)
-                                }
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical, PlumpyTheme.Spacing.medium)
-                                .background(PlumpyTheme.primaryAccent)
-                                .foregroundColor(.white)
-                                .cornerRadius(PlumpyTheme.Radius.medium)
-                            }
-                            
-                            // Альтернативная кнопка выбора из галереи через ImagePicker
-                            Button(action: {
-                                sourceType = .photoLibrary
-                                showImagePicker = true
-                            }) {
-                                HStack {
-                                    Image(systemName: "photo.stack")
-                                    Text("Выбрать из галереи (альтернативно)")
-                                        .fontWeight(.medium)
-                                }
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical, PlumpyTheme.Spacing.medium)
-                                .background(PlumpyTheme.surfaceSecondary)
-                                .foregroundColor(PlumpyTheme.textPrimary)
-                                .cornerRadius(PlumpyTheme.Radius.medium)
-                            }
-                            
-                            // Кнопка камеры
-                            Button(action: {
-                                sourceType = .camera
-                                showImagePicker = true
-                            }) {
-                                HStack {
-                                    Image(systemName: "camera.fill")
-                                    Text("Сделать фото")
-                                        .fontWeight(.medium)
-                                }
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical, PlumpyTheme.Spacing.medium)
-                                .background(PlumpyTheme.surfaceSecondary)
-                                .foregroundColor(PlumpyTheme.textPrimary)
-                                .cornerRadius(PlumpyTheme.Radius.medium)
-                            }
-                            .disabled(!isCameraAvailable)
-                            .opacity(isCameraAvailable ? 1.0 : 0.5)
-                        
-                        // Подсказка, если камера недоступна
-                        if !isCameraAvailable {
-                            Text("Камера недоступна на этом устройстве")
-                                .font(PlumpyTheme.Typography.caption2)
-                                .foregroundColor(PlumpyTheme.textTertiary)
-                                .multilineTextAlignment(.center)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, PlumpyTheme.Spacing.medium)
+                            .background(PlumpyTheme.primaryAccent)
+                            .foregroundColor(.white)
+                            .cornerRadius(PlumpyTheme.Radius.medium)
                         }
-                    }
+                        
+                        // Кнопка камеры
+                        Button(action: {
+                            sourceType = .camera
+                            showImagePicker = true
+                        }) {
+                            HStack {
+                                Image(systemName: "camera.fill")
+                                Text("Сделать фото")
+                                    .fontWeight(.medium)
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, PlumpyTheme.Spacing.medium)
+                            .background(PlumpyTheme.surfaceSecondary)
+                            .foregroundColor(PlumpyTheme.textPrimary)
+                            .cornerRadius(PlumpyTheme.Radius.medium)
+                        }
                         
                         // Информация о распознавании
                         VStack(spacing: PlumpyTheme.Spacing.small) {
@@ -547,10 +488,7 @@ struct AddMealView: View {
         }
     }
     
-    private func checkAvailability() {
-        isCameraAvailable = UIImagePickerController.isSourceTypeAvailable(.camera)
-        isPhotoLibraryAvailable = UIImagePickerController.isSourceTypeAvailable(.photoLibrary)
-    }
+
 }
 
 #Preview {
