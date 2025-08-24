@@ -758,7 +758,7 @@ struct StatisticsView: View {
     // MARK: - Trend Calculations
     
     /// Получить тренд для калорий (сравнение с предыдущим периодом)
-    private func getCaloriesTrend() -> PlumpyTrend {
+    private func getCaloriesTrend() -> PlumpyCard.PlumpyTrend {
         let currentAvg = getAverageCalories()
         let previousAvg = getPreviousPeriodAverageCalories()
         
@@ -772,7 +772,7 @@ struct StatisticsView: View {
     }
     
     /// Получить тренд для количества приемов пищи
-    private func getMealsTrend() -> PlumpyTrend {
+    private func getMealsTrend() -> PlumpyCard.PlumpyTrend {
         let currentAvg = Double(totalMeals) / Double(max(1, uniqueDayCount))
         let previousAvg = getPreviousPeriodAverageMeals()
         
@@ -786,7 +786,7 @@ struct StatisticsView: View {
     }
     
     /// Получить тренд для достижения цели
-    private func getGoalTrend() -> PlumpyTrend {
+    private func getGoalTrend() -> PlumpyCard.PlumpyTrend {
         let currentRate = getGoalAchievementRate()
         let previousRate = getPreviousPeriodGoalRate()
         
@@ -800,7 +800,7 @@ struct StatisticsView: View {
     }
     
     /// Получить тренд для средних дневных калорий
-    private func getAverageDailyCaloriesTrend() -> PlumpyTrend {
+    private func getAverageDailyCaloriesTrend() -> PlumpyCard.PlumpyTrend {
         let currentAvg = averageDailyCalories
         let previousAvg = getPreviousPeriodAverageCalories()
         
@@ -1011,7 +1011,7 @@ struct StatisticsCard: View {
     let subtitle: String?
     let icon: String
     let iconColor: Color
-    let trend: PlumpyTrend
+    let trend: PlumpyCard.PlumpyTrend
     
     enum PlumpyTrend {
         case up
