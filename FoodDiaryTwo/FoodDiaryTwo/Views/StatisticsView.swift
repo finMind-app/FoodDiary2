@@ -15,6 +15,7 @@ struct StatisticsView: View {
     @State private var showingCalendar = false
     @State private var isLoading = false
     @State private var isDataLoading = false
+    @State private var selectedHeatmapMonth = Date() // Новое состояние для выбранного месяца в heatmap
     
     // Кэшированные данные для оптимизации
     @State private var cachedPeriodEntries: [FoodEntry] = []
@@ -397,22 +398,18 @@ struct StatisticsView: View {
     private var activityHeatmap: some View {
         VStack(spacing: PlumpyTheme.Spacing.medium) {
             HStack {
-                Text("Activity Heatmap")
+                Text("Monthly Activity")
                     .font(PlumpyTheme.Typography.headline)
                     .fontWeight(.semibold)
                     .foregroundColor(PlumpyTheme.textPrimary)
                 
                 Spacer()
-                
-                Text("Last year")
-                    .font(PlumpyTheme.Typography.caption1)
-                    .foregroundColor(PlumpyTheme.textSecondary)
             }
             
             if isLoading {
                 RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
                     .fill(PlumpyTheme.surfaceSecondary)
-                    .frame(height: 200)
+                    .frame(height: 280)
                     .frame(maxWidth: .infinity)
                     .overlay(
                         VStack(spacing: PlumpyTheme.Spacing.medium) {
@@ -427,7 +424,7 @@ struct StatisticsView: View {
             } else if cachedPeriodEntries.isEmpty {
                 RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
                     .fill(PlumpyTheme.surfaceSecondary)
-                    .frame(height: 200)
+                    .frame(height: 280)
                     .frame(maxWidth: .infinity)
                     .overlay(
                         VStack(spacing: PlumpyTheme.Spacing.medium) {
@@ -441,13 +438,19 @@ struct StatisticsView: View {
                         }
                     )
             } else {
-                // Получаем все записи за последний год для heatmap
-                let allEntries = getAllEntriesForYearlyHeatmap()
-                let heatmapData = PlumpyHeatmap.generateYearlyHeatmapData(from: allEntries)
+                // Получаем все записи для heatmap
+                let allEntries = getAllEntriesForHeatmap()
+                let heatmapData = PlumpyHeatmap.generateHeatmapData(from: allEntries, for: selectedHeatmapMonth)
                 
-                PlumpyHeatmap(data: heatmapData)
-                    .frame(height: 160)
-                    .frame(maxWidth: .infinity)
+                PlumpyHeatmap(
+                    data: heatmapData,
+                    selectedMonth: selectedHeatmapMonth,
+                    onMonthChanged: { newMonth in
+                        selectedHeatmapMonth = newMonth
+                    }
+                )
+                .frame(height: 240)
+                .frame(maxWidth: .infinity)
             }
         }
         .statisticsCard()
@@ -771,12 +774,12 @@ struct StatisticsView: View {
         return streak
     }
     
-    /// Получить все записи за последний год для heatmap
-    private func getAllEntriesForYearlyHeatmap() -> [FoodEntry] {
+    /// Получить все записи для heatmap (за последние 6 месяцев для возможности переключения)
+    private func getAllEntriesForHeatmap() -> [FoodEntry] {
         let calendar = Calendar.current
         let today = Date()
         let endDate = calendar.startOfDay(for: today)
-        let startDate = calendar.date(byAdding: .year, value: -1, to: endDate) ?? endDate
+        let startDate = calendar.date(byAdding: .month, value: -6, to: endDate) ?? endDate
         
         let descriptor = FetchDescriptor<FoodEntry>(
             predicate: #Predicate<FoodEntry> { entry in
