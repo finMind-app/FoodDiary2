@@ -384,6 +384,6 @@ struct ExportDataView: View {
 }
 
 #Preview {
-    SettingsView(modelContext: try! ModelContainer(for: [AppSettings.self, FoodEntry.self, FoodProduct.self, UserProfile.self]).mainContext)
+    SettingsView(modelContext: try! ModelContainer(for: AppSettings.self, FoodEntry.self, FoodProduct.self, UserProfile.self).mainContext)
         .modelContainer(for: [AppSettings.self, FoodEntry.self, FoodProduct.self, UserProfile.self], inMemory: true)
 }
