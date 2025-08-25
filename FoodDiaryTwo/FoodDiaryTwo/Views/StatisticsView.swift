@@ -51,8 +51,8 @@ struct StatisticsView: View {
             VStack(spacing: 0) {
                 // Navigation Bar
                 PlumpyNavigationBar(
-                    title: "Statistics",
-                    subtitle: "Your nutrition insights"
+                    title: LocalizationManager.shared.localizedString(.statisticsTitle),
+                    subtitle: LocalizationManager.shared.localizedString(.nutritionInsights)
                 )
                 
                 ScrollView {
@@ -111,7 +111,7 @@ struct StatisticsView: View {
     private var periodSelector: some View {
         VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.medium) {
             HStack {
-                Text("Period")
+                Text(LocalizationManager.shared.localizedString(.dailyProgress))
                     .font(PlumpyTheme.Typography.headline)
                     .fontWeight(.semibold)
                     .foregroundColor(PlumpyTheme.textPrimary)
@@ -358,7 +358,7 @@ struct StatisticsView: View {
     
     private var caloriesChart: some View {
         VStack(spacing: PlumpyTheme.Spacing.medium) {
-            Text("Calories Over Time")
+            Text(LocalizationManager.shared.localizedString(.caloriesOverTime))
                 .font(PlumpyTheme.Typography.headline)
                 .fontWeight(.semibold)
                 .foregroundColor(PlumpyTheme.textPrimary)
@@ -375,7 +375,7 @@ struct StatisticsView: View {
                                 ProgressView()
                                     .foregroundColor(PlumpyTheme.primary)
                                 
-                                Text("Loading data...")
+                                Text(LocalizationManager.shared.localizedString(.loadingData))
                                     .font(PlumpyTheme.Typography.caption1)
                                     .foregroundColor(PlumpyTheme.textSecondary)
                             }
@@ -391,7 +391,7 @@ struct StatisticsView: View {
                                     .font(.system(size: 40))
                                     .foregroundColor(PlumpyTheme.textTertiary)
                                 
-                                Text("No data for this period")
+                                Text(LocalizationManager.shared.localizedString(.noDataForPeriod))
                                     .font(PlumpyTheme.Typography.caption1)
                                     .foregroundColor(PlumpyTheme.textTertiary)
                             }
@@ -409,7 +409,7 @@ struct StatisticsView: View {
     private var activityHeatmap: some View {
         VStack(spacing: PlumpyTheme.Spacing.medium) {
             HStack {
-                Text("Monthly Activity")
+                Text(LocalizationManager.shared.localizedString(.monthlyActivity))
                     .font(PlumpyTheme.Typography.headline)
                     .fontWeight(.semibold)
                     .foregroundColor(PlumpyTheme.textPrimary)
@@ -427,7 +427,7 @@ struct StatisticsView: View {
                             ProgressView()
                                 .foregroundColor(PlumpyTheme.primary)
                             
-                            Text("Loading data...")
+                            Text(LocalizationManager.shared.localizedString(.loadingData))
                                 .font(PlumpyTheme.Typography.caption1)
                                 .foregroundColor(PlumpyTheme.textSecondary)
                         }
@@ -443,7 +443,7 @@ struct StatisticsView: View {
                                 .font(.system(size: 40))
                                 .foregroundColor(PlumpyTheme.textTertiary)
                             
-                            Text("No data for this period")
+                            Text(LocalizationManager.shared.localizedString(.noDataForPeriod))
                                 .font(PlumpyTheme.Typography.caption1)
                                 .foregroundColor(PlumpyTheme.textTertiary)
                         }
@@ -474,7 +474,7 @@ struct StatisticsView: View {
     
     private var additionalStats: some View {
         VStack(spacing: PlumpyTheme.Spacing.medium) {
-            Text("Additional Insights")
+            Text(LocalizationManager.shared.localizedString(.additionalInsights))
                 .font(PlumpyTheme.Typography.headline)
                 .fontWeight(.semibold)
                 .foregroundColor(PlumpyTheme.textPrimary)
@@ -485,8 +485,8 @@ struct StatisticsView: View {
                 let unlocked = (try? modelContext.fetch(FetchDescriptor<Achievement>()))?.filter { $0.isUnlocked }.count ?? 0
                 let total = (try? modelContext.fetch(FetchDescriptor<Achievement>()))?.count ?? 0
                 StatisticsInfoCard(
-                    title: "Achievements",
-                    subtitle: "Unlocked: \(unlocked) of \(max(total, 1))",
+                    title: LocalizationManager.shared.localizedString(.achievements),
+                    subtitle: "\(LocalizationManager.shared.localizedString(.unlocked)): \(unlocked) of \(max(total, 1))",
                     icon: "trophy.fill",
                     iconColor: PlumpyTheme.primaryAccent,
                     action: {}
@@ -495,8 +495,8 @@ struct StatisticsView: View {
                 // Самый частый тип приема пищи
                 let mostCommonMeal = getMostCommonMeal()
                 StatisticsInfoCard(
-                    title: "Most Common Meal",
-                    subtitle: "\(mostCommonMeal.type) - \(mostCommonMeal.count) times",
+                    title: LocalizationManager.shared.localizedString(.mostCommonMeal),
+                    subtitle: "\(mostCommonMeal.type) - \(mostCommonMeal.count)",
                     icon: "sunrise.fill",
                     iconColor: PlumpyTheme.warning,
                     action: {}
@@ -505,8 +505,8 @@ struct StatisticsView: View {
                 // Лучший день по калориям
                 let bestDay = getBestDay()
                 StatisticsInfoCard(
-                    title: "Best Day",
-                    subtitle: "\(bestDay.day) - \(bestDay.calories) cal",
+                    title: LocalizationManager.shared.localizedString(.bestDay),
+                    subtitle: "\(bestDay.day) - \(bestDay.calories) \(LocalizationManager.shared.localizedString(.calUnit))",
                     icon: "star.fill",
                     iconColor: PlumpyTheme.warning,
                     action: {}
@@ -515,8 +515,8 @@ struct StatisticsView: View {
                 // Текущая серия дней подряд
                 let currentStreak = getCurrentStreak()
                 StatisticsInfoCard(
-                    title: "Current Streak",
-                    subtitle: "\(currentStreak) days in a row",
+                    title: LocalizationManager.shared.localizedString(.currentStreak),
+                    subtitle: "\(currentStreak) \(LocalizationManager.shared.localizedString(.daysInARow))",
                     icon: "flame.fill",
                     iconColor: PlumpyTheme.error,
                     action: {}
@@ -525,7 +525,7 @@ struct StatisticsView: View {
                 // Среднее количество калорий
                 let averageCalories = getAverageCalories()
                 StatisticsInfoCard(
-                    title: "Average Daily Calories",
+                    title: LocalizationManager.shared.localizedString(.averageDailyCalories),
                     subtitle: String(format: "%.0f cal", averageCalories),
                     icon: "chart.bar.fill",
                     iconColor: PlumpyTheme.primary,
@@ -535,7 +535,7 @@ struct StatisticsView: View {
                 // Процент достижения цели
                 let goalRate = getGoalAchievementRate()
                 StatisticsInfoCard(
-                    title: "Goal Achievement",
+                    title: LocalizationManager.shared.localizedString(.goalAchievement),
                     subtitle: String(format: "%.1f%%", goalRate),
                     icon: "target",
                     iconColor: PlumpyTheme.success,
@@ -545,8 +545,8 @@ struct StatisticsView: View {
                 // Самый калорийный прием пищи
                 let mostCaloricMeal = getMostCaloricMeal()
                 StatisticsInfoCard(
-                    title: "Most Caloric Meal",
-                    subtitle: "\(mostCaloricMeal.type) - \(mostCaloricMeal.calories) cal",
+                    title: LocalizationManager.shared.localizedString(.mostCaloricMeal),
+                    subtitle: "\(mostCaloricMeal.type) - \(mostCaloricMeal.calories) \(LocalizationManager.shared.localizedString(.calUnit))",
                     icon: "bolt.fill",
                     iconColor: PlumpyTheme.warning,
                     action: {}

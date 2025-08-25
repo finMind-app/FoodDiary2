@@ -191,7 +191,7 @@ struct AddMealView: View {
                         }) {
                             HStack {
                                 Image(systemName: "camera.viewfinder")
-                                Text(LocalizationManager.shared.localizedString(.calories))
+                                Text(LocalizationManager.shared.localizedString(.recognizeCalories))
                                     .fontWeight(.medium)
                             }
                             .frame(maxWidth: .infinity)
@@ -218,7 +218,7 @@ struct AddMealView: View {
                     HStack {
                         Image(systemName: "checkmark.circle.fill")
                             .foregroundColor(.green)
-                        Text("Фото готово для анализа")
+                        Text(LocalizationManager.shared.localizedString(.photoReady))
                             .font(PlumpyTheme.Typography.caption1)
                             .foregroundColor(.green)
                     }
@@ -234,7 +234,7 @@ struct AddMealView: View {
                         PhotosPicker(selection: $selectedPhotoItem, matching: .images) {
                             HStack {
                                 Image(systemName: "photo.on.rectangle")
-                                Text("Выбрать из галереи")
+                                Text(LocalizationManager.shared.localizedString(.pickFromGallery))
                                     .fontWeight(.medium)
                             }
                             .frame(maxWidth: .infinity)
@@ -251,7 +251,7 @@ struct AddMealView: View {
                         }) {
                             HStack {
                                 Image(systemName: "camera.fill")
-                                Text("Сделать фото")
+                                Text(LocalizationManager.shared.localizedString(.takePhoto))
                                     .fontWeight(.medium)
                             }
                             .frame(maxWidth: .infinity)
@@ -267,7 +267,7 @@ struct AddMealView: View {
                                 .font(.title2)
                                 .foregroundColor(PlumpyTheme.primaryAccent)
                             
-                            Text("Сфотографируйте еду для автоматического распознавания калорий и БЖУ")
+                            Text(LocalizationManager.shared.localizedString(.photoHint))
                                 .font(PlumpyTheme.Typography.caption1)
                                 .foregroundColor(PlumpyTheme.textSecondary)
                                 .multilineTextAlignment(.center)

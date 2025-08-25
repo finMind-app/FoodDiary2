@@ -132,6 +132,57 @@ enum LocalizationKey: String, CaseIterable {
     case remaining = "remaining"
     case progress = "progress"
     case goalLabel = "goal_label"
+
+    // Профиль
+    case editProfile = "edit_profile"
+    case allTime = "all_time"
+    case mealsLabel = "meals_label"
+    case avgPerDay = "avg_per_day"
+    case achievements = "achievements"
+    case unlockedFormat = "unlocked_format" // expects %d/%d
+    case editDailyCalories = "edit_daily_calories"
+    case runQuestionnaire = "run_questionnaire"
+    case profileSummary = "profile_summary"
+    case heightLabel = "height_label"
+    case weightLabel = "weight_label"
+    case bmiLabel = "bmi_label"
+    case ageLabel = "age_label"
+    case yearsSuffix = "years_suffix"
+    case cmUnit = "cm_unit"
+    case kgUnit = "kg_unit"
+    case profilePhoto = "profile_photo"
+    case tapToChangePhoto = "tap_to_change_photo"
+    case firstName = "first_name"
+    case lastName = "last_name"
+    case emailAddress = "email_address"
+    case enterFirstName = "enter_first_name"
+    case enterLastName = "enter_last_name"
+    case enterEmail = "enter_email"
+
+    // AddMeal photo actions
+    case recognizeCalories = "recognize_calories"
+    case photoReady = "photo_ready"
+    case pickFromGallery = "pick_from_gallery"
+    case takePhoto = "take_photo"
+    case photoHint = "photo_hint"
+
+    // Статистика (доп.)
+    case statisticsTitle = "statistics_title"
+    case nutritionInsights = "nutrition_insights"
+    case caloriesOverTime = "calories_over_time"
+    case loadingData = "loading_data"
+    case noDataForPeriod = "no_data_for_period"
+    case monthlyActivity = "monthly_activity"
+    case additionalInsights = "additional_insights"
+    case unlocked = "unlocked"
+    case mostCommonMeal = "most_common_meal"
+    case mostCaloricMeal = "most_caloric_meal"
+    case bestDay = "best_day"
+    case currentStreak = "current_streak"
+    case daysInARow = "days_in_a_row"
+    case averageDailyCalories = "average_daily_calories"
+    case goalAchievement = "goal_achievement"
+    case maxLabel = "max_label"
     
     // Профиль пользователя
     case userName = "user_name"
@@ -236,7 +287,52 @@ enum LocalizationKey: String, CaseIterable {
             .light: "Light",
             .moderate: "Moderate",
             .active: "Active",
-            .veryActive: "Very Active"
+            .veryActive: "Very Active",
+            .editProfile: "Edit Profile",
+            .allTime: "All-time",
+            .mealsLabel: "Meals",
+            .avgPerDay: "Avg/Day",
+            .achievements: "Achievements",
+            .unlockedFormat: "Unlocked: %d/%d",
+            .editDailyCalories: "Edit Daily Calories",
+            .runQuestionnaire: "Run Questionnaire",
+            .profileSummary: "Profile Summary",
+            .heightLabel: "Height",
+            .weightLabel: "Weight",
+            .bmiLabel: "BMI",
+            .ageLabel: "Age",
+            .yearsSuffix: "years",
+            .cmUnit: "cm",
+            .kgUnit: "kg",
+            .profilePhoto: "Profile Photo",
+            .tapToChangePhoto: "Tap to change photo",
+            .firstName: "First Name",
+            .lastName: "Last Name",
+            .emailAddress: "Email",
+            .enterFirstName: "Enter first name",
+            .enterLastName: "Enter last name",
+            .enterEmail: "Enter email address",
+            .recognizeCalories: "Recognize Calories",
+            .photoReady: "Photo is ready for analysis",
+            .pickFromGallery: "Pick from Gallery",
+            .takePhoto: "Take Photo",
+            .photoHint: "Photograph food to auto-detect calories and macros",
+            .statisticsTitle: "Statistics",
+            .nutritionInsights: "Your nutrition insights",
+            .caloriesOverTime: "Calories Over Time",
+            .loadingData: "Loading data...",
+            .noDataForPeriod: "No data for this period",
+            .monthlyActivity: "Monthly Activity",
+            .additionalInsights: "Additional Insights",
+            .unlocked: "Unlocked",
+            .mostCommonMeal: "Most Common Meal",
+            .mostCaloricMeal: "Most Caloric Meal",
+            .bestDay: "Best Day",
+            .currentStreak: "Current Streak",
+            .daysInARow: "days in a row",
+            .averageDailyCalories: "Average Daily Calories",
+            .goalAchievement: "Goal Achievement",
+            .maxLabel: "Max"
         ]
     }
     
@@ -307,7 +403,52 @@ enum LocalizationKey: String, CaseIterable {
             .light: "Легкий",
             .moderate: "Умеренный",
             .active: "Активный",
-            .veryActive: "Очень Активный"
+            .veryActive: "Очень Активный",
+            .editProfile: "Редактировать профиль",
+            .allTime: "За все время",
+            .mealsLabel: "Приемы",
+            .avgPerDay: "В ср./день",
+            .achievements: "Достижения",
+            .unlockedFormat: "Открыто: %d/%d",
+            .editDailyCalories: "Редактировать дневные калории",
+            .runQuestionnaire: "Пройти анкету",
+            .profileSummary: "Сводка профиля",
+            .heightLabel: "Рост",
+            .weightLabel: "Вес",
+            .bmiLabel: "ИМТ",
+            .ageLabel: "Возраст",
+            .yearsSuffix: "лет",
+            .cmUnit: "см",
+            .kgUnit: "кг",
+            .profilePhoto: "Фото профиля",
+            .tapToChangePhoto: "Нажмите, чтобы изменить фото",
+            .firstName: "Имя",
+            .lastName: "Фамилия",
+            .emailAddress: "Email",
+            .enterFirstName: "Введите имя",
+            .enterLastName: "Введите фамилию",
+            .enterEmail: "Введите email",
+            .recognizeCalories: "Распознать калории",
+            .photoReady: "Фото готово для анализа",
+            .pickFromGallery: "Выбрать из галереи",
+            .takePhoto: "Сделать фото",
+            .photoHint: "Сфотографируйте еду для авто-распознавания калорий и БЖУ",
+            .statisticsTitle: "Статистика",
+            .nutritionInsights: "Ваши инсайты питания",
+            .caloriesOverTime: "Калории со временем",
+            .loadingData: "Загрузка данных...",
+            .noDataForPeriod: "Нет данных за этот период",
+            .monthlyActivity: "Месячная активность",
+            .additionalInsights: "Дополнительные сведения",
+            .unlocked: "Открыто",
+            .mostCommonMeal: "Самый частый прием",
+            .mostCaloricMeal: "Самый калорийный прием",
+            .bestDay: "Лучший день",
+            .currentStreak: "Текущая серия",
+            .daysInARow: "дней подряд",
+            .averageDailyCalories: "Средние дневные калории",
+            .goalAchievement: "Достижение цели",
+            .maxLabel: "Макс"
         ]
     }
     
@@ -378,7 +519,52 @@ enum LocalizationKey: String, CaseIterable {
             .light: "Легкий",
             .moderate: "Помірний",
             .active: "Активний",
-            .veryActive: "Дуже Активний"
+            .veryActive: "Дуже Активний",
+            .editProfile: "Редагувати профіль",
+            .allTime: "За весь час",
+            .mealsLabel: "Прийоми",
+            .avgPerDay: "Сер./день",
+            .achievements: "Досягнення",
+            .unlockedFormat: "Відкрито: %d/%d",
+            .editDailyCalories: "Редагувати денні калорії",
+            .runQuestionnaire: "Пройти анкету",
+            .profileSummary: "Підсумок профілю",
+            .heightLabel: "Зріст",
+            .weightLabel: "Вага",
+            .bmiLabel: "ІМТ",
+            .ageLabel: "Вік",
+            .yearsSuffix: "років",
+            .cmUnit: "см",
+            .kgUnit: "кг",
+            .profilePhoto: "Фото профілю",
+            .tapToChangePhoto: "Торкніться, щоб змінити фото",
+            .firstName: "Ім'я",
+            .lastName: "Прізвище",
+            .emailAddress: "Email",
+            .enterFirstName: "Введіть ім'я",
+            .enterLastName: "Введіть прізвище",
+            .enterEmail: "Введіть email",
+            .recognizeCalories: "Розпізнати калорії",
+            .photoReady: "Фото готове до аналізу",
+            .pickFromGallery: "Обрати з галереї",
+            .takePhoto: "Зробити фото",
+            .photoHint: "Зфотографуйте їжу для авто-розпізнавання калорій та БЖВ",
+            .statisticsTitle: "Статистика",
+            .nutritionInsights: "Ваші інсайти харчування",
+            .caloriesOverTime: "Калорії з часом",
+            .loadingData: "Завантаження даних...",
+            .noDataForPeriod: "Немає даних за цей період",
+            .monthlyActivity: "Місячна активність",
+            .additionalInsights: "Додаткові відомості",
+            .unlocked: "Відкрито",
+            .mostCommonMeal: "Найчастіший прийом",
+            .mostCaloricMeal: "Найкалорійніший прийом",
+            .bestDay: "Найкращий день",
+            .currentStreak: "Поточна серія",
+            .daysInARow: "днів поспіль",
+            .averageDailyCalories: "Середні денні калорії",
+            .goalAchievement: "Досягнення цілі",
+            .maxLabel: "Макс"
         ]
     }
 
@@ -449,7 +635,52 @@ enum LocalizationKey: String, CaseIterable {
             .light: "Ligero",
             .moderate: "Moderado",
             .active: "Activo",
-            .veryActive: "Muy activo"
+            .veryActive: "Muy activo",
+            .editProfile: "Editar perfil",
+            .allTime: "Todo el tiempo",
+            .mealsLabel: "Comidas",
+            .avgPerDay: "Prom./día",
+            .achievements: "Logros",
+            .unlockedFormat: "Desbloqueados: %d/%d",
+            .editDailyCalories: "Editar calorías diarias",
+            .runQuestionnaire: "Realizar cuestionario",
+            .profileSummary: "Resumen del perfil",
+            .heightLabel: "Altura",
+            .weightLabel: "Peso",
+            .bmiLabel: "IMC",
+            .ageLabel: "Edad",
+            .yearsSuffix: "años",
+            .cmUnit: "cm",
+            .kgUnit: "kg",
+            .profilePhoto: "Foto de perfil",
+            .tapToChangePhoto: "Toca para cambiar la foto",
+            .firstName: "Nombre",
+            .lastName: "Apellido",
+            .emailAddress: "Email",
+            .enterFirstName: "Introduce el nombre",
+            .enterLastName: "Introduce el apellido",
+            .enterEmail: "Introduce el email",
+            .recognizeCalories: "Reconocer calorías",
+            .photoReady: "La foto está lista para analizar",
+            .pickFromGallery: "Elegir de la galería",
+            .takePhoto: "Tomar foto",
+            .photoHint: "Fotografía la comida para detectar calorías y macros",
+            .statisticsTitle: "Estadísticas",
+            .nutritionInsights: "Tus insights de nutrición",
+            .caloriesOverTime: "Calorías en el tiempo",
+            .loadingData: "Cargando datos...",
+            .noDataForPeriod: "No hay datos para este período",
+            .monthlyActivity: "Actividad mensual",
+            .additionalInsights: "Insights adicionales",
+            .unlocked: "Desbloqueado",
+            .mostCommonMeal: "Comida más común",
+            .mostCaloricMeal: "Comida más calórica",
+            .bestDay: "Mejor día",
+            .currentStreak: "Racha actual",
+            .daysInARow: "días seguidos",
+            .averageDailyCalories: "Calorías diarias promedio",
+            .goalAchievement: "Logro de la meta",
+            .maxLabel: "Máx"
         ]
     }
 
@@ -520,7 +751,52 @@ enum LocalizationKey: String, CaseIterable {
             .light: "Léger",
             .moderate: "Modéré",
             .active: "Actif",
-            .veryActive: "Très actif"
+            .veryActive: "Très actif",
+            .editProfile: "Modifier le profil",
+            .allTime: "Tout temps",
+            .mealsLabel: "Repas",
+            .avgPerDay: "Moy./jour",
+            .achievements: "Succès",
+            .unlockedFormat: "Déverrouillés : %d/%d",
+            .editDailyCalories: "Modifier calories quotidiennes",
+            .runQuestionnaire: "Remplir le questionnaire",
+            .profileSummary: "Résumé du profil",
+            .heightLabel: "Taille",
+            .weightLabel: "Poids",
+            .bmiLabel: "IMC",
+            .ageLabel: "Âge",
+            .yearsSuffix: "ans",
+            .cmUnit: "cm",
+            .kgUnit: "kg",
+            .profilePhoto: "Photo de profil",
+            .tapToChangePhoto: "Touchez pour changer la photo",
+            .firstName: "Prénom",
+            .lastName: "Nom",
+            .emailAddress: "Email",
+            .enterFirstName: "Entrez le prénom",
+            .enterLastName: "Entrez le nom",
+            .enterEmail: "Entrez l'email",
+            .recognizeCalories: "Reconnaître les calories",
+            .photoReady: "La photo est prête pour l'analyse",
+            .pickFromGallery: "Choisir depuis la galerie",
+            .takePhoto: "Prendre une photo",
+            .photoHint: "Photographiez la nourriture pour détecter calories et macros",
+            .statisticsTitle: "Statistiques",
+            .nutritionInsights: "Vos analyses nutritionnelles",
+            .caloriesOverTime: "Calories dans le temps",
+            .loadingData: "Chargement des données...",
+            .noDataForPeriod: "Aucune donnée pour cette période",
+            .monthlyActivity: "Activité mensuelle",
+            .additionalInsights: "Analyses supplémentaires",
+            .unlocked: "Déverrouillé",
+            .mostCommonMeal: "Repas le plus fréquent",
+            .mostCaloricMeal: "Repas le plus calorique",
+            .bestDay: "Meilleure journée",
+            .currentStreak: "Série actuelle",
+            .daysInARow: "jours d'affilée",
+            .averageDailyCalories: "Calories quotidiennes moyennes",
+            .goalAchievement: "Atteinte de l'objectif",
+            .maxLabel: "Max"
         ]
     }
 }

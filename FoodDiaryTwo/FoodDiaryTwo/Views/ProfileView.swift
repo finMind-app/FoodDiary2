@@ -34,10 +34,10 @@ struct ProfileView: View {
             VStack(spacing: 0) {
                 // Navigation Bar
                 PlumpyNavigationBar(
-                    title: "Profile",
+                    title: LocalizationManager.shared.localizedString(.profile),
                     rightButton: PlumpyNavigationButton(
                         icon: "gear",
-                        title: "Settings",
+                        title: LocalizationManager.shared.localizedString(.settings),
                         style: .outline
                     ) {
                         showingSettings = true
@@ -117,19 +117,19 @@ struct ProfileView: View {
                 
                 // Имя и email
                 VStack(spacing: PlumpyTheme.Spacing.tiny) {
-                    Text(users.first?.name ?? "Your Name") // Updated to use users.first
+                    Text(users.first?.name ?? LocalizationManager.shared.localizedString(.userName)) // Updated to use users.first
                         .font(PlumpyTheme.Typography.title1)
                         .fontWeight(.bold)
                         .foregroundColor(PlumpyTheme.textPrimary)
                     
-                    Text(users.first?.email ?? "No Email") // Updated to use users.first?.email
+                    Text(users.first?.email ?? LocalizationManager.shared.localizedString(.emailAddress)) // Updated to use users.first?.email
                         .font(PlumpyTheme.Typography.subheadline)
                         .foregroundColor(PlumpyTheme.textSecondary)
                 }
                 
                 // Кнопка редактирования
                 PlumpyButton(
-                    title: "Edit Profile",
+                    title: LocalizationManager.shared.localizedString(.editProfile),
                     icon: "pencil",
                     style: .outline
                 ) {
@@ -143,16 +143,16 @@ struct ProfileView: View {
     
     private var profileStats: some View {
         VStack(spacing: PlumpyTheme.Spacing.small) {
-            Text("All-time")
+            Text(LocalizationManager.shared.localizedString(.allTime))
                 .font(PlumpyTheme.Typography.subheadline)
                 .fontWeight(.semibold)
                 .foregroundColor(PlumpyTheme.textPrimary)
                 .frame(maxWidth: .infinity, alignment: .leading)
             
             HStack(spacing: PlumpyTheme.Spacing.large) {
-                statPill(title: "Meals", value: String(allTimeTotalMeals), icon: "fork.knife", color: PlumpyTheme.primaryAccent)
-                statPill(title: "Calories", value: String(allTimeTotalCalories), icon: "flame.fill", color: PlumpyTheme.warning)
-                statPill(title: "Avg/Day", value: String(averageDailyCaloriesAllTime), icon: "chart.line.uptrend.xyaxis", color: PlumpyTheme.secondaryAccent)
+                statPill(title: LocalizationManager.shared.localizedString(.mealsLabel), value: String(allTimeTotalMeals), icon: "fork.knife", color: PlumpyTheme.primaryAccent)
+                statPill(title: LocalizationManager.shared.localizedString(.calories), value: String(allTimeTotalCalories), icon: "flame.fill", color: PlumpyTheme.warning)
+                statPill(title: LocalizationManager.shared.localizedString(.avgPerDay), value: String(averageDailyCaloriesAllTime), icon: "chart.line.uptrend.xyaxis", color: PlumpyTheme.secondaryAccent)
             }
         }
         .plumpyCard()
@@ -188,7 +188,7 @@ struct ProfileView: View {
     private var achievementsSection: some View {
         VStack(spacing: PlumpyTheme.Spacing.medium) {
             HStack {
-                Text("Achievements")
+                Text(LocalizationManager.shared.localizedString(.achievements))
                     .font(PlumpyTheme.Typography.headline)
                     .fontWeight(.semibold)
                     .foregroundColor(PlumpyTheme.textPrimary)
@@ -234,7 +234,7 @@ struct ProfileView: View {
                                 .fontWeight(.medium)
                                 .foregroundColor(PlumpyTheme.textPrimary)
                                 .multilineTextAlignment(.center)
-                                .lineLimit(2)
+                                .lineLimit(1)
                                 .minimumScaleFactor(0.7)
                                 .fixedSize(horizontal: false, vertical: true)
                         }
@@ -248,7 +248,7 @@ struct ProfileView: View {
         .onAppear {
             let newly = AchievementsService.shared.evaluateAndSync(in: modelContext)
             if let first = newly.first {
-                toastText = "Unlocked: \(first.title)"
+                toastText = "\(LocalizationManager.shared.localizedString(.unlocked)) : \(first.title)"
                 withAnimation { showAchievementToast = true }
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
                     withAnimation { showAchievementToast = false }
@@ -269,8 +269,8 @@ struct ProfileView: View {
     private var goalsControls: some View {
         VStack(spacing: PlumpyTheme.Spacing.small) {
             HStack(spacing: PlumpyTheme.Spacing.medium) {
-                PlumpyButton(title: "Edit Daily Calories", icon: "flame.fill", style: .outline, size: .small) { showingCalorieEditor = true }
-                PlumpyButton(title: "Run Questionnaire", icon: "list.bullet.rectangle", style: .outline, size: .small) { navigateQuestionnaire = true }
+                PlumpyButton(title: LocalizationManager.shared.localizedString(.editDailyCalories), icon: "flame.fill", style: .outline, size: .small) { showingCalorieEditor = true }
+                PlumpyButton(title: LocalizationManager.shared.localizedString(.runQuestionnaire), icon: "list.bullet.rectangle", style: .outline, size: .small) { navigateQuestionnaire = true }
             }
         }
         .plumpyCard()
@@ -279,19 +279,19 @@ struct ProfileView: View {
     private var profileInfoDashboard: some View {
         let user = users.first
         return VStack(spacing: PlumpyTheme.Spacing.small) {
-            Text("Profile Summary")
+            Text(LocalizationManager.shared.localizedString(.profileSummary))
                 .font(PlumpyTheme.Typography.subheadline)
                 .fontWeight(.semibold)
                 .foregroundColor(PlumpyTheme.textPrimary)
                 .frame(maxWidth: .infinity, alignment: .leading)
             
             LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: PlumpyTheme.Spacing.medium), count: 2), spacing: PlumpyTheme.Spacing.medium) {
-                dashboardCard(icon: "target", title: "Goal", value: user?.goal.displayName ?? "-")
-                dashboardCard(icon: "flame.fill", title: "Calories", value: user != nil ? "\(DailyGoalsService.shared.getDailyCalorieGoal(from: modelContext)) cal" : "-")
-                dashboardCard(icon: "ruler", title: "Height", value: user != nil ? "\(Int(user!.height)) cm" : "-")
-                dashboardCard(icon: "scalemass", title: "Weight", value: user != nil ? String(format: "%.1f kg", user!.weight) : "-")
-                dashboardCard(icon: "heart.text.square", title: "BMI", value: user != nil ? String(format: "%.1f", user!.bmi) : "-")
-                dashboardCard(icon: "calendar", title: "Age", value: user != nil ? "\(user!.age) years" : "-")
+                dashboardCard(icon: "target", title: LocalizationManager.shared.localizedString(.goal), value: user?.goal.displayName ?? "-")
+                dashboardCard(icon: "flame.fill", title: LocalizationManager.shared.localizedString(.calories), value: user != nil ? "\(DailyGoalsService.shared.getDailyCalorieGoal(from: modelContext)) \(LocalizationManager.shared.localizedString(.calUnit))" : "-")
+                dashboardCard(icon: "ruler", title: LocalizationManager.shared.localizedString(.heightLabel), value: user != nil ? "\(Int(user!.height)) \(LocalizationManager.shared.localizedString(.cmUnit))" : "-")
+                dashboardCard(icon: "scalemass", title: LocalizationManager.shared.localizedString(.weightLabel), value: user != nil ? String(format: "%.1f \(LocalizationManager.shared.localizedString(.kgUnit))", user!.weight) : "-")
+                dashboardCard(icon: "heart.text.square", title: LocalizationManager.shared.localizedString(.bmiLabel), value: user != nil ? String(format: "%.1f", user!.bmi) : "-")
+                dashboardCard(icon: "calendar", title: LocalizationManager.shared.localizedString(.ageLabel), value: user != nil ? "\(user!.age) \(LocalizationManager.shared.localizedString(.yearsSuffix))" : "-")
             }
             .frame(maxWidth: .infinity)
             .animation(.easeInOut(duration: 0.3), value: user?.goal)
