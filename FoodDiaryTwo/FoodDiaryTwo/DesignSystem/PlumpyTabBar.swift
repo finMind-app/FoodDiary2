@@ -15,9 +15,11 @@ struct PlumpyTabBar: View {
         HStack(spacing: PlumpyTheme.Spacing.medium) {
             ForEach(0..<tabs.count, id: \.self) { index in
                 Button(action: {
+                    PerformanceLogger.begin("tab_button_\(index)")
                     withAnimation(PlumpyTheme.Animation.spring) {
                         selectedTab = index
                     }
+                    PerformanceLogger.end("tab_button_\(index)")
                 }) {
                     VStack(spacing: 2) {
                         Image(systemName: tabs[index].icon)
@@ -47,7 +49,7 @@ struct PlumpyTabBar: View {
             RoundedRectangle(cornerRadius: PlumpyTheme.Radius.extraLarge)
                 .fill(PlumpyTheme.surface)
                 .shadow(
-                    color: PlumpyTheme.shadow.opacity(0.08),
+                    color: PlumpyTheme.shadow.opacity(0.06),
                     radius: PlumpyTheme.Shadow.medium.radius,
                     x: PlumpyTheme.Shadow.medium.x,
                     y: PlumpyTheme.Shadow.medium.y

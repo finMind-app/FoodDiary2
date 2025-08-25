@@ -36,50 +36,50 @@ enum PlumpyTheme {
     // Фоновые цвета (адаптивные)
     static var background: Color {
         Color(UIColor { traitCollection in
-            traitCollection.userInterfaceStyle == .dark ? UIColor(hex: "#0F0F0F") : UIColor(hex: "#FFFFFF")
+            traitCollection.userInterfaceStyle == .dark ? UIColor(hex: "#0B0B0C") : UIColor(hex: "#FFFFFF")
         })
     }
     
     static var surface: Color {
         Color(UIColor { traitCollection in
-            traitCollection.userInterfaceStyle == .dark ? UIColor(hex: "#1A1A1A") : UIColor(hex: "#FFFFFF")
+            traitCollection.userInterfaceStyle == .dark ? UIColor(hex: "#141416") : UIColor(hex: "#FFFFFF")
         })
     }
     
     static var surfaceSecondary: Color {
         Color(UIColor { traitCollection in
-            traitCollection.userInterfaceStyle == .dark ? UIColor(hex: "#262626") : UIColor(hex: "#FAFAFA")
+            traitCollection.userInterfaceStyle == .dark ? UIColor(hex: "#1E1F22") : UIColor(hex: "#FAFAFA")
         })
     }
     
     static var surfaceTertiary: Color {
         Color(UIColor { traitCollection in
-            traitCollection.userInterfaceStyle == .dark ? UIColor(hex: "#404040") : UIColor(hex: "#F5F5F5")
+            traitCollection.userInterfaceStyle == .dark ? UIColor(hex: "#2A2C31") : UIColor(hex: "#F5F5F5")
         })
     }
     
     // Текстовые цвета (адаптивные)
     static var textPrimary: Color {
         Color(UIColor { traitCollection in
-            traitCollection.userInterfaceStyle == .dark ? UIColor(hex: "#FFFFFF") : UIColor(hex: "#171717")
+            traitCollection.userInterfaceStyle == .dark ? UIColor(hex: "#EDEEF0") : UIColor(hex: "#171717")
         })
     }
     
     static var textSecondary: Color {
         Color(UIColor { traitCollection in
-            traitCollection.userInterfaceStyle == .dark ? UIColor(hex: "#A3A3A3") : UIColor(hex: "#525252")
+            traitCollection.userInterfaceStyle == .dark ? UIColor(hex: "#A9AFB8") : UIColor(hex: "#525252")
         })
     }
     
     static var textTertiary: Color {
         Color(UIColor { traitCollection in
-            traitCollection.userInterfaceStyle == .dark ? UIColor(hex: "#737373") : UIColor(hex: "#A3A3A3")
+            traitCollection.userInterfaceStyle == .dark ? UIColor(hex: "#7C828C") : UIColor(hex: "#A3A3A3")
         })
     }
     
     static var textInverse: Color {
         Color(UIColor { traitCollection in
-            traitCollection.userInterfaceStyle == .dark ? UIColor(hex: "#171717") : UIColor(hex: "#FFFFFF")
+            traitCollection.userInterfaceStyle == .dark ? UIColor(hex: "#121315") : UIColor(hex: "#FFFFFF")
         })
     }
     
@@ -92,13 +92,13 @@ enum PlumpyTheme {
     // Границы и разделители (адаптивные)
     static var border: Color {
         Color(UIColor { traitCollection in
-            traitCollection.userInterfaceStyle == .dark ? UIColor(hex: "#404040") : UIColor(hex: "#E5E5E5")
+            traitCollection.userInterfaceStyle == .dark ? UIColor(hex: "#2E3136") : UIColor(hex: "#E5E5E5")
         })
     }
     
     static var borderLight: Color {
         Color(UIColor { traitCollection in
-            traitCollection.userInterfaceStyle == .dark ? UIColor(hex: "#525252") : UIColor(hex: "#F5F5F5")
+            traitCollection.userInterfaceStyle == .dark ? UIColor(hex: "#3A3E45") : UIColor(hex: "#F5F5F5")
         })
     }
     

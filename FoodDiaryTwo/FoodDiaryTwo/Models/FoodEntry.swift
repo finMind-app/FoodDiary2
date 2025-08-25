@@ -53,15 +53,25 @@ final class FoodEntry {
     }
     
     var formattedTime: String {
-        let formatter = DateFormatter()
-        formatter.timeStyle = .short
-        return formatter.string(from: date)
+        return FoodEntryFormatters.shared.timeFormatter.string(from: date)
     }
     
     var formattedDate: String {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .medium
-        return formatter.string(from: date)
+        return FoodEntryFormatters.shared.dateFormatter.string(from: date)
+    }
+}
+
+final class FoodEntryFormatters {
+    static let shared = FoodEntryFormatters()
+    let timeFormatter: DateFormatter
+    let dateFormatter: DateFormatter
+    private init() {
+        let tf = DateFormatter()
+        tf.timeStyle = .short
+        timeFormatter = tf
+        let df = DateFormatter()
+        df.dateStyle = .medium
+        dateFormatter = df
     }
 }
 

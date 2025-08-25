@@ -16,6 +16,11 @@ struct ProfileView: View {
     @State private var showingCalorieEditor = false
     @State private var showingQuestionnaire = false
     @State private var navigateQuestionnaire = false
+    @State private var showingAchievementDetail = false
+    @State private var selectedAchievement: Achievement?
+    @State private var showAchievementToast = false
+    @State private var toastText = ""
+    @Query private var achievementsQuery: [Achievement]
     
     @Query private var users: [UserProfile] // Using @Query to fetch user profiles
     @Query private var allFoodEntries: [FoodEntry]
@@ -67,6 +72,7 @@ struct ProfileView: View {
                 } label: { EmptyView() }
             }
         }
+        .achievementToast(isPresented: showAchievementToast, text: toastText)
         }
         .sheet(isPresented: $showingEditProfile) {
             EditProfileView()
@@ -189,33 +195,41 @@ struct ProfileView: View {
                 
                 Spacer()
                 
-                PlumpyBadge(
-                    text: "8/15",
-                    style: .primary,
-                    size: .medium
-                )
+                let unlockedCount = achievementsQuery.filter { $0.isUnlocked }.count
+                let totalCount = achievementsQuery.count
+                PlumpyBadge(text: "\(unlockedCount)/\(max(totalCount, 1))", style: .primary, size: .medium)
             }
             
+            let achievements = achievementsQuery.sorted { a, b in
+                if a.isUnlocked != b.isUnlocked { return a.isUnlocked && !b.isUnlocked }
+                return a.title < b.title
+            }
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: PlumpyTheme.Spacing.medium) {
-                    ForEach(0..<8, id: \.self) { index in
+                    ForEach(achievements, id: \.id) { ach in
                         VStack(spacing: PlumpyTheme.Spacing.small) {
-                            Circle()
-                                .fill(PlumpyTheme.primaryAccent)
-                                .frame(width: 56, height: 56)
-                                .overlay(
-                                    Image(systemName: achievementIcons[index])
-                                        .font(.title2)
-                                        .foregroundColor(PlumpyTheme.textInverse)
-                                )
-                                .shadow(
-                                    color: PlumpyTheme.primaryAccent.opacity(0.3),
-                                    radius: PlumpyTheme.Shadow.medium.radius,
-                                    x: PlumpyTheme.Shadow.medium.x,
-                                    y: PlumpyTheme.Shadow.medium.y
-                                )
+                            Button(action: {
+                                selectedAchievement = ach
+                                showingAchievementDetail = true
+                            }) {
+                                Circle()
+                                    .fill(ach.isUnlocked ? Color(hex: ach.colorHex) : PlumpyTheme.neutral700)
+                                    .frame(width: 56, height: 56)
+                                    .overlay(
+                                        Image(systemName: ach.icon)
+                                            .font(.title2)
+                                            .foregroundColor(ach.isUnlocked ? PlumpyTheme.textInverse : PlumpyTheme.textTertiary)
+                                    )
+                                    .shadow(
+                                        color: (ach.isUnlocked ? Color(hex: ach.colorHex) : PlumpyTheme.neutral700).opacity(0.3),
+                                        radius: PlumpyTheme.Shadow.medium.radius,
+                                        x: PlumpyTheme.Shadow.medium.x,
+                                        y: PlumpyTheme.Shadow.medium.y
+                                    )
+                            }
+                            .buttonStyle(PlainButtonStyle())
                             
-                            Text(achievementTitles[index])
+                            Text(ach.title)
                                 .font(PlumpyTheme.Typography.caption1)
                                 .fontWeight(.medium)
                                 .foregroundColor(PlumpyTheme.textPrimary)
@@ -231,39 +245,26 @@ struct ProfileView: View {
             }
         }
         .plumpyCard()
+        .onAppear {
+            let newly = AchievementsService.shared.evaluateAndSync(in: modelContext)
+            if let first = newly.first {
+                toastText = "Unlocked: \(first.title)"
+                withAnimation { showAchievementToast = true }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                    withAnimation { showAchievementToast = false }
+                }
+            }
+        }
+        .sheet(isPresented: $showingAchievementDetail) {
+            if let ach = selectedAchievement {
+                AchievementDetailView(achievement: ach)
+            }
+        }
     }
-    
-    // quickActionsSection удален по требованию
-    
-    // profileSettingsSection удален по требованию
     
     // MARK: - Helper Properties
     
-    private var achievementIcons: [String] {
-        [
-            "flame.fill",
-            "target",
-            "star.fill",
-            "trophy.fill",
-            "heart.fill",
-            "leaf.fill",
-            "sun.max.fill",
-            "moon.fill"
-        ]
-    }
-    
-    private var achievementTitles: [String] {
-        [
-            "First Meal",
-            "Goal Setter",
-            "Streak Master",
-            "Calorie Counter",
-            "Healthy Eater",
-            "Photo Pro",
-            "Early Bird",
-            "Night Owl"
-        ]
-    }
+    // legacy arrays removed
 
     private var goalsControls: some View {
         VStack(spacing: PlumpyTheme.Spacing.small) {
@@ -474,6 +475,77 @@ struct EditProfileView: View {
         dismiss()
     }
 
+}
+
+// MARK: - Achievement Detail View
+
+struct AchievementDetailView: View {
+    let achievement: Achievement
+    @Environment(\.dismiss) private var dismiss
+    
+    var body: some View {
+        VStack(spacing: PlumpyTheme.Spacing.medium) {
+            HStack {
+                Spacer()
+                Button(action: { dismiss() }) {
+                    Image(systemName: "xmark")
+                        .foregroundColor(PlumpyTheme.textSecondary)
+                }
+            }
+            
+            Circle()
+                .fill(achievement.isUnlocked ? Color(hex: achievement.colorHex) : PlumpyTheme.neutral700)
+                .frame(width: 64, height: 64)
+                .overlay(
+                    Image(systemName: achievement.icon)
+                        .font(.title2)
+                        .foregroundColor(achievement.isUnlocked ? PlumpyTheme.textInverse : PlumpyTheme.textTertiary)
+                )
+            
+            Text(achievement.title)
+                .font(PlumpyTheme.Typography.title3)
+                .foregroundColor(PlumpyTheme.textPrimary)
+            
+            Text(achievement.detail)
+                .font(PlumpyTheme.Typography.body)
+                .foregroundColor(PlumpyTheme.textSecondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, PlumpyTheme.Spacing.large)
+            
+            if !achievement.isUnlocked {
+                ProgressView(value: min(1, achievement.target == 0 ? 0 : achievement.progress / achievement.target))
+                    .tint(PlumpyTheme.primaryAccent)
+            }
+            
+            Spacer()
+        }
+        .padding()
+        .background(PlumpyTheme.surface)
+        .presentationDetents([.fraction(0.35)])
+    }
+}
+
+// MARK: - Toast Overlay Modifier
+extension View {
+    func achievementToast(isPresented: Bool, text: String) -> some View {
+        ZStack(alignment: .top) {
+            self
+            if isPresented {
+                HStack {
+                    Image(systemName: "trophy.fill")
+                        .foregroundColor(PlumpyTheme.textInverse)
+                    Text(text)
+                        .font(PlumpyTheme.Typography.caption1)
+                        .foregroundColor(PlumpyTheme.textInverse)
+                }
+                .padding(.horizontal, PlumpyTheme.Spacing.medium)
+                .padding(.vertical, PlumpyTheme.Spacing.small)
+                .background(PlumpyTheme.primaryAccent)
+                .clipShape(RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium))
+                .padding(.top, 16)
+            }
+        }
+    }
 }
 
 #Preview {

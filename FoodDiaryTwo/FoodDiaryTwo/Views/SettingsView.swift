@@ -13,7 +13,7 @@ struct SettingsView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var users: [UserProfile]
     @Query private var appSettings: [AppSettings]
-    
+
     @State private var settingsManager: AppSettingsManager?
     @State private var showingLanguagePicker = false
     @State private var showingTimePicker = false

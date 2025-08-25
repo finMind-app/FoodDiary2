@@ -16,6 +16,9 @@ struct HistoryView: View {
     @State private var selectedPeriod: HistoryPeriod = .week
     @State private var selectedDate = Date()
     @State private var showingCalendar = false
+    @State private var pagedEntries: [FoodEntry] = []
+    @State private var pageSize = 30
+    @State private var isLoadingPage = false
     
     enum HistoryPeriod: String, CaseIterable {
         case week = "week"
@@ -164,7 +167,7 @@ struct HistoryView: View {
                     .foregroundColor(PlumpyTheme.textSecondary)
             }
             
-            let entries = filteredEntries
+            let entries = pagedEntries
             if entries.isEmpty {
                 PlumpyEmptyState(
                     icon: "clock",
@@ -183,11 +186,25 @@ struct HistoryView: View {
                     ForEach(entries) { entry in
                         FoodEntryHistoryCard(entry: entry)
                             .frame(height: 80)
+                            .onAppear {
+                                if entry.id == entries.last?.id {
+                                    loadNextPageIfNeeded()
+                                }
+                            }
+                    }
+                    if isLoadingPage {
+                        ProgressView().padding()
                     }
                 }
             }
         }
         .plumpyCard()
+        .task(id: filteredEntries.map(\.id)) {
+            PerformanceLogger.begin("history_filter_compute")
+            // reset paging on new filter
+            pagedEntries = Array(filteredEntries.prefix(pageSize))
+            PerformanceLogger.end("history_filter_compute")
+        }
     }
 
     private var filteredEntries: [FoodEntry] {
@@ -245,6 +262,23 @@ struct HistoryView: View {
         
         // Сортировка по дате (новые сначала)
         return entries.sorted { $0.date > $1.date }
+    }
+
+    private func loadNextPageIfNeeded() {
+        guard !isLoadingPage else { return }
+        let currentCount = pagedEntries.count
+        guard currentCount < filteredEntries.count else { return }
+        isLoadingPage = true
+        let nextEnd = min(currentCount + pageSize, filteredEntries.count)
+        DispatchQueue.global(qos: .userInitiated).async {
+            let nextSlice = Array(filteredEntries[currentCount..<nextEnd])
+            DispatchQueue.main.async {
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    pagedEntries.append(contentsOf: nextSlice)
+                    isLoadingPage = false
+                }
+            }
+        }
     }
     
     private func formatDate(_ date: Date) -> String {
@@ -305,8 +339,18 @@ struct FoodEntryHistoryCard: View {
         }) {
             HStack(spacing: PlumpyTheme.Spacing.medium) {
                 // Фото или иконка
-                if let photoData = entry.photoData, let uiImage = UIImage(data: photoData) {
-                    Image(uiImage: uiImage)
+                if let photoData = entry.photoData {
+                    let key = entry.id.uuidString
+                    let image: UIImage
+                    if let cached = ImageCache.shared.image(forKey: key) {
+                        image = cached
+                    } else if let ui = UIImage(data: photoData) {
+                        ImageCache.shared.set(ui, forKey: key)
+                        image = ui
+                    } else {
+                        image = UIImage()
+                    }
+                    Image(uiImage: image)
                         .resizable()
                         .aspectRatio(contentMode: .fill)
                         .frame(width: PlumpyTheme.Spacing.huge, height: PlumpyTheme.Spacing.huge)

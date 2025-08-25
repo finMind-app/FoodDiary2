@@ -10,6 +10,7 @@ import SwiftData
 
 struct ContentView: View {
     @State private var selectedTab = 0
+    @State private var lastTabSwitchMark = ""
     
     var body: some View {
         ZStack {
@@ -17,22 +18,23 @@ struct ContentView: View {
                 .ignoresSafeArea()
             
             VStack(spacing: 0) {
-                TabView(selection: $selectedTab) {
-                    HomeView()
-                        .tag(0)
-                    
-                    HistoryView()
-                        .tag(1)
-                    
-                    StatisticsView()
-                        .tag(2)
-                    
-                    ProfileView()
-                        .tag(3)
+                Group {
+                    switch selectedTab {
+                    case 0: HomeView()
+                    case 1: HistoryView()
+                    case 2: StatisticsView()
+                    case 3: ProfileView()
+                    default: HomeView()
+                    }
                 }
-                .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
+                .transition(.opacity)
                 .animation(.easeInOut(duration: 0.2), value: selectedTab)
-                
+                .onChange(of: selectedTab) { _, newValue in
+                    PerformanceLogger.end(lastTabSwitchMark)
+                    lastTabSwitchMark = "tab_switch_\(newValue)"
+                    PerformanceLogger.begin(lastTabSwitchMark)
+                }
+
                 PlumpyTabBar(
                     selectedTab: $selectedTab,
                     tabs: [

@@ -15,6 +15,8 @@ struct FoodDiaryTwoApp: App {
             FoodEntry.self,
             FoodProduct.self,
             UserProfile.self,
+            AppSettings.self,
+            Achievement.self,
         ])
         let persistentConfig = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
         let inMemoryConfig = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)

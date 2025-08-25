@@ -157,6 +157,32 @@ class AppSettingsManager: ObservableObject {
                     window.overrideUserInterfaceStyle = settings.darkModeEnabled ? .dark : .light
                 }
             }
+
+            // Глобальные стили для нативных компонентов, чтобы избежать белых фонов в темной теме
+            let isDark = settings.darkModeEnabled
+            let bg = isDark ? UIColor.systemBackground : UIColor.systemBackground
+            let secondaryBg = isDark ? UIColor.secondarySystemBackground : UIColor.secondarySystemBackground
+
+            UITableView.appearance().backgroundColor = bg
+            UITableViewCell.appearance().backgroundColor = .clear
+            UICollectionView.appearance().backgroundColor = bg
+            UIScrollView.appearance().backgroundColor = bg
+            UITextView.appearance().backgroundColor = secondaryBg
+            UITextField.appearance().backgroundColor = secondaryBg
+            UISearchBar.appearance().barTintColor = bg
+            UISearchTextField.appearance().backgroundColor = secondaryBg
+            UITextField.appearance().textColor = UIColor.label
+            UITextView.appearance().textColor = UIColor.label
+
+            let navAppearance = UINavigationBarAppearance()
+            navAppearance.configureWithOpaqueBackground()
+            navAppearance.backgroundColor = bg
+            navAppearance.titleTextAttributes = [.foregroundColor: UIColor.label]
+            navAppearance.largeTitleTextAttributes = [.foregroundColor: UIColor.label]
+            UINavigationBar.appearance().standardAppearance = navAppearance
+            UINavigationBar.appearance().scrollEdgeAppearance = navAppearance
+            UINavigationBar.appearance().compactAppearance = navAppearance
+            UINavigationBar.appearance().tintColor = UIColor.label
         }
     }
     

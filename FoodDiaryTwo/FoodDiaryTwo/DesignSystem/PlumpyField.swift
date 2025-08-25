@@ -79,6 +79,7 @@ struct PlumpyField: View {
                     }
                 }
                 .font(PlumpyTheme.Typography.body)
+                .foregroundColor(PlumpyTheme.textPrimary)
                 .keyboardType(keyboardType)
                 .textContentType(textContentType)
                 .focused($isFocused)
@@ -131,7 +132,9 @@ struct PlumpyField: View {
         } else if errorMessage != nil {
             return PlumpyTheme.error.opacity(0.05)
         } else {
-            return PlumpyTheme.neutral50
+            return Color(UIColor { tc in
+                tc.userInterfaceStyle == .dark ? UIColor(PlumpyTheme.surfaceSecondary) : UIColor(PlumpyTheme.neutral50)
+            })
         }
     }
     
@@ -180,6 +183,7 @@ struct PlumpySearchField: View {
             
             TextField(placeholder, text: $text)
                 .font(PlumpyTheme.Typography.body)
+                .foregroundColor(PlumpyTheme.textPrimary)
                 .focused($isFocused)
                 .onSubmit {
                     onSearch(text)
@@ -200,7 +204,7 @@ struct PlumpySearchField: View {
         .padding(.vertical, PlumpyTheme.Spacing.medium)
         .background(
             RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
-                .fill(PlumpyTheme.neutral50)
+                .fill(Color(UIColor { tc in tc.userInterfaceStyle == .dark ? UIColor(PlumpyTheme.surfaceSecondary) : UIColor(PlumpyTheme.neutral50) }))
                 .overlay(
                     RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
                         .stroke(isFocused ? PlumpyTheme.primary : PlumpyTheme.neutral200, lineWidth: isFocused ? 1.5 : 1)
@@ -249,13 +253,14 @@ struct PlumpyTextArea: View {
             
             TextEditor(text: $text)
                 .font(PlumpyTheme.Typography.body)
+                .foregroundColor(PlumpyTheme.textPrimary)
                 .focused($isFocused)
                 .frame(minHeight: minHeight, maxHeight: maxHeight)
                 .padding(.horizontal, PlumpyTheme.Spacing.medium)
                 .padding(.vertical, PlumpyTheme.Spacing.medium)
                 .background(
                     RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
-                        .fill(PlumpyTheme.neutral50)
+                        .fill(Color(UIColor { tc in tc.userInterfaceStyle == .dark ? UIColor(PlumpyTheme.surfaceSecondary) : UIColor(PlumpyTheme.neutral50) }))
                         .overlay(
                             RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
                                 .stroke(isFocused ? PlumpyTheme.primary : PlumpyTheme.neutral200, lineWidth: isFocused ? 1.5 : 1)

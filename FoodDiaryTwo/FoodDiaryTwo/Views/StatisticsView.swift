@@ -91,6 +91,7 @@ struct StatisticsView: View {
             let calendar = Calendar.current
             selectedHeatmapMonth = calendar.dateInterval(of: .month, for: Date())?.start ?? Date()
             loadData()
+            // achievements are evaluated on app launch; avoid duplicate work here
         }
         .onChange(of: selectedPeriod) { _, newPeriod in
             if newPeriod != .custom {
@@ -104,6 +105,8 @@ struct StatisticsView: View {
             }
         }
     }
+
+    // achievements dashboard removed per request
     
     private var periodSelector: some View {
         VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.medium) {
@@ -253,6 +256,11 @@ struct StatisticsView: View {
         }
         .frame(height: 200)
         .frame(maxWidth: .infinity)
+        .task(id: selectedPeriod) {
+            PerformanceLogger.begin("stats_chart_compute_\(selectedPeriod.rawValue)")
+            // work is done in loadChartData already; here just mark segment
+            PerformanceLogger.end("stats_chart_compute_\(selectedPeriod.rawValue)")
+        }
     }
     
     private var chartBars: some View {
@@ -473,6 +481,17 @@ struct StatisticsView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             
             VStack(spacing: PlumpyTheme.Spacing.small) {
+                // Achievements summary synced with Profile achievements view
+                let unlocked = (try? modelContext.fetch(FetchDescriptor<Achievement>()))?.filter { $0.isUnlocked }.count ?? 0
+                let total = (try? modelContext.fetch(FetchDescriptor<Achievement>()))?.count ?? 0
+                StatisticsInfoCard(
+                    title: "Achievements",
+                    subtitle: "Unlocked: \(unlocked) of \(max(total, 1))",
+                    icon: "trophy.fill",
+                    iconColor: PlumpyTheme.primaryAccent,
+                    action: {}
+                )
+
                 // Самый частый тип приема пищи
                 let mostCommonMeal = getMostCommonMeal()
                 StatisticsInfoCard(
@@ -564,6 +583,7 @@ struct StatisticsView: View {
     
     @MainActor
     private func loadPeriodEntries() async {
+        PerformanceLogger.begin("stats_load_entries_\(selectedPeriod.rawValue)")
         let calendar = Calendar.current
         let startDate: Date
         let endDate: Date
@@ -596,10 +616,12 @@ struct StatisticsView: View {
             print("Error fetching period entries: \(error)")
             cachedPeriodEntries = []
         }
+        PerformanceLogger.end("stats_load_entries_\(selectedPeriod.rawValue)")
     }
     
     @MainActor
     private func loadChartData() async {
+        PerformanceLogger.begin("stats_chart_data_\(selectedPeriod.rawValue)")
         switch selectedPeriod {
         case .week:
             cachedChartData = generateWeekData()
@@ -610,6 +632,7 @@ struct StatisticsView: View {
         case .custom:
             cachedChartData = generateCustomData()
         }
+        PerformanceLogger.end("stats_chart_data_\(selectedPeriod.rawValue)")
     }
     
     // MARK: - Chart Data Generation
