@@ -20,11 +20,11 @@ struct CalorieGoalEditor: View {
 
             VStack(spacing: 0) {
                 PlumpyNavigationBar(
-                    title: "Daily Calories",
-                    leftButton: PlumpyNavigationButton(icon: "xmark", title: "Close", style: .outline) {
+                    title: LocalizationManager.shared.localizedString(.dailyCaloriesTitle),
+                    leftButton: PlumpyNavigationButton(icon: "xmark", title: LocalizationManager.shared.localizedString(.close), style: .outline) {
                         dismiss()
                     },
-                    rightButton: PlumpyNavigationButton(icon: "checkmark", title: "Save", style: .primary) {
+                    rightButton: PlumpyNavigationButton(icon: "checkmark", title: LocalizationManager.shared.localizedString(.save), style: .primary) {
                         save()
                     }
                 )
@@ -32,14 +32,14 @@ struct CalorieGoalEditor: View {
                 ScrollView {
                     VStack(spacing: PlumpyTheme.Spacing.large) {
                         VStack(spacing: PlumpyTheme.Spacing.medium) {
-                            Text("Set your daily calorie target")
+                            Text(LocalizationManager.shared.localizedString(.setDailyCalorieTarget))
                                 .font(PlumpyTheme.Typography.subheadline)
                                 .foregroundColor(PlumpyTheme.textSecondary)
                                 .frame(maxWidth: .infinity, alignment: .leading)
 
                             PlumpyField(
-                                title: "Daily Calories",
-                                placeholder: "e.g. 2200",
+                                title: LocalizationManager.shared.localizedString(.dailyCaloriesTitle),
+                                placeholder: LocalizationManager.shared.localizedString(.exampleCalories),
                                 text: $calorieGoalText,
                                 keyboardType: .numberPad,
                                 icon: "flame.fill",

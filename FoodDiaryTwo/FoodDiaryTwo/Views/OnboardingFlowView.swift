@@ -28,8 +28,8 @@ struct OnboardingFlowView: View {
             VStack(spacing: 0) {
                 PlumpyNavigationBar(
                     title: flowTitle,
-                    leftButton: PlumpyNavigationButton(icon: "xmark", title: "Close", style: .outline) { dismiss() },
-                    rightButton: PlumpyNavigationButton(icon: "forward.end", title: "Skip", style: .ghost) { saveAndExit(skip: true) }
+                    leftButton: PlumpyNavigationButton(icon: "xmark", title: LocalizationManager.shared.localizedString(.close), style: .outline) { dismiss() },
+                    rightButton: PlumpyNavigationButton(icon: "forward.end", title: LocalizationManager.shared.localizedString(.skip), style: .ghost) { saveAndExit(skip: true) }
                 )
 
                 // step progress
@@ -46,7 +46,7 @@ struct OnboardingFlowView: View {
                 // Bottom next/save button
                 VStack(spacing: PlumpyTheme.Spacing.small) {
                     PlumpyButton(
-                        title: step == maxStep ? "Save" : "Next",
+                        title: step == maxStep ? LocalizationManager.shared.localizedString(.save) : LocalizationManager.shared.localizedString(.next),
                         icon: step == maxStep ? "checkmark" : "chevron.right",
                         style: .primary
                     ) {
@@ -71,16 +71,16 @@ struct OnboardingFlowView: View {
         switch step {
         case 0:
             VStack(spacing: PlumpyTheme.Spacing.medium) {
-                Text("Tell us about you")
+                Text(LocalizationManager.shared.localizedString(.tellUsAboutYou))
                     .font(PlumpyTheme.Typography.subheadline)
                     .foregroundColor(PlumpyTheme.textSecondary)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                PlumpyField(title: "Name", placeholder: "Your name", text: $name, icon: "person", isRequired: true)
-                PlumpyField(title: "Age", placeholder: "Years", text: $age, keyboardType: .numberPad, icon: "number", isRequired: true)
+                PlumpyField(title: LocalizationManager.shared.localizedString(.userName), placeholder: LocalizationManager.shared.localizedString(.userName), text: $name, icon: "person", isRequired: true)
+                PlumpyField(title: LocalizationManager.shared.localizedString(.ageLabel), placeholder: LocalizationManager.shared.localizedString(.years), text: $age, keyboardType: .numberPad, icon: "number", isRequired: true)
             }.plumpyCard()
         case 1:
             VStack(spacing: PlumpyTheme.Spacing.small) {
-                Text("Gender")
+                Text(LocalizationManager.shared.localizedString(.gender))
                     .font(PlumpyTheme.Typography.subheadline)
                     .fontWeight(.medium)
                     .foregroundColor(PlumpyTheme.textPrimary)
@@ -119,15 +119,15 @@ struct OnboardingFlowView: View {
         case 2:
             VStack(spacing: PlumpyTheme.Spacing.large) {
                 HStack(spacing: PlumpyTheme.Spacing.medium) {
-                    PlumpyField(title: "Height (cm)", placeholder: "175", text: $height, keyboardType: .decimalPad, icon: "ruler", isRequired: true)
-                    PlumpyField(title: "Weight (kg)", placeholder: "70", text: $weight, keyboardType: .decimalPad, icon: "scalemass", isRequired: true)
+                    PlumpyField(title: LocalizationManager.shared.localizedString(.heightCm), placeholder: "175", text: $height, keyboardType: .decimalPad, icon: "ruler", isRequired: true)
+                    PlumpyField(title: LocalizationManager.shared.localizedString(.weightKg), placeholder: "70", text: $weight, keyboardType: .decimalPad, icon: "scalemass", isRequired: true)
                 }
             }
             .padding(.top, PlumpyTheme.Spacing.large)
             .plumpyCard()
         case 3:
             VStack(spacing: PlumpyTheme.Spacing.small) {
-                Text("Activity")
+                Text(LocalizationManager.shared.localizedString(.activityLevel))
                     .font(PlumpyTheme.Typography.subheadline)
                     .fontWeight(.medium)
                     .foregroundColor(PlumpyTheme.textPrimary)
@@ -173,7 +173,7 @@ struct OnboardingFlowView: View {
             .plumpyCard()
         case 4:
             VStack(spacing: PlumpyTheme.Spacing.small) {
-                Text("Goal")
+                Text(LocalizationManager.shared.localizedString(.goal))
                     .font(PlumpyTheme.Typography.subheadline)
                     .fontWeight(.medium)
                     .foregroundColor(PlumpyTheme.textPrimary)
@@ -212,21 +212,21 @@ struct OnboardingFlowView: View {
         case 5:
             VStack(spacing: PlumpyTheme.Spacing.large) {
                 let recommended = recommendedCalories
-                Text("Recommended daily calories based on your data")
+                Text(LocalizationManager.shared.localizedString(.recommendedDailyCalories))
                     .font(PlumpyTheme.Typography.subheadline)
                     .foregroundColor(PlumpyTheme.textSecondary)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 HStack {
-                    Text("Recommended:")
+                    Text(LocalizationManager.shared.localizedString(.recommendedLabel))
                         .font(PlumpyTheme.Typography.caption1)
                         .foregroundColor(PlumpyTheme.textSecondary)
-                    Text("\(recommended) cal")
+                    Text("\(recommended) \(LocalizationManager.shared.localizedString(.calUnit))")
                         .font(PlumpyTheme.Typography.subheadline)
                         .fontWeight(.semibold)
                         .foregroundColor(PlumpyTheme.textPrimary)
                     Spacer()
                 }
-                PlumpyField(title: "Custom (optional)", placeholder: String(recommended), text: $customCalories, keyboardType: .numberPad, icon: "flame.fill", iconColor: PlumpyTheme.warning, isRequired: false)
+                PlumpyField(title: LocalizationManager.shared.localizedString(.customOptional), placeholder: String(recommended), text: $customCalories, keyboardType: .numberPad, icon: "flame.fill", iconColor: PlumpyTheme.warning, isRequired: false)
             }
             .padding(.top, PlumpyTheme.Spacing.large)
             .plumpyCard()
@@ -239,19 +239,19 @@ struct OnboardingFlowView: View {
 
     private var summaryCard: some View {
         VStack(spacing: PlumpyTheme.Spacing.medium) {
-            Text("Summary")
+            Text(LocalizationManager.shared.localizedString(.summaryTitle))
                 .font(PlumpyTheme.Typography.subheadline)
                 .fontWeight(.semibold)
                 .frame(maxWidth: .infinity, alignment: .leading)
             VStack(spacing: PlumpyTheme.Spacing.small) {
-                row("Name", name)
-                row("Age", age)
-                row("Gender", gender.displayName)
-                row("Height", "\(height) cm")
-                row("Weight", "\(weight) kg")
-                row("Activity", activity.displayName)
-                row("Goal", goal.displayName)
-                row("Calories", "\(finalCalories) cal")
+                row(LocalizationManager.shared.localizedString(.userName), name)
+                row(LocalizationManager.shared.localizedString(.ageLabel), age)
+                row(LocalizationManager.shared.localizedString(.gender), gender.displayName)
+                row(LocalizationManager.shared.localizedString(.heightLabel), "\(height) \(LocalizationManager.shared.localizedString(.cmUnit))")
+                row(LocalizationManager.shared.localizedString(.weightLabel), "\(weight) \(LocalizationManager.shared.localizedString(.kgUnit))")
+                row(LocalizationManager.shared.localizedString(.activityLevel), activity.displayName)
+                row(LocalizationManager.shared.localizedString(.goal), goal.displayName)
+                row(LocalizationManager.shared.localizedString(.calories), "\(finalCalories) \(LocalizationManager.shared.localizedString(.calUnit))")
             }
         }.plumpyCard()
     }
@@ -266,14 +266,14 @@ struct OnboardingFlowView: View {
 
     private var flowTitle: String {
         switch step {
-        case 0: return "About You"
-        case 1: return "Gender"
-        case 2: return "Body"
-        case 3: return "Activity"
-        case 4: return "Goal"
-        case 5: return "Calories"
-        case 6: return "Summary"
-        default: return "Questionnaire"
+        case 0: return LocalizationManager.shared.localizedString(.tellUsAboutYou)
+        case 1: return LocalizationManager.shared.localizedString(.gender)
+        case 2: return LocalizationManager.shared.localizedString(.heightLabel)
+        case 3: return LocalizationManager.shared.localizedString(.activityLevel)
+        case 4: return LocalizationManager.shared.localizedString(.goal)
+        case 5: return LocalizationManager.shared.localizedString(.calories)
+        case 6: return LocalizationManager.shared.localizedString(.summaryTitle)
+        default: return LocalizationManager.shared.localizedString(.questionnaireTitle)
         }
     }
 

@@ -37,7 +37,7 @@ struct FoodRecognitionResultView: View {
             .padding(.horizontal, PlumpyTheme.Spacing.medium)
         }
         .background(PlumpyTheme.surfaceSecondary)
-        .navigationTitle("Результаты анализа")
+        .navigationTitle(LocalizationManager.shared.localizedString(.analysisResults))
         .navigationBarTitleDisplayMode(.inline)
     }
     
@@ -56,7 +56,7 @@ struct FoodRecognitionResultView: View {
                 .foregroundColor(PlumpyTheme.textPrimary)
             
             // Время обработки
-            Text("Время анализа: \(String(format: "%.1f", result.processingTime)) сек")
+            Text(String(format: LocalizationManager.shared.localizedString(.processingTimeSec), result.processingTime))
                 .font(PlumpyTheme.Typography.caption1)
                 .foregroundColor(PlumpyTheme.textSecondary)
         }
@@ -69,7 +69,7 @@ struct FoodRecognitionResultView: View {
     // MARK: - Общая информация
     private var summarySection: some View {
         VStack(spacing: PlumpyTheme.Spacing.medium) {
-            Text("Общая информация")
+            Text(LocalizationManager.shared.localizedString(.generalInfo))
                 .font(PlumpyTheme.Typography.title3)
                 .fontWeight(.semibold)
                 .foregroundColor(PlumpyTheme.textPrimary)
@@ -121,7 +121,7 @@ struct FoodRecognitionResultView: View {
     // MARK: - Детали по продуктам
     private var foodDetailsSection: some View {
         VStack(spacing: PlumpyTheme.Spacing.medium) {
-            Text("Распознанные продукты")
+            Text(LocalizationManager.shared.localizedString(.recognizedProductsTitle))
                 .font(PlumpyTheme.Typography.title3)
                 .fontWeight(.semibold)
                 .foregroundColor(PlumpyTheme.textPrimary)
@@ -143,7 +143,7 @@ struct FoodRecognitionResultView: View {
             Button(action: onApply) {
                 HStack {
                     Image(systemName: "checkmark.circle.fill")
-                    Text("Применить к приему пищи")
+                    Text(LocalizationManager.shared.localizedString(.applyToMeal))
                         .fontWeight(.semibold)
                 }
                 .frame(maxWidth: .infinity)
@@ -157,7 +157,7 @@ struct FoodRecognitionResultView: View {
             Button(action: onRetry) {
                 HStack {
                     Image(systemName: "arrow.clockwise")
-                    Text("Попробовать снова")
+                    Text(LocalizationManager.shared.localizedString(.tryAgain))
                         .fontWeight(.medium)
                 }
                 .frame(maxWidth: .infinity)

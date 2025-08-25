@@ -183,6 +183,38 @@ enum LocalizationKey: String, CaseIterable {
     case averageDailyCalories = "average_daily_calories"
     case goalAchievement = "goal_achievement"
     case maxLabel = "max_label"
+
+    // Calorie goal editor
+    case dailyCaloriesTitle = "daily_calories_title"
+    case setDailyCalorieTarget = "set_daily_calorie_target"
+    case exampleCalories = "example_calories"
+
+    // Onboarding
+    case close = "close"
+    case skip = "skip"
+    case next = "next"
+    case tellUsAboutYou = "tell_us_about_you"
+    case years = "years"
+    case heightCm = "height_cm"
+    case weightKg = "weight_kg"
+    case recommendedDailyCalories = "recommended_daily_calories"
+    case recommendedLabel = "recommended_label"
+    case customOptional = "custom_optional"
+    case summaryTitle = "summary_title"
+    case questionnaireTitle = "questionnaire_title"
+
+    // Recognition result
+    case analysisResults = "analysis_results"
+    case processingTimeSec = "processing_time_sec"
+    case generalInfo = "general_info"
+    case recognizedProductsTitle = "recognized_products_title"
+    case applyToMeal = "apply_to_meal"
+    case tryAgain = "try_again"
+    case confidenceLabel = "confidence_label"
+    case caloriesShort = "calories_short"
+    case proteinShort = "protein_short"
+    case fatShort = "fat_short"
+    case carbsShort = "carbs_short"
     
     // Профиль пользователя
     case userName = "user_name"

@@ -27,21 +27,21 @@ struct OnboardingQuestionnaireView: View {
 
             VStack(spacing: 0) {
                 PlumpyNavigationBar(
-                    title: "Questionnaire - UPDATED", // ОЧЕНЬ ЗАМЕТНОЕ ИЗМЕНЕНИЕ
-                    leftButton: PlumpyNavigationButton(icon: "xmark", title: "Skip", style: .outline) {
+                    title: LocalizationManager.shared.localizedString(.questionnaireTitle),
+                    leftButton: PlumpyNavigationButton(icon: "xmark", title: LocalizationManager.shared.localizedString(.skip), style: .outline) {
                         dismiss()
                     },
-                    rightButton: PlumpyNavigationButton(icon: "checkmark", title: "Done", style: .primary) {
+                    rightButton: PlumpyNavigationButton(icon: "checkmark", title: LocalizationManager.shared.localizedString(.save), style: .primary) {
                         save()
                     }
                 )
 
                 ScrollView {
                     VStack(spacing: PlumpyTheme.Spacing.medium) {
-                        PlumpyField(title: "Name", placeholder: "Your name", text: $name, icon: "person", isRequired: true)
-                        PlumpyField(title: "Age", placeholder: "Years", text: $age, keyboardType: .numberPad, icon: "number", isRequired: true)
+                        PlumpyField(title: LocalizationManager.shared.localizedString(.userName), placeholder: LocalizationManager.shared.localizedString(.userName), text: $name, icon: "person", isRequired: true)
+                        PlumpyField(title: LocalizationManager.shared.localizedString(.ageLabel), placeholder: LocalizationManager.shared.localizedString(.years), text: $age, keyboardType: .numberPad, icon: "number", isRequired: true)
 
-                        pickerCard(title: "Gender") {
+                        pickerCard(title: LocalizationManager.shared.localizedString(.gender)) {
                             HStack(spacing: PlumpyTheme.Spacing.small) {
                                 ForEach(Gender.allCases, id: \.self) { g in
                                     Button(action: {
@@ -74,11 +74,11 @@ struct OnboardingQuestionnaireView: View {
                         }
 
                         HStack(spacing: PlumpyTheme.Spacing.medium) {
-                            PlumpyField(title: "Height (cm)", placeholder: "175", text: $height, keyboardType: .decimalPad, icon: "ruler", isRequired: true)
-                            PlumpyField(title: "Weight (kg)", placeholder: "70", text: $weight, keyboardType: .decimalPad, icon: "scalemass", isRequired: true)
+                            PlumpyField(title: LocalizationManager.shared.localizedString(.heightCm), placeholder: "175", text: $height, keyboardType: .decimalPad, icon: "ruler", isRequired: true)
+                            PlumpyField(title: LocalizationManager.shared.localizedString(.weightKg), placeholder: "70", text: $weight, keyboardType: .decimalPad, icon: "scalemass", isRequired: true)
                         }
 
-                        pickerCard(title: "Activity") {
+                        pickerCard(title: LocalizationManager.shared.localizedString(.activityLevel)) {
                             LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: PlumpyTheme.Spacing.small), count: 2), spacing: PlumpyTheme.Spacing.small) {
                                 ForEach(ActivityLevel.allCases, id: \.self) { level in
                                     Button(action: {
@@ -118,7 +118,7 @@ struct OnboardingQuestionnaireView: View {
                                 .animation(.easeInOut(duration: 0.3), value: activity)
                         }
 
-                        pickerCard(title: "Goal") {
+                        pickerCard(title: LocalizationManager.shared.localizedString(.goal)) {
                             HStack(spacing: PlumpyTheme.Spacing.small) {
                                 ForEach(Goal.allCases, id: \.self) { goalType in
                                     Button(action: {
@@ -151,8 +151,8 @@ struct OnboardingQuestionnaireView: View {
                         }
 
                         PlumpyField(
-                            title: "Custom Calories (optional)",
-                            placeholder: "Auto-calculated if empty",
+                            title: LocalizationManager.shared.localizedString(.customOptional),
+                            placeholder: LocalizationManager.shared.localizedString(.customOptional),
                             text: $customCalories,
                             keyboardType: .numberPad,
                             icon: "flame.fill",
