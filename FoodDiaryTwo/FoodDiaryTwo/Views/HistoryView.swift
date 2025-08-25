@@ -341,16 +341,8 @@ struct FoodEntryHistoryCard: View {
                 // Фото или иконка
                 if let photoData = entry.photoData {
                     let key = entry.id.uuidString
-                    let image: UIImage
-                    if let cached = ImageCache.shared.image(forKey: key) {
-                        image = cached
-                    } else if let ui = UIImage(data: photoData) {
-                        ImageCache.shared.set(ui, forKey: key)
-                        image = ui
-                    } else {
-                        image = UIImage()
-                    }
-                    Image(uiImage: image)
+                    let uiImage = previewImage(forKey: key, data: photoData)
+                    Image(uiImage: uiImage)
                         .resizable()
                         .aspectRatio(contentMode: .fill)
                         .frame(width: PlumpyTheme.Spacing.huge, height: PlumpyTheme.Spacing.huge)
@@ -422,6 +414,19 @@ struct FoodEntryHistoryCard: View {
         .sheet(isPresented: $showingDetail) {
             FoodEntryDetailView(foodEntry: entry)
         }
+    }
+}
+
+extension FoodEntryHistoryCard {
+    private func previewImage(forKey key: String, data: Data) -> UIImage {
+        if let cached = ImageCache.shared.image(forKey: key) {
+            return cached
+        }
+        if let ui = UIImage(data: data) {
+            ImageCache.shared.set(ui, forKey: key)
+            return ui
+        }
+        return UIImage()
     }
 }
 
