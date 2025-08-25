@@ -79,6 +79,9 @@ enum LocalizationKey: String, CaseIterable {
     case edit = "edit"
     case add = "add"
     case search = "search"
+    case timeLabel = "time_label"
+    case items = "items"
+    case calUnit = "cal_unit"
     
     // Навигация
     case home = "home"
@@ -94,6 +97,13 @@ enum LocalizationKey: String, CaseIterable {
     case mealType = "meal_type"
     case mealTime = "meal_time"
     case notes = "notes"
+    case totalCaloriesToday = "total_calories_today"
+    case todaysMeals = "todays_meals"
+    case quickActions = "quick_actions"
+    case aiRecommendations = "ai_recommendations"
+    case noMealsToday = "no_meals_today"
+    case startTrackingHint = "start_tracking_hint"
+    case addMealCta = "add_meal_cta"
     
     // Типы приемов пищи
     case breakfast = "breakfast"
@@ -121,6 +131,7 @@ enum LocalizationKey: String, CaseIterable {
     case dailyGoal = "daily_goal"
     case remaining = "remaining"
     case progress = "progress"
+    case goalLabel = "goal_label"
     
     // Профиль пользователя
     case userName = "user_name"
@@ -168,6 +179,9 @@ enum LocalizationKey: String, CaseIterable {
             .edit: "Edit",
             .add: "Add",
             .search: "Search",
+            .timeLabel: "Time",
+            .items: "items",
+            .calUnit: "cal",
             .home: "Home",
             .stats: "Stats",
             .profile: "Profile",
@@ -179,6 +193,13 @@ enum LocalizationKey: String, CaseIterable {
             .mealType: "Meal Type",
             .mealTime: "Meal Time",
             .notes: "Notes",
+            .totalCaloriesToday: "Total calories today",
+            .todaysMeals: "Today's Meals",
+            .quickActions: "Quick Actions",
+            .aiRecommendations: "AI Recommendations",
+            .noMealsToday: "No meals yet today",
+            .startTrackingHint: "Start tracking your nutrition by adding your first meal",
+            .addMealCta: "Add Meal",
             .breakfast: "Breakfast",
             .lunch: "Lunch",
             .dinner: "Dinner",
@@ -200,6 +221,7 @@ enum LocalizationKey: String, CaseIterable {
             .dailyGoal: "Daily Goal",
             .remaining: "Remaining",
             .progress: "Progress",
+            .goalLabel: "Goal",
             .userName: "Name",
             .age: "Age",
             .gender: "Gender",
@@ -228,6 +250,9 @@ enum LocalizationKey: String, CaseIterable {
             .edit: "Изменить",
             .add: "Добавить",
             .search: "Поиск",
+            .timeLabel: "Время",
+            .items: "элементов",
+            .calUnit: "ккал",
             .home: "Главная",
             .stats: "Статистика",
             .profile: "Профиль",
@@ -239,6 +264,13 @@ enum LocalizationKey: String, CaseIterable {
             .mealType: "Тип Приема",
             .mealTime: "Время Приема",
             .notes: "Заметки",
+            .totalCaloriesToday: "Всего калорий сегодня",
+            .todaysMeals: "Сегодняшние приемы пищи",
+            .quickActions: "Быстрые действия",
+            .aiRecommendations: "Рекомендации ИИ",
+            .noMealsToday: "Сегодня еще нет приемов пищи",
+            .startTrackingHint: "Начните вести дневник питания, добавив первый прием",
+            .addMealCta: "Добавить прием",
             .breakfast: "Завтрак",
             .lunch: "Обед",
             .dinner: "Ужин",
@@ -260,6 +292,7 @@ enum LocalizationKey: String, CaseIterable {
             .dailyGoal: "Дневная Цель",
             .remaining: "Осталось",
             .progress: "Прогресс",
+            .goalLabel: "Цель",
             .userName: "Имя",
             .age: "Возраст",
             .gender: "Пол",
@@ -288,6 +321,9 @@ enum LocalizationKey: String, CaseIterable {
             .edit: "Змінити",
             .add: "Додати",
             .search: "Пошук",
+            .timeLabel: "Час",
+            .items: "елементів",
+            .calUnit: "ккал",
             .home: "Головна",
             .stats: "Статистика",
             .profile: "Профіль",
@@ -299,6 +335,13 @@ enum LocalizationKey: String, CaseIterable {
             .mealType: "Тип Прийому",
             .mealTime: "Час Прийому",
             .notes: "Нотатки",
+            .totalCaloriesToday: "Всього калорій сьогодні",
+            .todaysMeals: "Сьогоднішні прийоми їжі",
+            .quickActions: "Швидкі дії",
+            .aiRecommendations: "Рекомендації ШІ",
+            .noMealsToday: "Сьогодні ще немає прийомів їжі",
+            .startTrackingHint: "Почніть вести щоденник, додавши перший прийом",
+            .addMealCta: "Додати прийом",
             .breakfast: "Сніданок",
             .lunch: "Обід",
             .dinner: "Вечеря",
@@ -320,6 +363,7 @@ enum LocalizationKey: String, CaseIterable {
             .dailyGoal: "Денна Мета",
             .remaining: "Залишилось",
             .progress: "Прогрес",
+            .goalLabel: "Мета",
             .userName: "Ім'я",
             .age: "Вік",
             .gender: "Стать",
@@ -348,6 +392,9 @@ enum LocalizationKey: String, CaseIterable {
             .edit: "Editar",
             .add: "Añadir",
             .search: "Buscar",
+            .timeLabel: "Hora",
+            .items: "elementos",
+            .calUnit: "kcal",
             .home: "Inicio",
             .stats: "Estadísticas",
             .profile: "Perfil",
@@ -359,6 +406,13 @@ enum LocalizationKey: String, CaseIterable {
             .mealType: "Tipo de comida",
             .mealTime: "Hora de la comida",
             .notes: "Notas",
+            .totalCaloriesToday: "Calorías totales hoy",
+            .todaysMeals: "Comidas de hoy",
+            .quickActions: "Acciones rápidas",
+            .aiRecommendations: "Recomendaciones IA",
+            .noMealsToday: "Aún no hay comidas hoy",
+            .startTrackingHint: "Empieza a registrar tu alimentación añadiendo tu primera comida",
+            .addMealCta: "Añadir comida",
             .breakfast: "Desayuno",
             .lunch: "Almuerzo",
             .dinner: "Cena",
@@ -380,6 +434,7 @@ enum LocalizationKey: String, CaseIterable {
             .dailyGoal: "Meta diaria",
             .remaining: "Restante",
             .progress: "Progreso",
+            .goalLabel: "Meta",
             .userName: "Nombre",
             .age: "Edad",
             .gender: "Género",
@@ -408,6 +463,9 @@ enum LocalizationKey: String, CaseIterable {
             .edit: "Modifier",
             .add: "Ajouter",
             .search: "Rechercher",
+            .timeLabel: "Heure",
+            .items: "éléments",
+            .calUnit: "kcal",
             .home: "Accueil",
             .stats: "Stats",
             .profile: "Profil",
@@ -419,6 +477,13 @@ enum LocalizationKey: String, CaseIterable {
             .mealType: "Type de repas",
             .mealTime: "Heure du repas",
             .notes: "Notes",
+            .totalCaloriesToday: "Calories totales aujourd'hui",
+            .todaysMeals: "Repas du jour",
+            .quickActions: "Actions rapides",
+            .aiRecommendations: "Recommandations IA",
+            .noMealsToday: "Aucun repas aujourd'hui",
+            .startTrackingHint: "Commencez à suivre votre alimentation en ajoutant un premier repas",
+            .addMealCta: "Ajouter un repas",
             .breakfast: "Petit-déjeuner",
             .lunch: "Déjeuner",
             .dinner: "Dîner",
@@ -440,6 +505,7 @@ enum LocalizationKey: String, CaseIterable {
             .dailyGoal: "Objectif quotidien",
             .remaining: "Restant",
             .progress: "Progression",
+            .goalLabel: "Objectif",
             .userName: "Nom",
             .age: "Âge",
             .gender: "Sexe",

@@ -44,8 +44,8 @@ struct HistoryView: View {
             VStack(spacing: 0) {
                 // Navigation Bar
                 PlumpyNavigationBar(
-                    title: "History",
-                    subtitle: "Your meal history"
+                    title: LocalizationManager.shared.localizedString(.history),
+                    subtitle: ""
                 )
                 
                 ScrollView {
@@ -75,7 +75,7 @@ struct HistoryView: View {
     private var periodSelector: some View {
         VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.medium) {
             HStack {
-                Text("Period")
+                Text(LocalizationManager.shared.localizedString(.dailyProgress))
                     .font(PlumpyTheme.Typography.headline)
                     .fontWeight(.semibold)
                     .foregroundColor(PlumpyTheme.textPrimary)
@@ -128,7 +128,7 @@ struct HistoryView: View {
         VStack(spacing: PlumpyTheme.Spacing.medium) {
             PlumpySearchField(
                 text: $searchText,
-                placeholder: "Search meals, products, notes...",
+                placeholder: LocalizationManager.shared.localizedString(.search),
                 onSearch: { query in
                     // Поиск уже реализован через computed property
                 }
@@ -136,13 +136,13 @@ struct HistoryView: View {
             
             if !searchText.isEmpty {
                 HStack {
-                    Text("Search results: \(filteredEntries.count)")
+                    Text("\(filteredEntries.count)")
                         .font(PlumpyTheme.Typography.caption1)
                         .foregroundColor(PlumpyTheme.textSecondary)
                     
                     Spacer()
                     
-                    Button("Clear") {
+                    Button(LocalizationManager.shared.localizedString(.cancel)) {
                         searchText = ""
                     }
                     .font(PlumpyTheme.Typography.caption1)
@@ -155,14 +155,14 @@ struct HistoryView: View {
     private var historyList: some View {
         VStack(spacing: PlumpyTheme.Spacing.medium) {
             HStack {
-                Text(selectedPeriod == .custom ? "Meals for \(formatDate(selectedDate))" : "Recent Meals")
+                Text(selectedPeriod == .custom ? "\(formatDate(selectedDate))" : LocalizationManager.shared.localizedString(.todaysMeals))
                     .font(PlumpyTheme.Typography.headline)
                     .fontWeight(.semibold)
                     .foregroundColor(PlumpyTheme.textPrimary)
                 
                 Spacer()
                 
-                Text("\(filteredEntries.count) meals")
+                Text("\(filteredEntries.count)")
                     .font(PlumpyTheme.Typography.caption1)
                     .foregroundColor(PlumpyTheme.textSecondary)
             }
@@ -171,11 +171,11 @@ struct HistoryView: View {
             if entries.isEmpty {
                 PlumpyEmptyState(
                     icon: "clock",
-                    title: searchText.isEmpty ? "No meals found" : "No search results",
+                    title: searchText.isEmpty ? LocalizationManager.shared.localizedString(.noMealsToday) : LocalizationManager.shared.localizedString(.search),
                     subtitle: searchText.isEmpty ? 
-                        "Your meal history will appear here once you start tracking" :
-                        "Try adjusting your search terms",
-                    actionTitle: searchText.isEmpty ? "Add First Meal" : "Clear Search"
+                        LocalizationManager.shared.localizedString(.startTrackingHint) :
+                        LocalizationManager.shared.localizedString(.search),
+                    actionTitle: searchText.isEmpty ? LocalizationManager.shared.localizedString(.addMealCta) : LocalizationManager.shared.localizedString(.cancel)
                 ) {
                     if !searchText.isEmpty {
                         searchText = ""

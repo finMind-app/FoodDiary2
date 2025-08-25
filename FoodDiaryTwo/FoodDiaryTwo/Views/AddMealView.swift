@@ -39,17 +39,17 @@ struct AddMealView: View {
             VStack(spacing: 0) {
                 // Navigation Bar
                 PlumpyNavigationBar(
-                    title: "Add Meal",
+                    title: LocalizationManager.shared.localizedString(.addMeal),
                     leftButton: PlumpyNavigationButton(
                         icon: "xmark",
-                        title: "Cancel",
+                        title: LocalizationManager.shared.localizedString(.cancel),
                         style: .outline
                     ) {
                         dismiss()
                     },
                     rightButton: PlumpyNavigationButton(
                         icon: "checkmark",
-                        title: "Save",
+                        title: LocalizationManager.shared.localizedString(.save),
                         style: .primary
                     ) {
                         saveMeal()
@@ -92,7 +92,7 @@ struct AddMealView: View {
     
     private var basicInfoSection: some View {
         VStack(spacing: PlumpyTheme.Spacing.medium) {
-            Text("Basic Information")
+            Text(LocalizationManager.shared.localizedString(.foodDiary))
                 .font(PlumpyTheme.Typography.headline)
                 .fontWeight(.semibold)
                 .foregroundColor(PlumpyTheme.textPrimary)
@@ -109,7 +109,7 @@ struct AddMealView: View {
             
             // Тип приема пищи
             VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.small) {
-                Text("Meal Type")
+                Text(LocalizationManager.shared.localizedString(.mealType))
                     .font(PlumpyTheme.Typography.subheadline)
                     .fontWeight(.medium)
                     .foregroundColor(PlumpyTheme.textSecondary)
@@ -130,7 +130,7 @@ struct AddMealView: View {
             
             // Время приема пищи
             VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.small) {
-                Text("Time")
+                Text(LocalizationManager.shared.localizedString(.timeLabel))
                     .font(PlumpyTheme.Typography.subheadline)
                     .fontWeight(.medium)
                     .foregroundColor(PlumpyTheme.textSecondary)
@@ -148,7 +148,7 @@ struct AddMealView: View {
             // Калории
             PlumpyField(
                 title: "Calories",
-                placeholder: "Enter calories",
+                placeholder: LocalizationManager.shared.localizedString(.calories),
                 text: $calories,
                 keyboardType: .numberPad,
                 icon: "flame.fill",
@@ -191,7 +191,7 @@ struct AddMealView: View {
                         }) {
                             HStack {
                                 Image(systemName: "camera.viewfinder")
-                                Text("Распознать калории")
+                                Text(LocalizationManager.shared.localizedString(.calories))
                                     .fontWeight(.medium)
                             }
                             .frame(maxWidth: .infinity)
@@ -346,7 +346,7 @@ struct AddMealView: View {
     
     private var notesSection: some View {
         VStack(spacing: PlumpyTheme.Spacing.medium) {
-            Text("Notes")
+            Text(LocalizationManager.shared.localizedString(.notes))
                 .font(PlumpyTheme.Typography.headline)
                 .fontWeight(.semibold)
                 .foregroundColor(PlumpyTheme.textPrimary)

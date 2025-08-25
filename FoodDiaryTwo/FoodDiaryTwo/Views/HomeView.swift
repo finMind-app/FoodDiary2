@@ -55,7 +55,7 @@ struct HomeView: View {
             
             VStack(spacing: 0) {
                 PlumpyNavigationBar(
-                    title: "Food Diary",
+                    title: localizationManager.localizedString(.foodDiary),
                     subtitle: nil
                 )
                 
@@ -167,7 +167,7 @@ struct HomeView: View {
                     .fontWeight(.semibold)
                     .foregroundColor(PlumpyTheme.textPrimary)
                 
-                Text("Total calories today")
+                Text(localizationManager.localizedString(.totalCaloriesToday))
                     .font(PlumpyTheme.Typography.caption2)
                     .foregroundColor(PlumpyTheme.textSecondary)
             }
@@ -180,7 +180,7 @@ struct HomeView: View {
                     .fontWeight(.bold)
                     .foregroundColor(PlumpyTheme.primary)
                 
-                Text("calories")
+                Text(localizationManager.localizedString(.calories))
                     .font(PlumpyTheme.Typography.caption2)
                     .foregroundColor(PlumpyTheme.textSecondary)
             }
@@ -190,7 +190,7 @@ struct HomeView: View {
     
     private var calorieRingChart: some View {
         VStack(spacing: PlumpyTheme.Spacing.large) {
-            Text("Daily Progress")
+            Text(localizationManager.localizedString(.dailyProgress))
                 .font(PlumpyTheme.Typography.subheadline)
                 .fontWeight(.semibold)
                 .foregroundColor(PlumpyTheme.textPrimary)
@@ -209,7 +209,7 @@ struct HomeView: View {
             PlumpyProgressBar(
                 value: Double(totalCaloriesForSelectedDate),
                 maxValue: Double(DailyGoalsService.shared.getDailyCalorieGoal(from: modelContext)),
-                title: "Goal: \(DailyGoalsService.shared.getDailyCalorieGoal(from: modelContext)) cal",
+                title: "\(localizationManager.localizedString(.goalLabel)): \(DailyGoalsService.shared.getDailyCalorieGoal(from: modelContext)) \(localizationManager.localizedString(.calUnit))",
                 showPercentage: true,
                 style: .primary
             )
@@ -219,7 +219,7 @@ struct HomeView: View {
     
     private var quickActionsSection: some View {
         VStack(spacing: PlumpyTheme.Spacing.medium) {
-            Text("Quick Actions")
+            Text(localizationManager.localizedString(.quickActions))
                 .font(PlumpyTheme.Typography.subheadline)
                 .fontWeight(.semibold)
                 .foregroundColor(PlumpyTheme.textPrimary)
@@ -227,22 +227,22 @@ struct HomeView: View {
             
             // Кнопки для быстрого добавления разных типов приемов пищи
             LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: PlumpyTheme.Spacing.small), count: 2), spacing: PlumpyTheme.Spacing.small) {
-                PlumpyButton(title: "Breakfast", icon: "sunrise.fill", style: .outline, size: .small) {
+                PlumpyButton(title: localizationManager.localizedString(.breakfast), icon: "sunrise.fill", style: .outline, size: .small) {
                     selectedMealType = .breakfast
                     showingAddFoodEntry = true
                 }
                 
-                PlumpyButton(title: "Lunch", icon: "sun.max.fill", style: .outline, size: .small) {
+                PlumpyButton(title: localizationManager.localizedString(.lunch), icon: "sun.max.fill", style: .outline, size: .small) {
                     selectedMealType = .lunch
                     showingAddFoodEntry = true
                 }
                 
-                PlumpyButton(title: "Dinner", icon: "moon.fill", style: .outline, size: .small) {
+                PlumpyButton(title: localizationManager.localizedString(.dinner), icon: "moon.fill", style: .outline, size: .small) {
                     selectedMealType = .dinner
                     showingAddFoodEntry = true
                 }
                 
-                PlumpyButton(title: "Snack", icon: "leaf.fill", style: .outline, size: .small) {
+                PlumpyButton(title: localizationManager.localizedString(.snack), icon: "leaf.fill", style: .outline, size: .small) {
                     selectedMealType = .snack
                     showingAddFoodEntry = true
                 }
@@ -254,7 +254,7 @@ struct HomeView: View {
     private var foodEntriesList: some View {
         return VStack(spacing: PlumpyTheme.Spacing.large) {
             HStack {
-                Text("Today's Meals")
+                Text(localizationManager.localizedString(.todaysMeals))
                     .font(PlumpyTheme.Typography.subheadline)
                     .fontWeight(.semibold)
                     .foregroundColor(PlumpyTheme.textPrimary)
@@ -271,9 +271,9 @@ struct HomeView: View {
             if foodEntriesForSelectedDate.isEmpty {
                 PlumpyEmptyState(
                     icon: "fork.knife",
-                    title: "No meals yet today",
-                    subtitle: "Start tracking your nutrition by adding your first meal",
-                    actionTitle: "Add Meal"
+                    title: localizationManager.localizedString(.noMealsToday),
+                    subtitle: localizationManager.localizedString(.startTrackingHint),
+                    actionTitle: localizationManager.localizedString(.addMealCta)
                 ) {
                     selectedMealType = .breakfast
                     showingAddFoodEntry = true
@@ -291,7 +291,7 @@ struct HomeView: View {
     
     private var recommendationsSection: some View {
         return VStack(spacing: PlumpyTheme.Spacing.large) {
-            Text("AI Recommendations")
+            Text(localizationManager.localizedString(.aiRecommendations))
                 .font(PlumpyTheme.Typography.subheadline)
                 .fontWeight(.semibold)
                 .foregroundColor(PlumpyTheme.textPrimary)

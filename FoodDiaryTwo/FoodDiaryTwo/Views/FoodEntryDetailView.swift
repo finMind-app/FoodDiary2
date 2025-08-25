@@ -35,11 +35,11 @@ struct FoodEntryDetailView: View {
             VStack(spacing: 0) {
                 // Navigation Bar
                 PlumpyNavigationBar(
-                    title: isEditing ? "Edit Meal" : "Meal Details",
-                    subtitle: isEditing ? "Update meal information" : foodEntry.mealType.displayName,
+                    title: isEditing ? LocalizationManager.shared.localizedString(.edit) + " " + LocalizationManager.shared.localizedString(.addMeal) : LocalizationManager.shared.localizedString(.addMeal),
+                    subtitle: isEditing ? LocalizationManager.shared.localizedString(.edit) : foodEntry.mealType.displayName,
                     leftButton: PlumpyNavigationButton(
                         icon: "xmark",
-                        title: "Close",
+                        title: LocalizationManager.shared.localizedString(.cancel),
                         action: {
                             if isEditing {
                                 // Отменить редактирование
@@ -52,7 +52,7 @@ struct FoodEntryDetailView: View {
                     ),
                     rightButton: PlumpyNavigationButton(
                         icon: isEditing ? "checkmark" : "pencil",
-                        title: isEditing ? "Save" : "Edit",
+                        title: isEditing ? LocalizationManager.shared.localizedString(.save) : LocalizationManager.shared.localizedString(.edit),
                         action: {
                             if isEditing {
                                 saveChanges()
@@ -188,7 +188,7 @@ struct FoodEntryDetailView: View {
     // MARK: - Basic Info Section
     private var basicInfoSection: some View {
         VStack(spacing: PlumpyTheme.Spacing.medium) {
-            Text("Basic Information")
+            Text(LocalizationManager.shared.localizedString(.foodDiary))
                 .font(PlumpyTheme.Typography.headline)
                 .fontWeight(.semibold)
                 .foregroundColor(PlumpyTheme.textPrimary)
@@ -197,15 +197,15 @@ struct FoodEntryDetailView: View {
             VStack(spacing: PlumpyTheme.Spacing.medium) {
                 // Название
                 VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.tiny) {
-                    Text("Name")
+                    Text(LocalizationManager.shared.localizedString(.userName))
                         .font(PlumpyTheme.Typography.caption1)
                         .fontWeight(.medium)
                         .foregroundColor(PlumpyTheme.textSecondary)
                     
                     if isEditing {
                         PlumpyField(
-                            title: "Name",
-                            placeholder: "Enter meal name",
+                            title: LocalizationManager.shared.localizedString(.mealName),
+                            placeholder: LocalizationManager.shared.localizedString(.mealName),
                             text: $editedName
                         )
                     } else {
@@ -223,7 +223,7 @@ struct FoodEntryDetailView: View {
                 
                 // Тип приема пищи
                 VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.tiny) {
-                    Text("Meal Type")
+                    Text(LocalizationManager.shared.localizedString(.mealType))
                         .font(PlumpyTheme.Typography.caption1)
                         .fontWeight(.medium)
                         .foregroundColor(PlumpyTheme.textSecondary)
@@ -258,14 +258,14 @@ struct FoodEntryDetailView: View {
                 
                 // Дата и время
                 VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.tiny) {
-                    Text("Date & Time")
+                    Text(LocalizationManager.shared.localizedString(.mealTime))
                         .font(PlumpyTheme.Typography.caption1)
                         .fontWeight(.medium)
                         .foregroundColor(PlumpyTheme.textSecondary)
                     
                     if isEditing {
                         DatePicker(
-                            "Select Date",
+                            LocalizationManager.shared.localizedString(.mealTime),
                             selection: $editedDate,
                             displayedComponents: [.date, .hourAndMinute]
                         )
@@ -305,14 +305,14 @@ struct FoodEntryDetailView: View {
     private var productsSection: some View {
         VStack(spacing: PlumpyTheme.Spacing.medium) {
             HStack {
-                Text("Products")
+                Text(LocalizationManager.shared.localizedString(.products))
                     .font(PlumpyTheme.Typography.headline)
                     .fontWeight(.semibold)
                     .foregroundColor(PlumpyTheme.textPrimary)
                 
                 Spacer()
                 
-                Text("\(foodEntry.products.count) items")
+                Text("\(foodEntry.products.count) \(LocalizationManager.shared.localizedString(.items))")
                     .font(PlumpyTheme.Typography.caption1)
                     .foregroundColor(PlumpyTheme.textSecondary)
             }
@@ -320,9 +320,9 @@ struct FoodEntryDetailView: View {
             if foodEntry.products.isEmpty {
                 PlumpyEmptyState(
                     icon: "fork.knife",
-                    title: "No products",
-                    subtitle: "This meal doesn't contain any products",
-                    actionTitle: isEditing ? "Add Product" : nil
+                    title: LocalizationManager.shared.localizedString(.products),
+                    subtitle: nil,
+                    actionTitle: isEditing ? LocalizationManager.shared.localizedString(.addProduct) : nil
                 ) {
                     // TODO: Добавить логику добавления продукта
                 }
@@ -336,7 +336,7 @@ struct FoodEntryDetailView: View {
                                     .fontWeight(.medium)
                                     .foregroundColor(PlumpyTheme.textPrimary)
                                 
-                                Text("\(product.caloriesPerServing) cal • \(product.servingSize)g")
+                                Text("\(product.caloriesPerServing) \(LocalizationManager.shared.localizedString(.calUnit)) • \(product.servingSize)g")
                                     .font(PlumpyTheme.Typography.caption2)
                                     .foregroundColor(PlumpyTheme.textSecondary)
                             }
@@ -349,7 +349,7 @@ struct FoodEntryDetailView: View {
                                     .fontWeight(.semibold)
                                     .foregroundColor(PlumpyTheme.textPrimary)
                                 
-                                Text("cal")
+                                Text(LocalizationManager.shared.localizedString(.calUnit))
                                     .font(PlumpyTheme.Typography.caption2)
                                     .foregroundColor(PlumpyTheme.textSecondary)
                             }
@@ -369,7 +369,7 @@ struct FoodEntryDetailView: View {
     // MARK: - Notes Section
     private var notesSection: some View {
         VStack(spacing: PlumpyTheme.Spacing.medium) {
-            Text("Notes")
+            Text(LocalizationManager.shared.localizedString(.notes))
                 .font(PlumpyTheme.Typography.headline)
                 .fontWeight(.semibold)
                 .foregroundColor(PlumpyTheme.textPrimary)
@@ -377,8 +377,8 @@ struct FoodEntryDetailView: View {
             
             if isEditing {
                 PlumpyTextArea(
-                    title: "Notes",
-                    placeholder: "Add notes about your meal...",
+                    title: LocalizationManager.shared.localizedString(.notes),
+                    placeholder: LocalizationManager.shared.localizedString(.notes),
                     text: $editedNotes
                 )
             } else {
@@ -393,7 +393,7 @@ struct FoodEntryDetailView: View {
                                 .fill(PlumpyTheme.neutral50)
                         )
                 } else {
-                    Text("No notes added")
+                    Text(LocalizationManager.shared.localizedString(.notes))
                         .font(PlumpyTheme.Typography.body)
                         .foregroundColor(PlumpyTheme.textTertiary)
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -411,7 +411,7 @@ struct FoodEntryDetailView: View {
     // MARK: - Nutrition Section
     private var nutritionSection: some View {
         VStack(spacing: PlumpyTheme.Spacing.medium) {
-            Text("Nutrition Summary")
+            Text(LocalizationManager.shared.localizedString(.totalCalories))
                 .font(PlumpyTheme.Typography.headline)
                 .fontWeight(.semibold)
                 .foregroundColor(PlumpyTheme.textPrimary)
@@ -419,33 +419,33 @@ struct FoodEntryDetailView: View {
             
             LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: PlumpyTheme.Spacing.medium) {
                 PlumpyStatsCard(
-                    title: "Calories",
+                    title: LocalizationManager.shared.localizedString(.calories),
                     value: "\(foodEntry.totalCalories)",
-                    subtitle: "Total",
+                    subtitle: LocalizationManager.shared.localizedString(.totalCalories),
                     icon: "flame.fill",
                     iconColor: PlumpyTheme.warning
                 )
                 
                 PlumpyStatsCard(
-                    title: "Protein",
+                    title: LocalizationManager.shared.localizedString(.protein),
                     value: String(format: "%.1fg", foodEntry.totalProtein),
-                    subtitle: "Total",
+                    subtitle: LocalizationManager.shared.localizedString(.totalCalories),
                     icon: "circle.fill",
                     iconColor: PlumpyTheme.primary
                 )
                 
                 PlumpyStatsCard(
-                    title: "Carbs",
+                    title: LocalizationManager.shared.localizedString(.carbs),
                     value: String(format: "%.1fg", foodEntry.totalCarbs),
-                    subtitle: "Total",
+                    subtitle: LocalizationManager.shared.localizedString(.totalCalories),
                     icon: "circle.fill",
                     iconColor: PlumpyTheme.secondary
                 )
                 
                 PlumpyStatsCard(
-                    title: "Fat",
+                    title: LocalizationManager.shared.localizedString(.fat),
                     value: String(format: "%.1fg", foodEntry.totalFat),
-                    subtitle: "Total",
+                    subtitle: LocalizationManager.shared.localizedString(.totalCalories),
                     icon: "circle.fill",
                     iconColor: PlumpyTheme.tertiary
                 )
