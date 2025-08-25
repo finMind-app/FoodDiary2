@@ -38,6 +38,7 @@ struct FoodDiaryTwoApp: App {
     var body: some Scene {
         WindowGroup {
             MainAppView()
+                .environmentObject(LocalizationManager.shared)
         }
         .modelContainer(sharedModelContainer)
     }

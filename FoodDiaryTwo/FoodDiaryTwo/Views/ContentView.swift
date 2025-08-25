@@ -9,6 +9,7 @@ import SwiftUI
 import SwiftData
 
 struct ContentView: View {
+    @EnvironmentObject private var i18n: LocalizationManager
     @State private var selectedTab = 0
     @State private var lastTabSwitchMark = ""
     
@@ -38,10 +39,10 @@ struct ContentView: View {
                 PlumpyTabBar(
                     selectedTab: $selectedTab,
                     tabs: [
-                        PlumpyTabItem(icon: "house.fill", title: "Home", color: PlumpyTheme.primary),
-                        PlumpyTabItem(icon: "clock.fill", title: "History", color: PlumpyTheme.primaryAccent),
-                        PlumpyTabItem(icon: "chart.bar.fill", title: "Stats", color: PlumpyTheme.secondaryAccent),
-                        PlumpyTabItem(icon: "person.fill", title: "Profile", color: PlumpyTheme.tertiary)
+                        PlumpyTabItem(icon: "house.fill", title: i18n.localizedString(.home), color: PlumpyTheme.primary),
+                        PlumpyTabItem(icon: "clock.fill", title: i18n.localizedString(.history), color: PlumpyTheme.primaryAccent),
+                        PlumpyTabItem(icon: "chart.bar.fill", title: i18n.localizedString(.stats), color: PlumpyTheme.secondaryAccent),
+                        PlumpyTabItem(icon: "person.fill", title: i18n.localizedString(.profile), color: PlumpyTheme.tertiary)
                     ]
                 )
             }

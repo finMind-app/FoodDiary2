@@ -9,6 +9,7 @@ import SwiftUI
 import SwiftData
 
 struct SettingsView: View {
+    @EnvironmentObject private var i18n: LocalizationManager
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     @Query private var users: [UserProfile]
@@ -209,11 +210,11 @@ struct SettingsView: View {
                     Text("About")
                 }
             }
-            .navigationTitle("Settings")
+            .navigationTitle(i18n.localizedString(.settings))
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Done") {
+                    Button(i18n.localizedString(.ok)) {
                         dismiss()
                     }
                 }
@@ -228,6 +229,14 @@ struct SettingsView: View {
                             language: newValue,
                             region: settingsManager?.settings?.region ?? "United States"
                         )
+                        let lang: Language
+                        switch newValue {
+                        case "Русский": lang = .russian
+                        case "Español": lang = .spanish
+                        case "Français": lang = .french
+                        default: lang = .english
+                        }
+                        i18n.setLanguage(lang)
                     }
                 ),
                 languages: languages

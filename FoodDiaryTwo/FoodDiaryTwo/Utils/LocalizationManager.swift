@@ -35,6 +35,8 @@ enum Language: String, CaseIterable {
     case english = "en"
     case russian = "ru"
     case ukrainian = "uk"
+    case spanish = "es"
+    case french = "fr"
     
     var displayName: String {
         switch self {
@@ -44,6 +46,10 @@ enum Language: String, CaseIterable {
             return "Русский"
         case .ukrainian:
             return "Українська"
+        case .spanish:
+            return "Español"
+        case .french:
+            return "Français"
         }
     }
     
@@ -55,6 +61,10 @@ enum Language: String, CaseIterable {
             return "🇷🇺"
         case .ukrainian:
             return "🇺🇦"
+        case .spanish:
+            return "🇪🇸"
+        case .french:
+            return "🇫🇷"
         }
     }
 }
@@ -75,6 +85,7 @@ enum LocalizationKey: String, CaseIterable {
     case stats = "stats"
     case profile = "profile"
     case settings = "settings"
+    case history = "history"
     
     // Дневник питания
     case foodDiary = "food_diary"
@@ -140,6 +151,10 @@ enum LocalizationKey: String, CaseIterable {
             return russianStrings[self] ?? rawValue
         case .ukrainian:
             return ukrainianStrings[self] ?? rawValue
+        case .spanish:
+            return spanishStrings[self] ?? rawValue
+        case .french:
+            return frenchStrings[self] ?? rawValue
         }
     }
     
@@ -157,6 +172,7 @@ enum LocalizationKey: String, CaseIterable {
             .stats: "Stats",
             .profile: "Profile",
             .settings: "Settings",
+            .history: "History",
             .foodDiary: "Food Diary",
             .addMeal: "Add Meal",
             .mealName: "Meal Name",
@@ -216,6 +232,7 @@ enum LocalizationKey: String, CaseIterable {
             .stats: "Статистика",
             .profile: "Профиль",
             .settings: "Настройки",
+            .history: "История",
             .foodDiary: "Дневник Питания",
             .addMeal: "Добавить Прием Пищи",
             .mealName: "Название Приема",
@@ -275,6 +292,7 @@ enum LocalizationKey: String, CaseIterable {
             .stats: "Статистика",
             .profile: "Профіль",
             .settings: "Налаштування",
+            .history: "Історія",
             .foodDiary: "Щоденник Харчування",
             .addMeal: "Додати Прийом Їжі",
             .mealName: "Назва Прийому",
@@ -317,6 +335,126 @@ enum LocalizationKey: String, CaseIterable {
             .moderate: "Помірний",
             .active: "Активний",
             .veryActive: "Дуже Активний"
+        ]
+    }
+
+    private var spanishStrings: [LocalizationKey: String] {
+        [
+            .appName: "Diario de Comida",
+            .ok: "OK",
+            .cancel: "Cancelar",
+            .save: "Guardar",
+            .delete: "Eliminar",
+            .edit: "Editar",
+            .add: "Añadir",
+            .search: "Buscar",
+            .home: "Inicio",
+            .stats: "Estadísticas",
+            .profile: "Perfil",
+            .settings: "Ajustes",
+            .history: "Historial",
+            .foodDiary: "Diario de Comida",
+            .addMeal: "Añadir comida",
+            .mealName: "Nombre de la comida",
+            .mealType: "Tipo de comida",
+            .mealTime: "Hora de la comida",
+            .notes: "Notas",
+            .breakfast: "Desayuno",
+            .lunch: "Almuerzo",
+            .dinner: "Cena",
+            .snack: "Snack",
+            .products: "Productos",
+            .addProduct: "Añadir producto",
+            .productName: "Nombre del producto",
+            .brand: "Marca",
+            .servingSize: "Tamaño de porción",
+            .calories: "Calorías",
+            .protein: "Proteínas",
+            .carbs: "Carbohidratos",
+            .fat: "Grasas",
+            .fiber: "Fibra",
+            .sugar: "Azúcar",
+            .sodium: "Sodio",
+            .dailyProgress: "Progreso diario",
+            .totalCalories: "Calorías totales",
+            .dailyGoal: "Meta diaria",
+            .remaining: "Restante",
+            .progress: "Progreso",
+            .userName: "Nombre",
+            .age: "Edad",
+            .gender: "Género",
+            .height: "Altura",
+            .weight: "Peso",
+            .activityLevel: "Nivel de actividad",
+            .goal: "Objetivo",
+            .loseWeight: "Perder peso",
+            .maintainWeight: "Mantener peso",
+            .gainWeight: "Ganar peso",
+            .sedentary: "Sedentario",
+            .light: "Ligero",
+            .moderate: "Moderado",
+            .active: "Activo",
+            .veryActive: "Muy activo"
+        ]
+    }
+
+    private var frenchStrings: [LocalizationKey: String] {
+        [
+            .appName: "Journal Alimentaire",
+            .ok: "OK",
+            .cancel: "Annuler",
+            .save: "Enregistrer",
+            .delete: "Supprimer",
+            .edit: "Modifier",
+            .add: "Ajouter",
+            .search: "Rechercher",
+            .home: "Accueil",
+            .stats: "Stats",
+            .profile: "Profil",
+            .settings: "Réglages",
+            .history: "Historique",
+            .foodDiary: "Journal alimentaire",
+            .addMeal: "Ajouter un repas",
+            .mealName: "Nom du repas",
+            .mealType: "Type de repas",
+            .mealTime: "Heure du repas",
+            .notes: "Notes",
+            .breakfast: "Petit-déjeuner",
+            .lunch: "Déjeuner",
+            .dinner: "Dîner",
+            .snack: "Snack",
+            .products: "Produits",
+            .addProduct: "Ajouter un produit",
+            .productName: "Nom du produit",
+            .brand: "Marque",
+            .servingSize: "Taille de portion",
+            .calories: "Calories",
+            .protein: "Protéines",
+            .carbs: "Glucides",
+            .fat: "Lipides",
+            .fiber: "Fibres",
+            .sugar: "Sucre",
+            .sodium: "Sodium",
+            .dailyProgress: "Progression quotidienne",
+            .totalCalories: "Calories totales",
+            .dailyGoal: "Objectif quotidien",
+            .remaining: "Restant",
+            .progress: "Progression",
+            .userName: "Nom",
+            .age: "Âge",
+            .gender: "Sexe",
+            .height: "Taille",
+            .weight: "Poids",
+            .activityLevel: "Niveau d'activité",
+            .goal: "Objectif",
+            .loseWeight: "Perdre du poids",
+            .maintainWeight: "Maintenir le poids",
+            .gainWeight: "Prendre du poids",
+            .sedentary: "Sédentaire",
+            .light: "Léger",
+            .moderate: "Modéré",
+            .active: "Actif",
+            .veryActive: "Très actif"
         ]
     }
 }
