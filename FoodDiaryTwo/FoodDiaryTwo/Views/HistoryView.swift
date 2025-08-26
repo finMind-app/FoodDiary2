@@ -28,10 +28,10 @@ struct HistoryView: View {
         
         var displayName: String {
             switch self {
-            case .week: return "Week"
-            case .month: return "Month"
-            case .year: return "Year"
-            case .custom: return "Custom"
+            case .week: return LocalizationManager.shared.localizedString(.week)
+            case .month: return LocalizationManager.shared.localizedString(.month)
+            case .year: return LocalizationManager.shared.localizedString(.year)
+            case .custom: return LocalizationManager.shared.localizedString(.custom)
             }
         }
     }
@@ -297,7 +297,7 @@ struct CalendarView: View {
         NavigationView {
             VStack(spacing: PlumpyTheme.Spacing.large) {
                 DatePicker(
-                    "Select Date",
+                    LocalizationManager.shared.localizedString(.selectDate),
                     selection: $selectedDate,
                     displayedComponents: [.date]
                 )
@@ -307,7 +307,7 @@ struct CalendarView: View {
                 Spacer()
                 
                 PlumpyButton(
-                    title: "Select Date",
+                    title: LocalizationManager.shared.localizedString(.selectDate),
                     style: .primary
                 ) {
                     dismiss()
@@ -315,11 +315,11 @@ struct CalendarView: View {
                 .padding(.horizontal, PlumpyTheme.Spacing.large)
                 .padding(.bottom, PlumpyTheme.Spacing.large)
             }
-            .navigationTitle("Select Date")
+            .navigationTitle(LocalizationManager.shared.localizedString(.selectDate))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Cancel") {
+                    Button(LocalizationManager.shared.localizedString(.cancel)) {
                         dismiss()
                     }
                 }
@@ -381,7 +381,7 @@ struct FoodEntryHistoryCard: View {
                     }
                     
                     if !entry.products.isEmpty {
-                        Text("\(entry.products.count) products")
+                        Text("\(entry.products.count) \(LocalizationManager.shared.localizedString(.products))")
                             .font(PlumpyTheme.Typography.caption2)
                             .foregroundColor(PlumpyTheme.textTertiary)
                     }
@@ -395,7 +395,7 @@ struct FoodEntryHistoryCard: View {
                         .fontWeight(.semibold)
                         .foregroundColor(PlumpyTheme.textPrimary)
                     
-                    Text("cal")
+                    Text(LocalizationManager.shared.localizedString(.calUnit))
                         .font(PlumpyTheme.Typography.caption2)
                         .foregroundColor(PlumpyTheme.textSecondary)
                 }

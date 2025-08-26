@@ -390,7 +390,7 @@ struct EditProfileView: View {
     
     private var profilePhotoSection: some View {
         VStack(spacing: PlumpyTheme.Spacing.medium) {
-            Text("Profile Photo")
+            Text(LocalizationManager.shared.localizedString(.profilePhoto))
                 .font(PlumpyTheme.Typography.headline)
                 .fontWeight(.semibold)
                 .foregroundColor(PlumpyTheme.textPrimary)
@@ -423,7 +423,7 @@ struct EditProfileView: View {
                             )
                     }
                     
-                    Text("Tap to change photo")
+                    Text(LocalizationManager.shared.localizedString(.tapToChangePhoto))
                         .font(PlumpyTheme.Typography.caption1)
                         .foregroundColor(PlumpyTheme.primaryAccent)
                 }
@@ -435,31 +435,31 @@ struct EditProfileView: View {
     
     private var basicInfoSection: some View {
         VStack(spacing: PlumpyTheme.Spacing.medium) {
-            Text("Basic Information")
+            Text(LocalizationManager.shared.localizedString(.basicInformation))
                 .font(PlumpyTheme.Typography.headline)
                 .fontWeight(.semibold)
                 .foregroundColor(PlumpyTheme.textPrimary)
                 .frame(maxWidth: .infinity, alignment: .leading)
             
             PlumpyField(
-                title: "First Name",
-                placeholder: "Enter first name",
+                title: LocalizationManager.shared.localizedString(.firstName),
+                placeholder: LocalizationManager.shared.localizedString(.enterFirstName),
                 text: $firstName,
                 icon: "person",
                 isRequired: true
             )
             
             PlumpyField(
-                title: "Last Name",
-                placeholder: "Enter last name",
+                title: LocalizationManager.shared.localizedString(.lastName),
+                placeholder: LocalizationManager.shared.localizedString(.enterLastName),
                 text: $lastName,
                 icon: "person",
                 isRequired: true
             )
             
             PlumpyField(
-                title: "Email",
-                placeholder: "Enter email address",
+                title: LocalizationManager.shared.localizedString(.emailAddress),
+                placeholder: LocalizationManager.shared.localizedString(.enterEmail),
                 text: $email,
                 keyboardType: .emailAddress,
                 textContentType: .emailAddress,

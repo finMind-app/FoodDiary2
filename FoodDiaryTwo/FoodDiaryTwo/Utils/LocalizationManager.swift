@@ -237,6 +237,41 @@ enum LocalizationKey: String, CaseIterable {
     case active = "active"
     case veryActive = "very_active"
     
+    // Settings
+    case notifications = "notifications"
+    case reminderTime = "reminder_time"
+    case calorieReminders = "calorie_reminders"
+    case getRemindedAboutGoals = "get_reminded_about_goals"
+    case appearance = "appearance"
+    case darkMode = "dark_mode"
+    case language = "language"
+    case region = "region"
+    case languageRegion = "language_region"
+    case dataManagement = "data_management"
+    case exportDataTitle = "export_data_title"
+    case exportYourDataOrResetApp = "export_your_data_or_reset_app"
+    case clearAllData = "clear_all_data"
+    case clearAll = "clear_all"
+    case clearAllDataAlertTitle = "clear_all_data_alert_title"
+    case clearAllDataAlertMessage = "clear_all_data_alert_message"
+    case version = "version"
+    case termsOfService = "terms_of_service"
+    case privacyPolicy = "privacy_policy"
+    case about = "about"
+    case done = "done"
+    case share = "share"
+    
+    // History/Calendar
+    case week = "week"
+    case month = "month"
+    case year = "year"
+    case custom = "custom"
+    case selectDate = "select_date"
+    
+    // Additional
+    case trackJourney = "track_journey"
+    case basicInformation = "basic_information"
+    
     func localizedString(for language: Language) -> String {
         switch language {
         case .english:
@@ -364,7 +399,39 @@ enum LocalizationKey: String, CaseIterable {
             .daysInARow: "days in a row",
             .averageDailyCalories: "Average Daily Calories",
             .goalAchievement: "Goal Achievement",
-            .maxLabel: "Max"
+            .maxLabel: "Max",
+            // Settings
+            .notifications: "Notifications",
+            .reminderTime: "Reminder Time",
+            .calorieReminders: "Calorie Reminders",
+            .getRemindedAboutGoals: "Get reminded about your daily goals and meal tracking",
+            .appearance: "Appearance",
+            .darkMode: "Dark Mode",
+            .language: "Language",
+            .region: "Region",
+            .languageRegion: "Language & Region",
+            .dataManagement: "Data Management",
+            .exportDataTitle: "Export Data",
+            .exportYourDataOrResetApp: "Export your food diary data or reset the app",
+            .clearAllData: "Clear All Data",
+            .clearAll: "Clear All",
+            .clearAllDataAlertTitle: "Clear All Data",
+            .clearAllDataAlertMessage: "This will permanently delete all your food diary data. This action cannot be undone.",
+            .version: "Version",
+            .termsOfService: "Terms of Service",
+            .privacyPolicy: "Privacy Policy",
+            .about: "About",
+            .done: "Done",
+            .share: "Share",
+            // History/Calendar
+            .week: "Week",
+            .month: "Month",
+            .year: "Year",
+            .custom: "Custom",
+            .selectDate: "Select Date",
+            // Additional
+            .trackJourney: "Track your nutrition journey",
+            .basicInformation: "Basic Information"
         ]
     }
     
@@ -480,7 +547,39 @@ enum LocalizationKey: String, CaseIterable {
             .daysInARow: "дней подряд",
             .averageDailyCalories: "Средние дневные калории",
             .goalAchievement: "Достижение цели",
-            .maxLabel: "Макс"
+            .maxLabel: "Макс",
+            // Settings
+            .notifications: "Уведомления",
+            .reminderTime: "Время напоминания",
+            .calorieReminders: "Напоминания о калориях",
+            .getRemindedAboutGoals: "Получайте напоминания о целях и ведении дневника",
+            .appearance: "Оформление",
+            .darkMode: "Темная тема",
+            .language: "Язык",
+            .region: "Регион",
+            .languageRegion: "Язык и регион",
+            .dataManagement: "Управление данными",
+            .exportDataTitle: "Экспорт данных",
+            .exportYourDataOrResetApp: "Экспортируйте данные или сбросьте приложение",
+            .clearAllData: "Удалить все данные",
+            .clearAll: "Удалить всё",
+            .clearAllDataAlertTitle: "Удалить все данные",
+            .clearAllDataAlertMessage: "Это навсегда удалит все данные дневника. Действие нельзя отменить.",
+            .version: "Версия",
+            .termsOfService: "Условия использования",
+            .privacyPolicy: "Политика конфиденциальности",
+            .about: "О приложении",
+            .done: "Готово",
+            .share: "Поделиться",
+            // History/Calendar
+            .week: "Неделя",
+            .month: "Месяц",
+            .year: "Год",
+            .custom: "Произвольно",
+            .selectDate: "Выберите дату",
+            // Additional
+            .trackJourney: "Ведите свой путь питания",
+            .basicInformation: "Основная информация"
         ]
     }
     
@@ -596,7 +695,39 @@ enum LocalizationKey: String, CaseIterable {
             .daysInARow: "днів поспіль",
             .averageDailyCalories: "Середні денні калорії",
             .goalAchievement: "Досягнення цілі",
-            .maxLabel: "Макс"
+            .maxLabel: "Макс",
+            // Settings
+            .notifications: "Сповіщення",
+            .reminderTime: "Час нагадування",
+            .calorieReminders: "Нагадування про калорії",
+            .getRemindedAboutGoals: "Отримуйте нагадування про цілі та ведення щоденника",
+            .appearance: "Оформлення",
+            .darkMode: "Темна тема",
+            .language: "Мова",
+            .region: "Регіон",
+            .languageRegion: "Мова та регіон",
+            .dataManagement: "Керування даними",
+            .exportDataTitle: "Експорт даних",
+            .exportYourDataOrResetApp: "Експортуйте дані або скиньте застосунок",
+            .clearAllData: "Видалити всі дані",
+            .clearAll: "Видалити все",
+            .clearAllDataAlertTitle: "Видалити всі дані",
+            .clearAllDataAlertMessage: "Це назавжди видалить усі дані щоденника. Дію не можна скасувати.",
+            .version: "Версія",
+            .termsOfService: "Умови користування",
+            .privacyPolicy: "Політика конфіденційності",
+            .about: "Про застосунок",
+            .done: "Готово",
+            .share: "Поділитися",
+            // History/Calendar
+            .week: "Тиждень",
+            .month: "Місяць",
+            .year: "Рік",
+            .custom: "Користувацький",
+            .selectDate: "Виберіть дату",
+            // Additional
+            .trackJourney: "Ведіть свій шлях харчування",
+            .basicInformation: "Базова інформація"
         ]
     }
 
@@ -712,7 +843,39 @@ enum LocalizationKey: String, CaseIterable {
             .daysInARow: "días seguidos",
             .averageDailyCalories: "Calorías diarias promedio",
             .goalAchievement: "Logro de la meta",
-            .maxLabel: "Máx"
+            .maxLabel: "Máx",
+            // Settings
+            .notifications: "Notificaciones",
+            .reminderTime: "Hora de recordatorio",
+            .calorieReminders: "Recordatorios de calorías",
+            .getRemindedAboutGoals: "Recibe recordatorios de tus metas y registro de comidas",
+            .appearance: "Apariencia",
+            .darkMode: "Modo oscuro",
+            .language: "Idioma",
+            .region: "Región",
+            .languageRegion: "Idioma y región",
+            .dataManagement: "Gestión de datos",
+            .exportDataTitle: "Exportar datos",
+            .exportYourDataOrResetApp: "Exporta tus datos o reinicia la app",
+            .clearAllData: "Borrar todos los datos",
+            .clearAll: "Borrar todo",
+            .clearAllDataAlertTitle: "Borrar todos los datos",
+            .clearAllDataAlertMessage: "Esto eliminará permanentemente tus datos. Esta acción no se puede deshacer.",
+            .version: "Versión",
+            .termsOfService: "Términos de servicio",
+            .privacyPolicy: "Política de privacidad",
+            .about: "Acerca de",
+            .done: "Listo",
+            .share: "Compartir",
+            // History/Calendar
+            .week: "Semana",
+            .month: "Mes",
+            .year: "Año",
+            .custom: "Personalizado",
+            .selectDate: "Seleccionar fecha",
+            // Additional
+            .trackJourney: "Sigue tu camino de nutrición",
+            .basicInformation: "Información básica"
         ]
     }
 
@@ -828,7 +991,39 @@ enum LocalizationKey: String, CaseIterable {
             .daysInARow: "jours d'affilée",
             .averageDailyCalories: "Calories quotidiennes moyennes",
             .goalAchievement: "Atteinte de l'objectif",
-            .maxLabel: "Max"
+            .maxLabel: "Max",
+            // Settings
+            .notifications: "Notifications",
+            .reminderTime: "Heure de rappel",
+            .calorieReminders: "Rappels de calories",
+            .getRemindedAboutGoals: "Recevez des rappels sur vos objectifs et suivi",
+            .appearance: "Apparence",
+            .darkMode: "Mode sombre",
+            .language: "Langue",
+            .region: "Région",
+            .languageRegion: "Langue et région",
+            .dataManagement: "Gestion des données",
+            .exportDataTitle: "Exporter les données",
+            .exportYourDataOrResetApp: "Exportez vos données ou réinitialisez l'app",
+            .clearAllData: "Supprimer toutes les données",
+            .clearAll: "Tout supprimer",
+            .clearAllDataAlertTitle: "Supprimer toutes les données",
+            .clearAllDataAlertMessage: "Cela supprimera définitivement vos données. Action irréversible.",
+            .version: "Version",
+            .termsOfService: "Conditions d'utilisation",
+            .privacyPolicy: "Politique de confidentialité",
+            .about: "À propos",
+            .done: "Terminé",
+            .share: "Partager",
+            // History/Calendar
+            .week: "Semaine",
+            .month: "Mois",
+            .year: "An",
+            .custom: "Personnalisé",
+            .selectDate: "Sélectionner la date",
+            // Additional
+            .trackJourney: "Suivez votre parcours nutritionnel",
+            .basicInformation: "Informations de base"
         ]
     }
 }

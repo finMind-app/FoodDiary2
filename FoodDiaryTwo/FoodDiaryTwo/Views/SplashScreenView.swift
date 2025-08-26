@@ -45,12 +45,12 @@ struct SplashScreenView: View {
                 
                 // Название приложения
                 VStack(spacing: PlumpyTheme.Spacing.small) {
-                    Text("Food Diary")
+                    Text(LocalizationManager.shared.localizedString(.foodDiary))
                         .font(PlumpyTheme.Typography.largeTitle)
                         .fontWeight(.bold)
                         .foregroundColor(PlumpyTheme.primaryAccent)
                     
-                    Text("Track your nutrition journey")
+                    Text(LocalizationManager.shared.localizedString(.trackJourney))
                         .font(PlumpyTheme.Typography.body)
                         .fontWeight(.medium)
                         .foregroundColor(PlumpyTheme.textSecondary)

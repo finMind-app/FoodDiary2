@@ -111,13 +111,13 @@ struct FoodEntryDetailView: View {
                 }
             }
         }
-        .alert("Delete Meal", isPresented: $showingDeleteAlert) {
-            Button("Cancel", role: .cancel) { }
-            Button("Delete", role: .destructive) {
+        .alert(LocalizationManager.shared.localizedString(.delete), isPresented: $showingDeleteAlert) {
+            Button(LocalizationManager.shared.localizedString(.cancel), role: .cancel) { }
+            Button(LocalizationManager.shared.localizedString(.delete), role: .destructive) {
                 deleteMeal()
             }
         } message: {
-            Text("Are you sure you want to delete this meal? This action cannot be undone.")
+            Text(LocalizationManager.shared.localizedString(.clearAllDataAlertMessage))
         }
     }
     
@@ -149,7 +149,7 @@ struct FoodEntryDetailView: View {
                             Image(systemName: "camera.fill")
                                 .font(.system(size: 40))
                                 .foregroundColor(PlumpyTheme.textTertiary)
-                            Text("No photo")
+                            Text(LocalizationManager.shared.localizedString(.profilePhoto))
                                 .font(PlumpyTheme.Typography.caption1)
                                 .foregroundColor(PlumpyTheme.textTertiary)
                         }

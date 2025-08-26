@@ -38,7 +38,7 @@ struct SettingsView: View {
                         Image(systemName: "bell.fill")
                             .foregroundColor(.blue)
                             .frame(width: 24)
-                        Toggle("Notifications", isOn: Binding(
+                        Toggle(i18n.localizedString(.notifications), isOn: Binding(
                             get: { settingsManager?.settings?.notificationsEnabled ?? true },
                             set: { newValue in
                                 settingsManager?.updateNotificationSettings(
@@ -55,7 +55,7 @@ struct SettingsView: View {
                             Image(systemName: "clock.fill")
                                 .foregroundColor(.orange)
                                 .frame(width: 24)
-                            Text("Reminder Time")
+                            Text(i18n.localizedString(.reminderTime))
                             Spacer()
                             Text(settingsManager?.settings?.reminderTimeString ?? "9:00 AM")
                                 .foregroundColor(.secondary)
@@ -68,7 +68,7 @@ struct SettingsView: View {
                             Image(systemName: "flame.fill")
                                 .foregroundColor(.red)
                                 .frame(width: 24)
-                            Text("Calorie Reminders")
+                            Text(i18n.localizedString(.calorieReminders))
                             Spacer()
                             Toggle("", isOn: Binding(
                                 get: { settingsManager?.settings?.calorieRemindersEnabled ?? true },
@@ -84,9 +84,9 @@ struct SettingsView: View {
                         }
                     }
                 } header: {
-                    Text("Notifications")
+                    Text(i18n.localizedString(.notifications))
                 } footer: {
-                    Text("Get reminded about your daily goals and meal tracking")
+                    Text(i18n.localizedString(.getRemindedAboutGoals))
                 }
                 
                 // MARK: - Appearance
@@ -95,7 +95,7 @@ struct SettingsView: View {
                         Image(systemName: "moon.fill")
                             .foregroundColor(.purple)
                             .frame(width: 24)
-                        Toggle("Dark Mode", isOn: Binding(
+                        Toggle(i18n.localizedString(.darkMode), isOn: Binding(
                             get: { settingsManager?.settings?.darkModeEnabled ?? false },
                             set: { newValue in
                                 settingsManager?.updateAppearanceSettings(darkMode: newValue)
@@ -103,7 +103,7 @@ struct SettingsView: View {
                         ))
                     }
                 } header: {
-                    Text("Appearance")
+                    Text(i18n.localizedString(.appearance))
                 }
                 
                 // MARK: - Language & Region
@@ -112,7 +112,7 @@ struct SettingsView: View {
                         Image(systemName: "globe")
                             .foregroundColor(.blue)
                             .frame(width: 24)
-                        Text("Language")
+                        Text(i18n.localizedString(.language))
                         Spacer()
                         Text(settingsManager?.settings?.selectedLanguage ?? "English")
                             .foregroundColor(.secondary)
@@ -125,13 +125,13 @@ struct SettingsView: View {
                         Image(systemName: "flag.fill")
                             .foregroundColor(.orange)
                             .frame(width: 24)
-                        Text("Region")
+                        Text(i18n.localizedString(.region))
                         Spacer()
                         Text(settingsManager?.settings?.region ?? "United States")
                             .foregroundColor(.secondary)
                     }
                 } header: {
-                    Text("Language & Region")
+                    Text(i18n.localizedString(.languageRegion))
                 }
                 
                 // MARK: - Data Management
@@ -140,7 +140,7 @@ struct SettingsView: View {
                         Image(systemName: "arrow.up.doc.fill")
                             .foregroundColor(.green)
                             .frame(width: 24)
-                        Text("Export Data")
+                        Text(i18n.localizedString(.exportDataTitle))
                         Spacer()
                         Toggle("", isOn: Binding(
                             get: { settingsManager?.settings?.dataExportEnabled ?? false },
@@ -159,7 +159,7 @@ struct SettingsView: View {
                         Image(systemName: "trash.fill")
                             .foregroundColor(.red)
                             .frame(width: 24)
-                        Text("Clear All Data")
+                        Text(i18n.localizedString(.clearAllData))
                         Spacer()
                         Text("")
                     }
@@ -168,9 +168,9 @@ struct SettingsView: View {
                         showingClearDataAlert = true
                     }
                 } header: {
-                    Text("Data Management")
+                    Text(i18n.localizedString(.dataManagement))
                 } footer: {
-                    Text("Export your food diary data or reset the app")
+                    Text(i18n.localizedString(.exportYourDataOrResetApp))
                 }
                 
                 // MARK: - About
@@ -179,7 +179,7 @@ struct SettingsView: View {
                         Image(systemName: "info.circle.fill")
                             .foregroundColor(.blue)
                             .frame(width: 24)
-                        Text("Version")
+                        Text(i18n.localizedString(.version))
                         Spacer()
                         Text(settingsManager?.settings?.appVersion ?? "1.0.0")
                             .foregroundColor(.secondary)
@@ -189,7 +189,7 @@ struct SettingsView: View {
                         Image(systemName: "doc.text.fill")
                             .foregroundColor(.gray)
                             .frame(width: 24)
-                        Text("Terms of Service")
+                        Text(i18n.localizedString(.termsOfService))
                         Spacer()
                         Image(systemName: "chevron.right")
                             .font(.caption)
@@ -200,14 +200,14 @@ struct SettingsView: View {
                         Image(systemName: "hand.raised.fill")
                             .foregroundColor(.gray)
                             .frame(width: 24)
-                        Text("Privacy Policy")
+                        Text(i18n.localizedString(.privacyPolicy))
                         Spacer()
                         Image(systemName: "chevron.right")
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
                 } header: {
-                    Text("About")
+                    Text(i18n.localizedString(.about))
                 }
             }
             .navigationTitle(i18n.localizedString(.settings))
@@ -256,13 +256,13 @@ struct SettingsView: View {
                 )
             )
         }
-        .alert("Clear All Data", isPresented: $showingClearDataAlert) {
-            Button("Cancel", role: .cancel) { }
-            Button("Clear All", role: .destructive) {
+        .alert(i18n.localizedString(.clearAllDataAlertTitle), isPresented: $showingClearDataAlert) {
+            Button(i18n.localizedString(.cancel), role: .cancel) { }
+            Button(i18n.localizedString(.clearAll), role: .destructive) {
                 settingsManager?.clearAllData()
             }
         } message: {
-            Text("This will permanently delete all your food diary data. This action cannot be undone.")
+            Text(i18n.localizedString(.clearAllDataAlertMessage))
         }
         .sheet(isPresented: $showingExportSheet) {
             if let exportData = exportData {
@@ -300,11 +300,11 @@ struct LanguagePickerView: View {
                     dismiss()
                 }
             }
-            .navigationTitle("Language")
+            .navigationTitle(LocalizationManager.shared.localizedString(.language))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Done") {
+                    Button(LocalizationManager.shared.localizedString(.done)) {
                         dismiss()
                     }
                 }
@@ -322,7 +322,7 @@ struct TimePickerView: View {
         NavigationView {
             VStack {
                 DatePicker(
-                    "Reminder Time",
+                    LocalizationManager.shared.localizedString(.reminderTime),
                     selection: $selectedTime,
                     displayedComponents: .hourAndMinute
                 )
@@ -332,16 +332,16 @@ struct TimePickerView: View {
                 
                 Spacer()
             }
-            .navigationTitle("Reminder Time")
+            .navigationTitle(LocalizationManager.shared.localizedString(.reminderTime))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancel") {
+                    Button(LocalizationManager.shared.localizedString(.cancel)) {
                         dismiss()
                     }
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Done") {
+                    Button(LocalizationManager.shared.localizedString(.done)) {
                         dismiss()
                     }
                 }
@@ -365,7 +365,7 @@ struct ExportDataView: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 
-                Button("Share") {
+                Button(LocalizationManager.shared.localizedString(.share)) {
                     let activityVC = UIActivityViewController(
                         activityItems: [data],
                         applicationActivities: nil
@@ -379,11 +379,11 @@ struct ExportDataView: View {
                 .buttonStyle(.borderedProminent)
                 .padding()
             }
-            .navigationTitle("Export Data")
+            .navigationTitle(LocalizationManager.shared.localizedString(.exportDataTitle))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Done") {
+                    Button(LocalizationManager.shared.localizedString(.done)) {
                         dismiss()
                     }
                 }

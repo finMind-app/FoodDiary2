@@ -404,7 +404,7 @@ struct FoodEntryCard: View {
                         .fontWeight(.bold)
                         .foregroundColor(PlumpyTheme.primary)
                     
-                    Text("cal")
+                    Text(localizationManager.localizedString(.calUnit))
                         .font(PlumpyTheme.Typography.caption2)
                         .foregroundColor(PlumpyTheme.textSecondary)
                 }

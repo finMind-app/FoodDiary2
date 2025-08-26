@@ -35,10 +35,10 @@ struct StatisticsView: View {
         
         var displayName: String {
             switch self {
-            case .week: return "Week"
-            case .month: return "Month"
-            case .year: return "Year"
-            case .custom: return "Custom"
+            case .week: return LocalizationManager.shared.localizedString(.week)
+            case .month: return LocalizationManager.shared.localizedString(.month)
+            case .year: return LocalizationManager.shared.localizedString(.year)
+            case .custom: return LocalizationManager.shared.localizedString(.custom)
             }
         }
     }
@@ -341,14 +341,14 @@ struct StatisticsView: View {
                 Circle()
                     .fill(PlumpyTheme.primaryAccent)
                     .frame(width: PlumpyTheme.Spacing.small, height: PlumpyTheme.Spacing.small)
-                Text("Calories")
+                Text(LocalizationManager.shared.localizedString(.calories))
                     .font(PlumpyTheme.Typography.caption2)
                     .foregroundColor(PlumpyTheme.textSecondary)
             }
             
             Spacer()
             
-            Text("Max: \(maxCalories) cal")
+            Text("\(LocalizationManager.shared.localizedString(.maxLabel)): \(maxCalories) \(LocalizationManager.shared.localizedString(.calUnit))")
                 .font(PlumpyTheme.Typography.caption2)
                 .foregroundColor(PlumpyTheme.textSecondary)
         }

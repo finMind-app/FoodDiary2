@@ -100,8 +100,8 @@ struct AddMealView: View {
             
             // Название приема пищи
             PlumpyField(
-                title: "Meal Name",
-                placeholder: "Enter meal name",
+                title: LocalizationManager.shared.localizedString(.mealName),
+                placeholder: LocalizationManager.shared.localizedString(.mealName),
                 text: $mealName,
                 icon: "fork.knife",
                 isRequired: true
@@ -147,7 +147,7 @@ struct AddMealView: View {
             
             // Калории
             PlumpyField(
-                title: "Calories",
+                title: LocalizationManager.shared.localizedString(.calories),
                 placeholder: LocalizationManager.shared.localizedString(.calories),
                 text: $calories,
                 keyboardType: .numberPad,
@@ -162,7 +162,7 @@ struct AddMealView: View {
     // MARK: - Секция фото с распознаванием
     private var photoSectionWithRecognition: some View {
         VStack(spacing: PlumpyTheme.Spacing.medium) {
-            Text("Photo & Recognition")
+            Text(LocalizationManager.shared.localizedString(.recognizeCalories))
                 .font(PlumpyTheme.Typography.headline)
                 .fontWeight(.semibold)
                 .foregroundColor(PlumpyTheme.textPrimary)
@@ -353,7 +353,7 @@ struct AddMealView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             
             VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.small) {
-                Text("Additional notes")
+                Text(LocalizationManager.shared.localizedString(.notes))
                     .font(PlumpyTheme.Typography.caption1)
                     .fontWeight(.medium)
                     .foregroundColor(PlumpyTheme.textSecondary)
@@ -373,7 +373,7 @@ struct AddMealView: View {
                         )
                     
                     if notes.isEmpty {
-                        Text("Add notes about your meal...")
+                        Text(LocalizationManager.shared.localizedString(.notes))
                             .font(PlumpyTheme.Typography.body)
                             .foregroundColor(PlumpyTheme.textTertiary)
                             .padding(.horizontal, PlumpyTheme.Spacing.medium)
