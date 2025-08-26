@@ -354,17 +354,17 @@ struct EditProfileView: View {
             VStack(spacing: 0) {
                 // Navigation Bar
                 PlumpyNavigationBar(
-                    title: "Edit Profile",
+                    title: LocalizationManager.shared.localizedString(.editProfile),
                     leftButton: PlumpyNavigationButton(
                         icon: "xmark",
-                        title: "Cancel",
+                        title: LocalizationManager.shared.localizedString(.cancel),
                         style: .outline
                     ) {
                         dismiss()
                     },
                     rightButton: PlumpyNavigationButton(
                         icon: "checkmark",
-                        title: "Save",
+                        title: LocalizationManager.shared.localizedString(.save),
                         style: .primary
                     ) {
                         saveProfile()

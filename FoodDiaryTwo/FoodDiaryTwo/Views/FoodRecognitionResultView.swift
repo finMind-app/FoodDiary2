@@ -81,33 +81,33 @@ struct FoodRecognitionResultView: View {
             ], spacing: PlumpyTheme.Spacing.medium) {
                 
                 NutritionCard(
-                    title: "Калории",
+                    title: LocalizationManager.shared.localizedString(.calories),
                     value: "\(Int(result.totalCalories))",
-                    unit: "ккал",
+                    unit: LocalizationManager.shared.localizedString(.calUnit),
                     color: .orange,
                     icon: "flame.fill"
                 )
                 
                 NutritionCard(
-                    title: "Белки",
+                    title: LocalizationManager.shared.localizedString(.protein),
                     value: "\(String(format: "%.1f", result.totalProtein))",
-                    unit: "г",
+                    unit: "g",
                     color: .blue,
                     icon: "circle.hexagongrid.fill"
                 )
                 
                 NutritionCard(
-                    title: "Жиры",
+                    title: LocalizationManager.shared.localizedString(.fat),
                     value: "\(String(format: "%.1f", result.totalFat))",
-                    unit: "г",
+                    unit: "g",
                     color: .yellow,
                     icon: "drop.fill"
                 )
                 
                 NutritionCard(
-                    title: "Углеводы",
+                    title: LocalizationManager.shared.localizedString(.carbs),
                     value: "\(String(format: "%.1f", result.totalCarbs))",
-                    unit: "г",
+                    unit: "g",
                     color: .green,
                     icon: "leaf.fill"
                 )
@@ -242,7 +242,7 @@ struct RecognizedFoodRow: View {
                         .fontWeight(.semibold)
                         .foregroundColor(food.confidenceColor)
                     
-                    Text("уверенность")
+                    Text(LocalizationManager.shared.localizedString(.confidenceLabel))
                         .font(PlumpyTheme.Typography.caption2)
                         .foregroundColor(PlumpyTheme.textTertiary)
                 }
@@ -250,10 +250,10 @@ struct RecognizedFoodRow: View {
             
             // Детали питания
             HStack(spacing: PlumpyTheme.Spacing.medium) {
-                NutritionBadge(label: "Кал", value: "\(Int(food.calories))")
-                NutritionBadge(label: "Б", value: "\(String(format: "%.1f", food.protein))")
-                NutritionBadge(label: "Ж", value: "\(String(format: "%.1f", food.fat))")
-                NutritionBadge(label: "У", value: "\(String(format: "%.1f", food.carbs))")
+                NutritionBadge(label: LocalizationManager.shared.localizedString(.caloriesShort), value: "\(Int(food.calories))")
+                NutritionBadge(label: LocalizationManager.shared.localizedString(.proteinShort), value: "\(String(format: "%.1f", food.protein))")
+                NutritionBadge(label: LocalizationManager.shared.localizedString(.fatShort), value: "\(String(format: "%.1f", food.fat))")
+                NutritionBadge(label: LocalizationManager.shared.localizedString(.carbsShort), value: "\(String(format: "%.1f", food.carbs))")
                 
                 Spacer()
                 

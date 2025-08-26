@@ -486,7 +486,7 @@ struct StatisticsView: View {
                 let total = (try? modelContext.fetch(FetchDescriptor<Achievement>()))?.count ?? 0
                 StatisticsInfoCard(
                     title: LocalizationManager.shared.localizedString(.achievements),
-                    subtitle: "\(LocalizationManager.shared.localizedString(.unlocked)): \(unlocked) of \(max(total, 1))",
+                    subtitle: String(format: LocalizationManager.shared.localizedString(.unlockedFormat), unlocked, max(total, 1)),
                     icon: "trophy.fill",
                     iconColor: PlumpyTheme.primaryAccent,
                     action: {}

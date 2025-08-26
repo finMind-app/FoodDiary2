@@ -153,9 +153,9 @@ struct HomeView: View {
     private func getAIFoodSuggestions(for date: Date) -> [String] {
         // Simple implementation - return some suggestions
         return [
-            "Try adding more vegetables to your meals",
-            "Consider having a protein-rich snack",
-            "Stay hydrated throughout the day"
+            localizationManager.localizedString(.nutritionInsights),
+            localizationManager.localizedString(.aiRecommendations),
+            localizationManager.localizedString(.startTrackingHint)
         ]
     }
     

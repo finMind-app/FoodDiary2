@@ -160,7 +160,7 @@ struct FoodEntryDetailView: View {
                 HStack(spacing: PlumpyTheme.Spacing.medium) {
                     PhotosPicker(selection: $selectedPhotoItem, matching: .images) {
                         PlumpyButton(
-                            title: "Change Photo",
+                            title: LocalizationManager.shared.localizedString(.tapToChangePhoto),
                             icon: "photo",
                             style: .outline,
                             size: .small
@@ -171,7 +171,7 @@ struct FoodEntryDetailView: View {
                     
                     if $foodEntry.photoData.wrappedValue != nil {
                         PlumpyButton(
-                            title: "Remove",
+                            title: LocalizationManager.shared.localizedString(.delete),
                             icon: "trash",
                             style: .outline,
                             size: .small
@@ -457,7 +457,7 @@ struct FoodEntryDetailView: View {
     // MARK: - Delete Button
     private var deleteButton: some View {
         PlumpyButton(
-            title: "Delete Meal",
+            title: LocalizationManager.shared.localizedString(.delete),
             icon: "trash",
             style: .outline
         ) {

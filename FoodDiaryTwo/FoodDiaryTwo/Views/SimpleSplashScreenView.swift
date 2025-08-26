@@ -28,7 +28,7 @@ struct SimpleSplashScreenView: View {
                     .opacity(logoOpacity)
                 
                 // Название приложения
-                Text("Food Diary")
+                Text(LocalizationManager.shared.localizedString(.foodDiary))
                     .font(PlumpyTheme.Typography.title1)
                     .fontWeight(.bold)
                     .foregroundColor(PlumpyTheme.surface)
