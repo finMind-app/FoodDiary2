@@ -236,6 +236,10 @@ enum LocalizationKey: String, CaseIterable {
     case moderate = "moderate"
     case active = "active"
     case veryActive = "very_active"
+    // Gender labels
+    case maleLabel = "male_label"
+    case femaleLabel = "female_label"
+    case otherLabel = "other_label"
     
     // Settings
     case notifications = "notifications"
@@ -271,6 +275,58 @@ enum LocalizationKey: String, CaseIterable {
     // Additional
     case trackJourney = "track_journey"
     case basicInformation = "basic_information"
+
+    // Achievements (titles and details)
+    case achFirstMealTitle = "ach_first_meal_title"
+    case achFirstMealDetail = "ach_first_meal_detail"
+    case achFiveMealsTitle = "ach_five_meals_title"
+    case achFiveMealsDetail = "ach_five_meals_detail"
+    case achTwentyMealsTitle = "ach_twenty_meals_title"
+    case achTwentyMealsDetail = "ach_twenty_meals_detail"
+    case achHundredMealsTitle = "ach_hundred_meals_title"
+    case achHundredMealsDetail = "ach_hundred_meals_detail"
+    case achPhotoEntryTitle = "ach_photo_entry_title"
+    case achPhotoEntryDetail = "ach_photo_entry_detail"
+    case achHealthySnacksTitle = "ach_healthy_snacks_title"
+    case achHealthySnacksDetail = "ach_healthy_snacks_detail"
+    case achBreakfastEarlyTitle = "ach_breakfast_early_title"
+    case achBreakfastEarlyDetail = "ach_breakfast_early_detail"
+    case achDinnerLateTitle = "ach_dinner_late_title"
+    case achDinnerLateDetail = "ach_dinner_late_detail"
+    case achStreak3Title = "ach_streak3_title"
+    case achStreak3Detail = "ach_streak3_detail"
+    case achStreak7Title = "ach_streak7_title"
+    case achStreak7Detail = "ach_streak7_detail"
+    case achGoalDayTitle = "ach_goal_day_title"
+    case achGoalDayDetail = "ach_goal_day_detail"
+    case achGoalWeek4Title = "ach_goal_week4_title"
+    case achGoalWeek4Detail = "ach_goal_week4_detail"
+    case achProtein100Title = "ach_protein100_title"
+    case achProtein100Detail = "ach_protein100_detail"
+    case achVeggieDayTitle = "ach_veggie_day_title"
+    case achVeggieDayDetail = "ach_veggie_day_detail"
+    case achWeek30MealsTitle = "ach_week30_meals_title"
+    case achWeek30MealsDetail = "ach_week30_meals_detail"
+    case achMonth100MealsTitle = "ach_month100_meals_title"
+    case achMonth100MealsDetail = "ach_month100_meals_detail"
+
+    // Recommendations / forecasts
+    case recStartBreakfast = "rec_start_breakfast"
+    case recAddMoreFood = "rec_add_more_food"
+    case recReducePortions = "rec_reduce_portions"
+    case recGreatProgress = "rec_great_progress"
+    case recAddProtein = "rec_add_protein"
+    case recAddCarbs = "rec_add_carbs"
+    case recAddFats = "rec_add_fats"
+    case recForecastMorning = "rec_forecast_morning"
+    case recForecastGoodStart = "rec_forecast_good_start"
+    case recForecastExcellent = "rec_forecast_excellent"
+    case recForecastHalfDay = "rec_forecast_halfday"
+    case recForecastGood = "rec_forecast_good"
+    case recForecastGoalReached = "rec_forecast_goal_reached"
+    case recForecastEvening = "rec_forecast_evening"
+    case recForecastGreatDay = "rec_forecast_great_day"
+    case recForecastOverLimit = "rec_forecast_over_limit"
     
     func localizedString(for language: Language) -> String {
         switch language {
@@ -423,6 +479,9 @@ enum LocalizationKey: String, CaseIterable {
             .about: "About",
             .done: "Done",
             .share: "Share",
+            .maleLabel: "Male",
+            .femaleLabel: "Female",
+            .otherLabel: "Other",
             // History/Calendar
             .week: "Week",
             .month: "Month",
@@ -432,6 +491,57 @@ enum LocalizationKey: String, CaseIterable {
             // Additional
             .trackJourney: "Track your nutrition journey",
             .basicInformation: "Basic Information"
+            ,
+            // Achievements
+            .achFirstMealTitle: "First Meal",
+            .achFirstMealDetail: "Log your very first meal.",
+            .achFiveMealsTitle: "Getting Started",
+            .achFiveMealsDetail: "Log 5 meals in total.",
+            .achTwentyMealsTitle: "Meal Enthusiast",
+            .achTwentyMealsDetail: "Log 20 meals in total.",
+            .achHundredMealsTitle: "Meal Master",
+            .achHundredMealsDetail: "Log 100 meals in total.",
+            .achPhotoEntryTitle: "Photo Pro",
+            .achPhotoEntryDetail: "Attach a photo to a meal.",
+            .achHealthySnacksTitle: "Snack Smart",
+            .achHealthySnacksDetail: "Log 10 snacks.",
+            .achBreakfastEarlyTitle: "Early Bird",
+            .achBreakfastEarlyDetail: "Log a breakfast before 8 AM.",
+            .achDinnerLateTitle: "Night Owl",
+            .achDinnerLateDetail: "Log a dinner after 9 PM.",
+            .achStreak3Title: "3-Day Streak",
+            .achStreak3Detail: "Log meals 3 days in a row.",
+            .achStreak7Title: "7-Day Streak",
+            .achStreak7Detail: "Log meals 7 days in a row.",
+            .achGoalDayTitle: "On Target",
+            .achGoalDayDetail: "Hit your daily calorie goal.",
+            .achGoalWeek4Title: "Consistency",
+            .achGoalWeek4Detail: "Hit your goal on 4 days in a week.",
+            .achProtein100Title: "Protein Punch",
+            .achProtein100Detail: "Reach 100g protein in a day.",
+            .achVeggieDayTitle: "Veggie Day",
+            .achVeggieDayDetail: "Log 5 different products in a day.",
+            .achWeek30MealsTitle: "Busy Week",
+            .achWeek30MealsDetail: "Log 30 meals in a week.",
+            .achMonth100MealsTitle: "Power Logger",
+            .achMonth100MealsDetail: "Log 100 meals in a month.",
+            // Recommendations / forecast
+            .recStartBreakfast: "Start the day with breakfast! Recommended 400–600 kcal",
+            .recAddMoreFood: "Add more food. Remaining %d kcal",
+            .recReducePortions: "Consider reducing portions. Over by %d kcal",
+            .recGreatProgress: "Great progress! %d kcal remaining to goal",
+            .recAddProtein: "Add more protein: meat, fish, eggs, cottage cheese",
+            .recAddCarbs: "Add complex carbs: grains, bread, vegetables",
+            .recAddFats: "Add healthy fats: nuts, avocado, olive oil",
+            .recForecastMorning: "You have %d kcal for the day. Start with a nutritious breakfast!",
+            .recForecastGoodStart: "Good start! %d kcal remaining. Plan lunch and dinner",
+            .recForecastExcellent: "Excellent progress! Keep it up",
+            .recForecastHalfDay: "Half the day passed. %d kcal remaining. Plan dinner",
+            .recForecastGood: "Nice! %d kcal remaining to the goal",
+            .recForecastGoalReached: "Goal reached! You can have a light snack",
+            .recForecastEvening: "Day is ending. %d kcal remaining. Light dinner",
+            .recForecastGreatDay: "Great day! You reached your goal",
+            .recForecastOverLimit: "Over the limit. Start fresh tomorrow"
         ]
     }
     
@@ -571,6 +681,9 @@ enum LocalizationKey: String, CaseIterable {
             .about: "О приложении",
             .done: "Готово",
             .share: "Поделиться",
+            .maleLabel: "Мужской",
+            .femaleLabel: "Женский",
+            .otherLabel: "Другое",
             // History/Calendar
             .week: "Неделя",
             .month: "Месяц",
@@ -579,7 +692,57 @@ enum LocalizationKey: String, CaseIterable {
             .selectDate: "Выберите дату",
             // Additional
             .trackJourney: "Ведите свой путь питания",
-            .basicInformation: "Основная информация"
+            .basicInformation: "Основная информация",
+            // Achievements
+            .achFirstMealTitle: "Первый прием",
+            .achFirstMealDetail: "Добавьте свой самый первый прием пищи.",
+            .achFiveMealsTitle: "Начало положено",
+            .achFiveMealsDetail: "Добавьте всего 5 приемов пищи.",
+            .achTwentyMealsTitle: "Любитель приемов",
+            .achTwentyMealsDetail: "Добавьте 20 приемов пищи.",
+            .achHundredMealsTitle: "Мастер приемов",
+            .achHundredMealsDetail: "Добавьте 100 приемов пищи.",
+            .achPhotoEntryTitle: "Фото-про",
+            .achPhotoEntryDetail: "Прикрепите фото к приему питания.",
+            .achHealthySnacksTitle: "Умный перекус",
+            .achHealthySnacksDetail: "Добавьте 10 перекусов.",
+            .achBreakfastEarlyTitle: "Ранняя пташка",
+            .achBreakfastEarlyDetail: "Добавьте завтрак до 8 утра.",
+            .achDinnerLateTitle: "Ночная сова",
+            .achDinnerLateDetail: "Добавьте ужин после 21:00.",
+            .achStreak3Title: "Серия 3 дня",
+            .achStreak3Detail: "Добавляйте приемы 3 дня подряд.",
+            .achStreak7Title: "Серия 7 дней",
+            .achStreak7Detail: "Добавляйте приемы 7 дней подряд.",
+            .achGoalDayTitle: "В цель",
+            .achGoalDayDetail: "Достигните дневной цели по калориям.",
+            .achGoalWeek4Title: "Последовательность",
+            .achGoalWeek4Detail: "Достигайте цели 4 дня на неделе.",
+            .achProtein100Title: "Белковый удар",
+            .achProtein100Detail: "Достигните 100 г белка за день.",
+            .achVeggieDayTitle: "Овощной день",
+            .achVeggieDayDetail: "Добавьте 5 разных продуктов за день.",
+            .achWeek30MealsTitle: "Загруженная неделя",
+            .achWeek30MealsDetail: "Добавьте 30 приемов за неделю.",
+            .achMonth100MealsTitle: "Супер-логгер",
+            .achMonth100MealsDetail: "Добавьте 100 приемов за месяц.",
+            // Recommendations / forecast
+            .recStartBreakfast: "Начните день с завтрака! Рекомендуется 400–600 ккал",
+            .recAddMoreFood: "Добавьте больше еды. Осталось %d ккал",
+            .recReducePortions: "Попробуйте уменьшить порции. Превышение на %d ккал",
+            .recGreatProgress: "Отличный прогресс! Осталось %d ккал до цели",
+            .recAddProtein: "Добавьте больше белка: мясо, рыба, яйца, творог",
+            .recAddCarbs: "Добавьте сложные углеводы: крупы, хлеб, овощи",
+            .recAddFats: "Добавьте полезные жиры: орехи, авокадо, оливковое масло",
+            .recForecastMorning: "У вас есть %d ккал на весь день. Начните с питательного завтрака!",
+            .recForecastGoodStart: "Хорошее начало! Осталось %d ккал. Планируйте обед и ужин",
+            .recForecastExcellent: "Отличный прогресс! Продолжайте",
+            .recForecastHalfDay: "Половина дня прошла. Осталось %d ккал. Планируйте ужин",
+            .recForecastGood: "Хорошо! Осталось %d ккал до цели",
+            .recForecastGoalReached: "Цель достигнута! Можно легкий перекус",
+            .recForecastEvening: "День подходит к концу. Осталось %d ккал. Легкий ужин",
+            .recForecastGreatDay: "Отличный день! Вы достигли цели",
+            .recForecastOverLimit: "Превышение нормы. Завтра начните заново"
         ]
     }
     

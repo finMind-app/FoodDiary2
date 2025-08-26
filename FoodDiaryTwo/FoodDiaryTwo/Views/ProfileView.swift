@@ -258,6 +258,8 @@ struct ProfileView: View {
         .sheet(isPresented: $showingAchievementDetail) {
             if let ach = selectedAchievement {
                 AchievementDetailView(achievement: ach)
+                    .background(PlumpyTheme.surface)
+                    .presentationBackground(.regularMaterial)
             }
         }
     }

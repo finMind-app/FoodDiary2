@@ -40,22 +40,22 @@ final class AchievementsService {
     
     // Seed a rich set of achievements
     private let catalogue: [Achievement] = [
-        Achievement(id: "first_meal", title: "First Meal", detail: "Log your very first meal.", icon: "fork.knife", colorHex: "#10B981"),
-        Achievement(id: "five_meals", title: "Getting Started", detail: "Log 5 meals in total.", icon: "fork.knife.circle", colorHex: "#3B82F6", target: 5),
-        Achievement(id: "twenty_meals", title: "Meal Enthusiast", detail: "Log 20 meals in total.", icon: "takeoutbag.and.cup.and.straw.fill", colorHex: "#6366F1", target: 20),
-        Achievement(id: "hundred_meals", title: "Meal Master", detail: "Log 100 meals in total.", icon: "fork.knife.circle.fill", colorHex: "#8B5CF6", target: 100),
-        Achievement(id: "photo_entry", title: "Photo Pro", detail: "Attach a photo to a meal.", icon: "camera.fill", colorHex: "#EC4899"),
-        Achievement(id: "healthy_snacks", title: "Snack Smart", detail: "Log 10 snacks.", icon: "leaf.fill", colorHex: "#22C55E", target: 10),
-        Achievement(id: "breakfast_early", title: "Early Bird", detail: "Log a breakfast before 8 AM.", icon: "sunrise.fill", colorHex: "#F59E0B"),
-        Achievement(id: "dinner_late", title: "Night Owl", detail: "Log a dinner after 9 PM.", icon: "moon.stars.fill", colorHex: "#0EA5E9"),
-        Achievement(id: "streak_3", title: "3-Day Streak", detail: "Log meals 3 days in a row.", icon: "flame.fill", colorHex: "#F97316", target: 3),
-        Achievement(id: "streak_7", title: "7-Day Streak", detail: "Log meals 7 days in a row.", icon: "flame.circle.fill", colorHex: "#FB923C", target: 7),
-        Achievement(id: "goal_day", title: "On Target", detail: "Hit your daily calorie goal.", icon: "target", colorHex: "#16A34A"),
-        Achievement(id: "goal_week_4", title: "Consistency", detail: "Hit your goal on 4 days in a week.", icon: "target.circle", colorHex: "#22C55E", target: 4),
-        Achievement(id: "protein_100", title: "Protein Punch", detail: "Reach 100g protein in a day.", icon: "bolt.fill", colorHex: "#F59E0B"),
-        Achievement(id: "veggie_day", title: "Veggie Day", detail: "Log 5 different products in a day.", icon: "leaf.circle.fill", colorHex: "#84CC16", target: 5),
-        Achievement(id: "week_30_meals", title: "Busy Week", detail: "Log 30 meals in a week.", icon: "calendar", colorHex: "#06B6D4", target: 30),
-        Achievement(id: "month_100_meals", title: "Power Logger", detail: "Log 100 meals in a month.", icon: "calendar.circle.fill", colorHex: "#0EA5E9", target: 100)
+        Achievement(id: "first_meal", title: LocalizationManager.shared.localizedString(.achFirstMealTitle), detail: LocalizationManager.shared.localizedString(.achFirstMealDetail), icon: "fork.knife", colorHex: "#10B981"),
+        Achievement(id: "five_meals", title: LocalizationManager.shared.localizedString(.achFiveMealsTitle), detail: LocalizationManager.shared.localizedString(.achFiveMealsDetail), icon: "fork.knife.circle", colorHex: "#3B82F6", target: 5),
+        Achievement(id: "twenty_meals", title: LocalizationManager.shared.localizedString(.achTwentyMealsTitle), detail: LocalizationManager.shared.localizedString(.achTwentyMealsDetail), icon: "takeoutbag.and.cup.and.straw.fill", colorHex: "#6366F1", target: 20),
+        Achievement(id: "hundred_meals", title: LocalizationManager.shared.localizedString(.achHundredMealsTitle), detail: LocalizationManager.shared.localizedString(.achHundredMealsDetail), icon: "fork.knife.circle.fill", colorHex: "#8B5CF6", target: 100),
+        Achievement(id: "photo_entry", title: LocalizationManager.shared.localizedString(.achPhotoEntryTitle), detail: LocalizationManager.shared.localizedString(.achPhotoEntryDetail), icon: "camera.fill", colorHex: "#EC4899"),
+        Achievement(id: "healthy_snacks", title: LocalizationManager.shared.localizedString(.achHealthySnacksTitle), detail: LocalizationManager.shared.localizedString(.achHealthySnacksDetail), icon: "leaf.fill", colorHex: "#22C55E", target: 10),
+        Achievement(id: "breakfast_early", title: LocalizationManager.shared.localizedString(.achBreakfastEarlyTitle), detail: LocalizationManager.shared.localizedString(.achBreakfastEarlyDetail), icon: "sunrise.fill", colorHex: "#F59E0B"),
+        Achievement(id: "dinner_late", title: LocalizationManager.shared.localizedString(.achDinnerLateTitle), detail: LocalizationManager.shared.localizedString(.achDinnerLateDetail), icon: "moon.stars.fill", colorHex: "#0EA5E9"),
+        Achievement(id: "streak_3", title: LocalizationManager.shared.localizedString(.achStreak3Title), detail: LocalizationManager.shared.localizedString(.achStreak3Detail), icon: "flame.fill", colorHex: "#F97316", target: 3),
+        Achievement(id: "streak_7", title: LocalizationManager.shared.localizedString(.achStreak7Title), detail: LocalizationManager.shared.localizedString(.achStreak7Detail), icon: "flame.circle.fill", colorHex: "#FB923C", target: 7),
+        Achievement(id: "goal_day", title: LocalizationManager.shared.localizedString(.achGoalDayTitle), detail: LocalizationManager.shared.localizedString(.achGoalDayDetail), icon: "target", colorHex: "#16A34A"),
+        Achievement(id: "goal_week_4", title: LocalizationManager.shared.localizedString(.achGoalWeek4Title), detail: LocalizationManager.shared.localizedString(.achGoalWeek4Detail), icon: "target.circle", colorHex: "#22C55E", target: 4),
+        Achievement(id: "protein_100", title: LocalizationManager.shared.localizedString(.achProtein100Title), detail: LocalizationManager.shared.localizedString(.achProtein100Detail), icon: "bolt.fill", colorHex: "#F59E0B"),
+        Achievement(id: "veggie_day", title: LocalizationManager.shared.localizedString(.achVeggieDayTitle), detail: LocalizationManager.shared.localizedString(.achVeggieDayDetail), icon: "leaf.circle.fill", colorHex: "#84CC16", target: 5),
+        Achievement(id: "week_30_meals", title: LocalizationManager.shared.localizedString(.achWeek30MealsTitle), detail: LocalizationManager.shared.localizedString(.achWeek30MealsDetail), icon: "calendar", colorHex: "#06B6D4", target: 30),
+        Achievement(id: "month_100_meals", title: LocalizationManager.shared.localizedString(.achMonth100MealsTitle), detail: LocalizationManager.shared.localizedString(.achMonth100MealsDetail), icon: "calendar.circle.fill", colorHex: "#0EA5E9", target: 100)
     ]
     
     // Returns newly unlocked achievements from this evaluation

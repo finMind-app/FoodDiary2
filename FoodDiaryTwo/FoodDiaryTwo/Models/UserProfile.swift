@@ -184,11 +184,11 @@ enum Gender: String, CaseIterable, Codable {
     var displayName: String {
         switch self {
         case .male:
-            return "Male"
+            return LocalizationManager.shared.localizedString(.maleLabel)
         case .female:
-            return "Female"
+            return LocalizationManager.shared.localizedString(.femaleLabel)
         case .other:
-            return "Other"
+            return LocalizationManager.shared.localizedString(.otherLabel)
         }
     }
 }
@@ -203,30 +203,30 @@ enum ActivityLevel: String, CaseIterable, Codable {
     var displayName: String {
         switch self {
         case .sedentary:
-            return "Sedentary (little or no exercise)"
+            return LocalizationManager.shared.localizedString(.sedentary)
         case .light:
-            return "Light (light exercise 1-3 days/week)"
+            return LocalizationManager.shared.localizedString(.light)
         case .moderate:
-            return "Moderate (moderate exercise 3-5 days/week)"
+            return LocalizationManager.shared.localizedString(.moderate)
         case .active:
-            return "Active (hard exercise 6-7 days/week)"
+            return LocalizationManager.shared.localizedString(.active)
         case .veryActive:
-            return "Very Active (very hard exercise, physical job)"
+            return LocalizationManager.shared.localizedString(.veryActive)
         }
     }
     
     var shortName: String {
         switch self {
         case .sedentary:
-            return "Sedentary"
+            return LocalizationManager.shared.localizedString(.sedentary)
         case .light:
-            return "Light"
+            return LocalizationManager.shared.localizedString(.light)
         case .moderate:
-            return "Moderate"
+            return LocalizationManager.shared.localizedString(.moderate)
         case .active:
-            return "Active"
+            return LocalizationManager.shared.localizedString(.active)
         case .veryActive:
-            return "Very Active"
+            return LocalizationManager.shared.localizedString(.veryActive)
         }
     }
 }
@@ -239,11 +239,11 @@ enum Goal: String, CaseIterable, Codable {
     var displayName: String {
         switch self {
         case .lose:
-            return "Lose Weight"
+            return LocalizationManager.shared.localizedString(.loseWeight)
         case .maintain:
-            return "Maintain Weight"
+            return LocalizationManager.shared.localizedString(.maintainWeight)
         case .gain:
-            return "Gain Weight"
+            return LocalizationManager.shared.localizedString(.gainWeight)
         }
     }
 }

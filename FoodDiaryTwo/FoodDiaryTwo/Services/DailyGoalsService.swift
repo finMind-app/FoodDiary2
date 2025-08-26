@@ -222,28 +222,28 @@ extension DailyGoalsService {
         var recommendations: [String] = []
         
         if currentCalories == 0 {
-            recommendations.append("Начните день с завтрака! Рекомендуется 400-600 ккал")
+            recommendations.append(LocalizationManager.shared.localizedString(.recStartBreakfast))
         } else if currentCalories < Int(Double(calorieGoal) * 0.3) {
-            recommendations.append("Добавьте больше еды. Осталось \(remainingCalories) ккал")
+            recommendations.append(String(format: LocalizationManager.shared.localizedString(.recAddMoreFood), remainingCalories))
         } else if currentCalories > Int(Double(calorieGoal) * 1.2) {
-            recommendations.append("Попробуйте уменьшить порции. Превышение нормы на \(currentCalories - calorieGoal) ккал")
+            recommendations.append(String(format: LocalizationManager.shared.localizedString(.recReducePortions), currentCalories - calorieGoal))
         } else if currentCalories >= Int(Double(calorieGoal) * 0.8) && currentCalories <= calorieGoal {
-            recommendations.append("Отличный прогресс! Осталось \(remainingCalories) ккал до цели")
+            recommendations.append(String(format: LocalizationManager.shared.localizedString(.recGreatProgress), remainingCalories))
         }
         
         // Рекомендации по макронутриентам
         let macroProgress = getMacroProgress(for: date, context: context)
         
         if macroProgress.protein < 0.7 {
-            recommendations.append("Добавьте больше белка: мясо, рыба, яйца, творог")
+            recommendations.append(LocalizationManager.shared.localizedString(.recAddProtein))
         }
         
         if macroProgress.carbs < 0.7 {
-            recommendations.append("Добавьте сложные углеводы: крупы, хлеб, овощи")
+            recommendations.append(LocalizationManager.shared.localizedString(.recAddCarbs))
         }
         
         if macroProgress.fat < 0.7 {
-            recommendations.append("Добавьте полезные жиры: орехи, авокадо, оливковое масло")
+            recommendations.append(LocalizationManager.shared.localizedString(.recAddFats))
         }
         
         return recommendations
@@ -265,37 +265,37 @@ extension DailyGoalsService {
         if hour < 12 {
             // Утро
             if currentCalories == 0 {
-                forecast = "У вас есть \(calorieGoal) ккал на весь день. Начните с питательного завтрака!"
+                forecast = String(format: LocalizationManager.shared.localizedString(.recForecastMorning), calorieGoal)
                 confidence = 0.9
             } else if currentCalories < Int(Double(calorieGoal) * 0.3) {
-                forecast = "Хорошее начало! Осталось \(remainingCalories) ккал. Планируйте обед и ужин"
+                forecast = String(format: LocalizationManager.shared.localizedString(.recForecastGoodStart), remainingCalories)
                 confidence = 0.8
             } else {
-                forecast = "Отличный прогресс! Продолжайте в том же духе"
+                forecast = LocalizationManager.shared.localizedString(.recForecastExcellent)
                 confidence = 0.7
             }
         } else if hour < 18 {
             // День
             if currentCalories < Int(Double(calorieGoal) * 0.6) {
-                forecast = "Половина дня прошла. Осталось \(remainingCalories) ккал. Планируйте ужин"
+                forecast = String(format: LocalizationManager.shared.localizedString(.recForecastHalfDay), remainingCalories)
                 confidence = 0.8
             } else if currentCalories < calorieGoal {
-                forecast = "Хорошо! Осталось \(remainingCalories) ккал до цели"
+                forecast = String(format: LocalizationManager.shared.localizedString(.recForecastGood), remainingCalories)
                 confidence = 0.7
             } else {
-                forecast = "Цель достигнута! Можете позволить себе легкий перекус"
+                forecast = LocalizationManager.shared.localizedString(.recForecastGoalReached)
                 confidence = 0.6
             }
         } else {
             // Вечер
             if currentCalories < Int(Double(calorieGoal) * 0.8) {
-                forecast = "День подходит к концу. Осталось \(remainingCalories) ккал. Легкий ужин"
+                forecast = String(format: LocalizationManager.shared.localizedString(.recForecastEvening), remainingCalories)
                 confidence = 0.7
             } else if currentCalories <= calorieGoal {
-                forecast = "Отличный день! Вы достигли своей цели"
+                forecast = LocalizationManager.shared.localizedString(.recForecastGreatDay)
                 confidence = 0.9
             } else {
-                forecast = "Превышение нормы. Завтра начните заново"
+                forecast = LocalizationManager.shared.localizedString(.recForecastOverLimit)
                 confidence = 0.8
             }
         }
