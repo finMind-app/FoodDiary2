@@ -359,7 +359,7 @@ struct FoodEntryHistoryCard: View {
                         )
                 }
                 
-                VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.tiny) {
+                VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.small) {
                     Text(entry.displayName)
                         .font(PlumpyTheme.Typography.subheadline)
                         .fontWeight(.medium)
@@ -379,12 +379,14 @@ struct FoodEntryHistoryCard: View {
                         Text(entry.formattedDate)
                             .font(PlumpyTheme.Typography.caption2)
                             .foregroundColor(PlumpyTheme.textSecondary)
-                        
-                        // БЖУ кратко
-                        PlumpyBadge(text: "P \(Int(entry.totalProtein))g", style: .success, size: .small)
-                        PlumpyBadge(text: "C \(Int(entry.totalCarbs))g", style: .primary, size: .small)
-                        PlumpyBadge(text: "F \(Int(entry.totalFat))g", style: .warning, size: .small)
                     }
+                    
+                    // БЖУ компактно одной строкой, чтобы не обрезалось
+                    Text("P \(Int(entry.totalProtein))g • C \(Int(entry.totalCarbs))g • F \(Int(entry.totalFat))g")
+                        .font(PlumpyTheme.Typography.caption2)
+                        .foregroundColor(PlumpyTheme.textSecondary)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
                     
                     if !entry.products.isEmpty {
                         Text("\(entry.products.count) \(LocalizationManager.shared.localizedString(.products))")

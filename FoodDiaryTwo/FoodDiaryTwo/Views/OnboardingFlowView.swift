@@ -21,6 +21,9 @@ struct OnboardingFlowView: View {
     @State private var activity: ActivityLevel = .moderate
     @State private var goal: Goal = .maintain
     @State private var customCalories: String = ""
+    @State private var customProtein: String = ""
+    @State private var customCarbs: String = ""
+    @State private var customFat: String = ""
 
     var body: some View {
         ZStack {
@@ -125,6 +128,23 @@ struct OnboardingFlowView: View {
             }
             .padding(.top, PlumpyTheme.Spacing.large)
             .plumpyCard()
+            .onChange(of: customCalories) { _, newValue in
+                // Автозаполнение БЖУ при изменении калорий, если поля БЖУ пустые
+                let trimmed = newValue.trimmingCharacters(in: .whitespaces)
+                guard let cal = Int(trimmed), cal > 0 else { return }
+                if customProtein.trimmingCharacters(in: .whitespaces).isEmpty {
+                    let grams = Double(cal) * 0.25 / 4.0
+                    customProtein = String(Int(round(grams)))
+                }
+                if customCarbs.trimmingCharacters(in: .whitespaces).isEmpty {
+                    let grams = Double(cal) * 0.45 / 4.0
+                    customCarbs = String(Int(round(grams)))
+                }
+                if customFat.trimmingCharacters(in: .whitespaces).isEmpty {
+                    let grams = Double(cal) * 0.30 / 9.0
+                    customFat = String(Int(round(grams)))
+                }
+            }
         case 3:
             VStack(spacing: PlumpyTheme.Spacing.small) {
                 Text(LocalizationManager.shared.localizedString(.activityLevel))
@@ -227,6 +247,37 @@ struct OnboardingFlowView: View {
                     Spacer()
                 }
                 PlumpyField(title: LocalizationManager.shared.localizedString(.customOptional), placeholder: String(recommended), text: $customCalories, keyboardType: .numberPad, icon: "flame.fill", iconColor: PlumpyTheme.warning, isRequired: false)
+
+                // Macros goals (optional overrides)
+                HStack(spacing: PlumpyTheme.Spacing.medium) {
+                    PlumpyField(
+                        title: LocalizationManager.shared.localizedString(.protein),
+                        placeholder: LocalizationManager.shared.localizedString(.protein),
+                        text: $customProtein,
+                        keyboardType: .decimalPad,
+                        icon: "bolt.heart",
+                        iconColor: PlumpyTheme.secondaryAccent,
+                        isRequired: false
+                    )
+                    PlumpyField(
+                        title: LocalizationManager.shared.localizedString(.carbs),
+                        placeholder: LocalizationManager.shared.localizedString(.carbs),
+                        text: $customCarbs,
+                        keyboardType: .decimalPad,
+                        icon: "leaf",
+                        iconColor: PlumpyTheme.primaryAccent,
+                        isRequired: false
+                    )
+                    PlumpyField(
+                        title: LocalizationManager.shared.localizedString(.fat),
+                        placeholder: LocalizationManager.shared.localizedString(.fat),
+                        text: $customFat,
+                        keyboardType: .decimalPad,
+                        icon: "drop",
+                        iconColor: PlumpyTheme.tertiaryAccent,
+                        isRequired: false
+                    )
+                }
             }
             .padding(.top, PlumpyTheme.Spacing.large)
             .plumpyCard()
@@ -252,6 +303,11 @@ struct OnboardingFlowView: View {
                 row(LocalizationManager.shared.localizedString(.activityLevel), activity.displayName)
                 row(LocalizationManager.shared.localizedString(.goal), goal.displayName)
                 row(LocalizationManager.shared.localizedString(.calories), "\(finalCalories) \(LocalizationManager.shared.localizedString(.calUnit))")
+                if !customProtein.isEmpty || !customCarbs.isEmpty || !customFat.isEmpty {
+                    row(LocalizationManager.shared.localizedString(.protein), customProtein.isEmpty ? "-" : customProtein + " g")
+                    row(LocalizationManager.shared.localizedString(.carbs), customCarbs.isEmpty ? "-" : customCarbs + " g")
+                    row(LocalizationManager.shared.localizedString(.fat), customFat.isEmpty ? "-" : customFat + " g")
+                }
             }
         }.plumpyCard()
     }
@@ -318,6 +374,9 @@ struct OnboardingFlowView: View {
             activity = u.activityLevel
             goal = u.goal
             customCalories = String(DailyGoalsService.shared.getDailyCalorieGoal(from: modelContext))
+            customProtein = String(format: "%.0f", DailyGoalsService.shared.getDailyProteinGoal(from: modelContext))
+            customCarbs = String(format: "%.0f", DailyGoalsService.shared.getDailyCarbsGoal(from: modelContext))
+            customFat = String(format: "%.0f", DailyGoalsService.shared.getDailyFatGoal(from: modelContext))
         }
     }
 
@@ -347,12 +406,18 @@ struct OnboardingFlowView: View {
             if !skip {
                 u.updateDailyCalorieGoal(finalCalories)
             }
+            if let p = Double(customProtein), p > 0 { u.dailyProteinGoal = p }
+            if let c = Double(customCarbs), c > 0 { u.dailyCarbsGoal = c }
+            if let f = Double(customFat), f > 0 { u.dailyFatGoal = f }
             try? modelContext.save()
         } else {
             let new = UserProfile(name: name.isEmpty ? "User" : name, age: a, gender: gender, height: h, weight: w, activityLevel: activity, goal: goal)
             if !skip {
                 new.updateDailyCalorieGoal(finalCalories)
             }
+            if let p = Double(customProtein), p > 0 { new.dailyProteinGoal = p }
+            if let c = Double(customCarbs), c > 0 { new.dailyCarbsGoal = c }
+            if let f = Double(customFat), f > 0 { new.dailyFatGoal = f }
             modelContext.insert(new)
             try? modelContext.save()
         }
