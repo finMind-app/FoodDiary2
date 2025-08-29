@@ -282,6 +282,9 @@ struct ProfileView: View {
             LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: PlumpyTheme.Spacing.medium), count: 2), spacing: PlumpyTheme.Spacing.medium) {
                 dashboardCard(icon: "target", title: LocalizationManager.shared.localizedString(.goal), value: user?.goal.displayName ?? "-")
                 dashboardCard(icon: "flame.fill", title: LocalizationManager.shared.localizedString(.calories), value: user != nil ? "\(DailyGoalsService.shared.getDailyCalorieGoal(from: modelContext)) \(LocalizationManager.shared.localizedString(.calUnit))" : "-")
+                dashboardCard(icon: "bolt.heart", title: LocalizationManager.shared.localizedString(.protein), value: user != nil ? String(format: "%.0f g", user!.dailyProteinGoal) : "-")
+                dashboardCard(icon: "leaf", title: LocalizationManager.shared.localizedString(.carbs), value: user != nil ? String(format: "%.0f g", user!.dailyCarbsGoal) : "-")
+                dashboardCard(icon: "drop", title: LocalizationManager.shared.localizedString(.fat), value: user != nil ? String(format: "%.0f g", user!.dailyFatGoal) : "-")
                 dashboardCard(icon: "ruler", title: LocalizationManager.shared.localizedString(.heightLabel), value: user != nil ? "\(Int(user!.height)) \(LocalizationManager.shared.localizedString(.cmUnit))" : "-")
                 dashboardCard(icon: "scalemass", title: LocalizationManager.shared.localizedString(.weightLabel), value: user != nil ? String(format: "%.1f \(LocalizationManager.shared.localizedString(.kgUnit))", user!.weight) : "-")
                 dashboardCard(icon: "heart.text.square", title: LocalizationManager.shared.localizedString(.bmiLabel), value: user != nil ? String(format: "%.1f", user!.bmi) : "-")
