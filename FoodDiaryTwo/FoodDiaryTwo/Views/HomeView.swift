@@ -242,7 +242,7 @@ struct HomeView: View {
                     maxValue: DailyGoalsService.shared.getDailyProteinGoal(from: modelContext),
                     title: "\(localizationManager.localizedString(.protein)): \(Int(totalProteinForSelectedDate))/\(Int(DailyGoalsService.shared.getDailyProteinGoal(from: modelContext))) g",
                     showPercentage: true,
-                    style: .info
+                    style: .success
                 )
                 PlumpyProgressBar(
                     value: totalCarbsForSelectedDate,

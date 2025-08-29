@@ -178,7 +178,7 @@ struct HistoryView: View {
                     let totalP = filteredAll.reduce(0.0) { $0 + $1.totalProtein }
                     let totalC = filteredAll.reduce(0.0) { $0 + $1.totalCarbs }
                     let totalF = filteredAll.reduce(0.0) { $0 + $1.totalFat }
-                    PlumpyBadge(text: "P \(Int(totalP))g", style: .info, size: .small)
+                    PlumpyBadge(text: "P \(Int(totalP))g", style: .success, size: .small)
                     PlumpyBadge(text: "C \(Int(totalC))g", style: .primary, size: .small)
                     PlumpyBadge(text: "F \(Int(totalF))g", style: .warning, size: .small)
                 }
@@ -381,7 +381,7 @@ struct FoodEntryHistoryCard: View {
                             .foregroundColor(PlumpyTheme.textSecondary)
                         
                         // БЖУ кратко
-                        PlumpyBadge(text: "P \(Int(entry.totalProtein))g", style: .info, size: .small)
+                        PlumpyBadge(text: "P \(Int(entry.totalProtein))g", style: .success, size: .small)
                         PlumpyBadge(text: "C \(Int(entry.totalCarbs))g", style: .primary, size: .small)
                         PlumpyBadge(text: "F \(Int(entry.totalFat))g", style: .warning, size: .small)
                     }
