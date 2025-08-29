@@ -82,6 +82,9 @@ enum LocalizationKey: String, CaseIterable {
     case timeLabel = "time_label"
     case items = "items"
     case calUnit = "cal_unit"
+    case meals = "meals"
+    case less = "less"
+    case more = "more"
     
     // Навигация
     case home = "home"
@@ -183,6 +186,12 @@ enum LocalizationKey: String, CaseIterable {
     case averageDailyCalories = "average_daily_calories"
     case goalAchievement = "goal_achievement"
     case maxLabel = "max_label"
+    case thisPeriod = "this_period"
+    case avgDailyShort = "avg_daily_short"
+    case caloriesShortUnit = "calories_short_unit"
+    case goalMet = "goal_met"
+    case ofDays = "of_days"
+    case noneLabel = "none_label"
 
     // Calorie goal editor
     case dailyCaloriesTitle = "daily_calories_title"
@@ -276,6 +285,19 @@ enum LocalizationKey: String, CaseIterable {
     case trackJourney = "track_journey"
     case basicInformation = "basic_information"
 
+    // Design system / demo
+    case stepLabel = "step_label"
+    case primaryBackground = "primary_background"
+    case secondaryBackground = "secondary_background"
+    case gradientBackground = "gradient_background"
+    case patternBackground = "pattern_background"
+    case minimalBackground = "minimal_background"
+    case chips = "chips"
+    case badges = "badges"
+    case loadingIndicators = "loading_indicators"
+    case cardTitle = "card_title"
+    case cardSampleText = "card_sample_text"
+
     // Achievements (titles and details)
     case achFirstMealTitle = "ach_first_meal_title"
     case achFirstMealDetail = "ach_first_meal_detail"
@@ -356,6 +378,9 @@ enum LocalizationKey: String, CaseIterable {
             .timeLabel: "Time",
             .items: "items",
             .calUnit: "cal",
+            .meals: "Meals",
+            .less: "Less",
+            .more: "More",
             .home: "Home",
             .stats: "Stats",
             .profile: "Profile",
@@ -456,6 +481,12 @@ enum LocalizationKey: String, CaseIterable {
             .averageDailyCalories: "Average Daily Calories",
             .goalAchievement: "Goal Achievement",
             .maxLabel: "Max",
+            .thisPeriod: "This period",
+            .avgDailyShort: "Avg. Daily",
+            .caloriesShortUnit: "cal",
+            .goalMet: "Goal Met",
+            .ofDays: "Of days",
+            .noneLabel: "None",
             // Settings
             .notifications: "Notifications",
             .reminderTime: "Reminder Time",
@@ -490,7 +521,18 @@ enum LocalizationKey: String, CaseIterable {
             .selectDate: "Select Date",
             // Additional
             .trackJourney: "Track your nutrition journey",
-            .basicInformation: "Basic Information"
+            .basicInformation: "Basic Information",
+            .stepLabel: "Step",
+            .primaryBackground: "Primary Background",
+            .secondaryBackground: "Secondary Background",
+            .gradientBackground: "Gradient Background",
+            .patternBackground: "Pattern Background",
+            .minimalBackground: "Minimal Background",
+            .chips: "Chips",
+            .badges: "Badges",
+            .loadingIndicators: "Loading Indicators",
+            .cardTitle: "Card Title",
+            .cardSampleText: "This is a sample card with some content to demonstrate the new design system."
             ,
             // Achievements
             .achFirstMealTitle: "First Meal",
@@ -650,6 +692,9 @@ enum LocalizationKey: String, CaseIterable {
             .monthlyActivity: "Месячная активность",
             .additionalInsights: "Дополнительные сведения",
             .unlocked: "Открыто",
+            .meals: "Приемы",
+            .less: "Меньше",
+            .more: "Больше",
             .mostCommonMeal: "Самый частый прием",
             .mostCaloricMeal: "Самый калорийный прием",
             .bestDay: "Лучший день",
@@ -658,6 +703,12 @@ enum LocalizationKey: String, CaseIterable {
             .averageDailyCalories: "Средние дневные калории",
             .goalAchievement: "Достижение цели",
             .maxLabel: "Макс",
+            .thisPeriod: "Этот период",
+            .avgDailyShort: "Ср. в день",
+            .caloriesShortUnit: "ккал",
+            .goalMet: "Достигнуто",
+            .ofDays: "Дней",
+            .noneLabel: "Нет",
             // Settings
             .notifications: "Уведомления",
             .reminderTime: "Время напоминания",
@@ -851,6 +902,9 @@ enum LocalizationKey: String, CaseIterable {
             .monthlyActivity: "Місячна активність",
             .additionalInsights: "Додаткові відомості",
             .unlocked: "Відкрито",
+            .meals: "Прийоми",
+            .less: "Менше",
+            .more: "Більше",
             .mostCommonMeal: "Найчастіший прийом",
             .mostCaloricMeal: "Найкалорійніший прийом",
             .bestDay: "Найкращий день",
@@ -859,6 +913,12 @@ enum LocalizationKey: String, CaseIterable {
             .averageDailyCalories: "Середні денні калорії",
             .goalAchievement: "Досягнення цілі",
             .maxLabel: "Макс",
+            .thisPeriod: "Цей період",
+            .avgDailyShort: "Сер. за день",
+            .caloriesShortUnit: "ккал",
+            .goalMet: "Досягнуто",
+            .ofDays: "Днів",
+            .noneLabel: "Немає",
             // Settings
             .notifications: "Сповіщення",
             .reminderTime: "Час нагадування",
@@ -891,6 +951,18 @@ enum LocalizationKey: String, CaseIterable {
             // Additional
             .trackJourney: "Ведіть свій шлях харчування",
             .basicInformation: "Базова інформація"
+            ,
+            .stepLabel: "Крок",
+            .primaryBackground: "Основний фон",
+            .secondaryBackground: "Вторинний фон",
+            .gradientBackground: "Градієнтний фон",
+            .patternBackground: "Візерунковий фон",
+            .minimalBackground: "Мінімальний фон",
+            .chips: "Чіпси",
+            .badges: "Бейджі",
+            .loadingIndicators: "Індикатори завантаження",
+            .cardTitle: "Заголовок картки",
+            .cardSampleText: "Зразок картки з текстом для демонстрації дизайн-системи."
         ]
     }
 
@@ -999,6 +1071,9 @@ enum LocalizationKey: String, CaseIterable {
             .monthlyActivity: "Actividad mensual",
             .additionalInsights: "Insights adicionales",
             .unlocked: "Desbloqueado",
+            .meals: "Comidas",
+            .less: "Menos",
+            .more: "Más",
             .mostCommonMeal: "Comida más común",
             .mostCaloricMeal: "Comida más calórica",
             .bestDay: "Mejor día",
@@ -1007,6 +1082,12 @@ enum LocalizationKey: String, CaseIterable {
             .averageDailyCalories: "Calorías diarias promedio",
             .goalAchievement: "Logro de la meta",
             .maxLabel: "Máx",
+            .thisPeriod: "Este período",
+            .avgDailyShort: "Prom. diario",
+            .caloriesShortUnit: "kcal",
+            .goalMet: "Meta lograda",
+            .ofDays: "De días",
+            .noneLabel: "Ninguno",
             // Settings
             .notifications: "Notificaciones",
             .reminderTime: "Hora de recordatorio",
@@ -1039,6 +1120,18 @@ enum LocalizationKey: String, CaseIterable {
             // Additional
             .trackJourney: "Sigue tu camino de nutrición",
             .basicInformation: "Información básica"
+            ,
+            .stepLabel: "Paso",
+            .primaryBackground: "Fondo primario",
+            .secondaryBackground: "Fondo secundario",
+            .gradientBackground: "Fondo degradado",
+            .patternBackground: "Fondo con patrón",
+            .minimalBackground: "Fondo minimalista",
+            .chips: "Chips",
+            .badges: "Insignias",
+            .loadingIndicators: "Indicadores de carga",
+            .cardTitle: "Título de la tarjeta",
+            .cardSampleText: "Tarjeta de ejemplo con contenido para demostrar el sistema de diseño."
         ]
     }
 
@@ -1147,6 +1240,9 @@ enum LocalizationKey: String, CaseIterable {
             .monthlyActivity: "Activité mensuelle",
             .additionalInsights: "Analyses supplémentaires",
             .unlocked: "Déverrouillé",
+            .meals: "Repas",
+            .less: "Moins",
+            .more: "Plus",
             .mostCommonMeal: "Repas le plus fréquent",
             .mostCaloricMeal: "Repas le plus calorique",
             .bestDay: "Meilleure journée",
@@ -1155,6 +1251,12 @@ enum LocalizationKey: String, CaseIterable {
             .averageDailyCalories: "Calories quotidiennes moyennes",
             .goalAchievement: "Atteinte de l'objectif",
             .maxLabel: "Max",
+            .thisPeriod: "Cette période",
+            .avgDailyShort: "Moy. quotidien",
+            .caloriesShortUnit: "kcal",
+            .goalMet: "Objectif atteint",
+            .ofDays: "Des jours",
+            .noneLabel: "Aucun",
             // Settings
             .notifications: "Notifications",
             .reminderTime: "Heure de rappel",
@@ -1187,6 +1289,18 @@ enum LocalizationKey: String, CaseIterable {
             // Additional
             .trackJourney: "Suivez votre parcours nutritionnel",
             .basicInformation: "Informations de base"
+            ,
+            .stepLabel: "Étape",
+            .primaryBackground: "Arrière-plan principal",
+            .secondaryBackground: "Arrière-plan secondaire",
+            .gradientBackground: "Arrière-plan dégradé",
+            .patternBackground: "Arrière-plan à motif",
+            .minimalBackground: "Arrière-plan minimal",
+            .chips: "Puce",
+            .badges: "Badges",
+            .loadingIndicators: "Indicateurs de chargement",
+            .cardTitle: "Titre de la carte",
+            .cardSampleText: "Exemple de carte avec du contenu pour démontrer le système de conception."
         ]
     }
 }

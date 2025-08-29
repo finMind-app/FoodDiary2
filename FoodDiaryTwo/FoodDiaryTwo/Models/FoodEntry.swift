@@ -53,11 +53,17 @@ final class FoodEntry {
     }
     
     var formattedTime: String {
-        return FoodEntryFormatters.shared.timeFormatter.string(from: date)
+        let tf = DateFormatter()
+        tf.locale = Locale(identifier: LocalizationManager.shared.currentLanguage.rawValue)
+        tf.timeStyle = .short
+        return tf.string(from: date)
     }
     
     var formattedDate: String {
-        return FoodEntryFormatters.shared.dateFormatter.string(from: date)
+        let df = DateFormatter()
+        df.locale = Locale(identifier: LocalizationManager.shared.currentLanguage.rawValue)
+        df.dateStyle = .medium
+        return df.string(from: date)
     }
 }
 
@@ -84,13 +90,13 @@ enum MealType: String, CaseIterable, Codable {
     var displayName: String {
         switch self {
         case .breakfast:
-            return "Breakfast"
+            return LocalizationManager.shared.localizedString(.breakfast)
         case .lunch:
-            return "Lunch"
+            return LocalizationManager.shared.localizedString(.lunch)
         case .dinner:
-            return "Dinner"
+            return LocalizationManager.shared.localizedString(.dinner)
         case .snack:
-            return "Snack"
+            return LocalizationManager.shared.localizedString(.snack)
         }
     }
     

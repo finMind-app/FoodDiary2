@@ -80,8 +80,8 @@ struct PlumpyTabItem {
             selectedTab: .constant(0),
             tabs: [
                 PlumpyTabItem(icon: "house.fill", title: "Home", color: PlumpyTheme.primary),
-                PlumpyTabItem(icon: "chart.bar.fill", title: "Stats", color: PlumpyTheme.secondary),
-                PlumpyTabItem(icon: "person.fill", title: "Profile", color: PlumpyTheme.tertiary)
+                PlumpyTabItem(icon: "chart.bar.fill", title: LocalizationManager.shared.localizedString(.stats), color: PlumpyTheme.secondary),
+                PlumpyTabItem(icon: "person.fill", title: LocalizationManager.shared.localizedString(.profile), color: PlumpyTheme.tertiary)
             ]
         )
     }

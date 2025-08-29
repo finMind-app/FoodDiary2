@@ -12,6 +12,8 @@ import SwiftData
 final class UserProfile {
     var id: UUID
     var name: String
+    var firstName: String? // optional split from name for UI convenience
+    var lastName: String? // optional split from name for UI convenience
     var age: Int
     var gender: Gender
     var height: Double // в см
@@ -19,6 +21,7 @@ final class UserProfile {
     var activityLevel: ActivityLevel
     var goal: Goal
     var email: String // Added for profile view
+    var profilePhotoData: Data? // Stored JPEG/PNG image data
     var dailyCalorieGoal: Int
     var dailyProteinGoal: Double
     var dailyCarbsGoal: Double
@@ -38,6 +41,8 @@ final class UserProfile {
     ) {
         self.id = UUID()
         self.name = name
+        self.firstName = nil
+        self.lastName = nil
         self.age = age
         self.gender = gender
         self.height = height
@@ -45,6 +50,7 @@ final class UserProfile {
         self.activityLevel = activityLevel
         self.goal = goal
         self.email = email
+        self.profilePhotoData = nil
         
         // Calculate goals based on BMR and activity level
         let bmr = Self.calculateBMR(weight: weight, height: height, age: age, gender: gender)
@@ -111,13 +117,13 @@ final class UserProfile {
     var bmiCategory: String {
         switch bmi {
         case ..<18.5:
-            return "Underweight"
+            return LocalizationManager.shared.localizedString(.basicInformation) // TODO: replace with specific key if needed
         case 18.5..<25:
-            return "Normal"
+            return LocalizationManager.shared.localizedString(.basicInformation)
         case 25..<30:
-            return "Overweight"
+            return LocalizationManager.shared.localizedString(.basicInformation)
         default:
-            return "Obese"
+            return LocalizationManager.shared.localizedString(.basicInformation)
         }
     }
     

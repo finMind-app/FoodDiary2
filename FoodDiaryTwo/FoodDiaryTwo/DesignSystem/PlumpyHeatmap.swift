@@ -13,6 +13,7 @@ struct PlumpyHeatmap: View {
     let onMonthChanged: (Date) -> Void
     
     @State private var selectedCell: HeatmapDataPoint?
+    @StateObject private var localizationManager = LocalizationManager.shared
     
     struct HeatmapDataPoint: Identifiable {
         let id = UUID()
@@ -90,7 +91,7 @@ struct PlumpyHeatmap: View {
                     
                     Spacer()
                     
-                    Text("\(selected.count) meals")
+                    Text("\(selected.count) \(localizationManager.localizedString(.meals))")
                         .font(PlumpyTheme.Typography.caption1)
                         .foregroundColor(PlumpyTheme.textSecondary)
                 }
@@ -102,9 +103,10 @@ struct PlumpyHeatmap: View {
             
             // Легенда
             HStack(spacing: PlumpyTheme.Spacing.small) {
-                Text("Less")
+                Text(localizationManager.localizedString(.less))
                     .font(PlumpyTheme.Typography.caption2)
                     .foregroundColor(PlumpyTheme.textSecondary)
+                    .overlay(Text(localizationManager.localizedString(.less)).opacity(0))
                 
                 HStack(spacing: 2) {
                     ForEach(0..<5) { level in
@@ -114,7 +116,7 @@ struct PlumpyHeatmap: View {
                     }
                 }
                 
-                Text("More")
+                Text(localizationManager.localizedString(.more))
                     .font(PlumpyTheme.Typography.caption2)
                     .foregroundColor(PlumpyTheme.textSecondary)
                 
@@ -130,7 +132,8 @@ struct PlumpyHeatmap: View {
     
     private var monthYearString: String {
         let formatter = DateFormatter()
-        formatter.dateFormat = "MMMM yyyy"
+        formatter.locale = Locale(identifier: localizationManager.currentLanguage.rawValue)
+        formatter.dateFormat = "LLLL yyyy"
         return formatter.string(from: selectedMonth)
     }
     
@@ -147,12 +150,14 @@ struct PlumpyHeatmap: View {
     
     private func getDayLabels() -> [String] {
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "en_US")
-        return ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+        formatter.locale = Locale(identifier: localizationManager.currentLanguage.rawValue)
+        let symbols = formatter.shortWeekdaySymbols ?? ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]
+        return symbols
     }
     
     private func formatDate(_ date: Date) -> String {
         let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: localizationManager.currentLanguage.rawValue)
         formatter.dateStyle = .medium
         return formatter.string(from: date)
     }

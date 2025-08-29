@@ -86,58 +86,53 @@ struct ProfileView: View {
     }
     
     private var profileHeader: some View {
-        VStack(spacing: PlumpyTheme.Spacing.large) {
-            // Аватар и основная информация
-            VStack(spacing: PlumpyTheme.Spacing.medium) {
-                // Аватар
-                Button(action: {
-                    showingEditProfile = true
-                }) {
-                    ZStack {
+        let user = users.first
+        return VStack(spacing: PlumpyTheme.Spacing.medium) {
+            Button(action: { showingEditProfile = true }) {
+                ZStack {
+                    if let data = user?.profilePhotoData, let ui = UIImage(data: data) {
+                        Image(uiImage: ui)
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: 96, height: 96)
+                            .clipShape(Circle())
+                            .shadow(
+                                color: PlumpyTheme.shadow.opacity(0.2),
+                                radius: PlumpyTheme.Shadow.large.radius,
+                                x: PlumpyTheme.Shadow.large.x,
+                                y: PlumpyTheme.Shadow.large.y
+                            )
+                    } else {
                         Circle()
                             .fill(PlumpyTheme.primaryAccent)
-                            .frame(width: 80, height: 80)
+                            .frame(width: 96, height: 96)
                             .shadow(
                                 color: PlumpyTheme.primaryAccent.opacity(0.3),
                                 radius: PlumpyTheme.Shadow.large.radius,
                                 x: PlumpyTheme.Shadow.large.x,
                                 y: PlumpyTheme.Shadow.large.y
                             )
-                        
-                        Image(systemName: "person.fill")
-                            .font(.system(size: 40))
-                            .foregroundColor(PlumpyTheme.textInverse)
+                            .overlay(
+                                Image(systemName: "person.fill")
+                                    .font(.system(size: 48))
+                                    .foregroundColor(PlumpyTheme.textInverse)
+                            )
                     }
                 }
-                .overlay(
-                    Circle()
-                        .stroke(PlumpyTheme.surface, lineWidth: 3)
-                        .frame(width: 86, height: 86)
-                )
-                
-                // Имя и email
-                VStack(spacing: PlumpyTheme.Spacing.tiny) {
-                    Text(users.first?.name ?? LocalizationManager.shared.localizedString(.userName)) // Updated to use users.first
-                        .font(PlumpyTheme.Typography.title1)
-                        .fontWeight(.bold)
-                        .foregroundColor(PlumpyTheme.textPrimary)
-                    
-                    Text(users.first?.email ?? LocalizationManager.shared.localizedString(.emailAddress)) // Updated to use users.first?.email
-                        .font(PlumpyTheme.Typography.subheadline)
-                        .foregroundColor(PlumpyTheme.textSecondary)
-                }
-                
-                // Кнопка редактирования
-                PlumpyButton(
-                    title: LocalizationManager.shared.localizedString(.editProfile),
-                    icon: "pencil",
-                    style: .outline
-                ) {
-                    showingEditProfile = true
-                }
-                .frame(maxWidth: 150)
+            }
+            .buttonStyle(PlainButtonStyle())
+            .overlay(
+                Circle()
+                    .stroke(PlumpyTheme.surface, lineWidth: 3)
+                    .frame(width: 102, height: 102)
+            )
+            
+            PlumpyButton(title: LocalizationManager.shared.localizedString(.edit), icon: "pencil", style: .outline, size: .small) {
+                showingEditProfile = true
             }
         }
+        .frame(maxWidth: .infinity)
+        .frame(height: 180)
         .plumpyCard()
     }
     
@@ -230,6 +225,7 @@ struct ProfileView: View {
                             .buttonStyle(PlainButtonStyle())
                             
                             Text(ach.title)
+                                .overlay(Text(ach.localizedTitle).opacity(0))
                                 .font(PlumpyTheme.Typography.caption1)
                                 .fontWeight(.medium)
                                 .foregroundColor(PlumpyTheme.textPrimary)
@@ -256,11 +252,7 @@ struct ProfileView: View {
             }
         }
         .sheet(isPresented: $showingAchievementDetail) {
-            if let ach = selectedAchievement {
-                AchievementDetailView(achievement: ach)
-                    .background(PlumpyTheme.surface)
-                    .presentationBackground(.regularMaterial)
-            }
+            AchievementDetailSheet(selectedAchievement: $selectedAchievement)
         }
     }
     
@@ -341,12 +333,16 @@ struct ProfileView: View {
 
 struct EditProfileView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var modelContext
+    @Query private var users: [UserProfile]
     
-    @State private var firstName = "John"
-    @State private var lastName = "Doe"
-    @State private var email = "john.doe@example.com"
+    @State private var firstName = ""
+    @State private var lastName = ""
+    @State private var email = ""
     @State private var showingImagePicker = false
     @State private var selectedImage: UIImage?
+    @State private var showSourceActionSheet = false
+    @State private var imageSource: UIImagePickerController.SourceType = .photoLibrary
     
     var body: some View {
         ZStack {
@@ -388,6 +384,10 @@ struct EditProfileView: View {
                 }
             }
         }
+        .onAppear { preload() }
+        .sheet(isPresented: $showingImagePicker) {
+            ImagePicker(selectedImage: $selectedImage, sourceType: imageSource)
+        }
     }
     
     private var profilePhotoSection: some View {
@@ -399,7 +399,7 @@ struct EditProfileView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             
             Button(action: {
-                showingImagePicker = true
+                showSourceActionSheet = true
             }) {
                 VStack(spacing: PlumpyTheme.Spacing.medium) {
                     if let selectedImage = selectedImage {
@@ -431,6 +431,19 @@ struct EditProfileView: View {
                 }
             }
             .buttonStyle(PlainButtonStyle())
+            .actionSheet(isPresented: $showSourceActionSheet) {
+                ActionSheet(title: Text(LocalizationManager.shared.localizedString(.profilePhoto)), buttons: [
+                    .default(Text(LocalizationManager.shared.localizedString(.pickFromGallery))) {
+                        imageSource = .photoLibrary
+                        showingImagePicker = true
+                    },
+                    .default(Text(LocalizationManager.shared.localizedString(.takePhoto))) {
+                        imageSource = .camera
+                        showingImagePicker = true
+                    },
+                    .cancel(Text(LocalizationManager.shared.localizedString(.cancel)))
+                ])
+            }
         }
         .plumpyCard()
     }
@@ -473,7 +486,37 @@ struct EditProfileView: View {
         .plumpyCard()
     }
     
+    private func preload() {
+        if let u = users.first {
+            if let data = u.profilePhotoData, let img = UIImage(data: data) {
+                selectedImage = img
+            }
+            email = u.email
+            if let fn = u.firstName, !fn.isEmpty { firstName = fn }
+            if let ln = u.lastName, !ln.isEmpty { lastName = ln }
+            if (firstName.isEmpty && lastName.isEmpty) {
+                let comps = u.name.split(separator: " ")
+                if let f = comps.first { firstName = String(f) }
+                if comps.count > 1 { lastName = comps.dropFirst().joined(separator: " ") }
+            }
+        }
+    }
+
     private func saveProfile() {
+        if let u = users.first {
+            // merge first/last into display name if both present
+            if !firstName.trimmingCharacters(in: .whitespaces).isEmpty || !lastName.trimmingCharacters(in: .whitespaces).isEmpty {
+                u.firstName = firstName.trimmingCharacters(in: .whitespaces)
+                u.lastName = lastName.trimmingCharacters(in: .whitespaces)
+                let merged = [u.firstName ?? "", u.lastName ?? ""].joined(separator: " ").trimmingCharacters(in: .whitespaces)
+                if !merged.isEmpty { u.name = merged }
+            }
+            u.email = email
+            if let img = selectedImage, let data = img.jpegData(compressionQuality: 0.9) {
+                u.profilePhotoData = data
+            }
+            try? modelContext.save()
+        }
         dismiss()
     }
 
@@ -504,11 +547,11 @@ struct AchievementDetailView: View {
                         .foregroundColor(achievement.isUnlocked ? PlumpyTheme.textInverse : PlumpyTheme.textTertiary)
                 )
             
-            Text(achievement.title)
+            Text(achievement.localizedTitle)
                 .font(PlumpyTheme.Typography.title3)
                 .foregroundColor(PlumpyTheme.textPrimary)
             
-            Text(achievement.detail)
+            Text(achievement.localizedDetail)
                 .font(PlumpyTheme.Typography.body)
                 .foregroundColor(PlumpyTheme.textSecondary)
                 .multilineTextAlignment(.center)
@@ -552,4 +595,18 @@ extension View {
 
 #Preview {
     ProfileView()
+}
+
+// Wrapper to address first-open empty sheet by always providing non-optional content
+struct AchievementDetailSheet: View {
+    @Binding var selectedAchievement: Achievement?
+    @Environment(\.dismiss) private var dismiss
+    var body: some View {
+        if let ach = selectedAchievement {
+            AchievementDetailView(achievement: ach)
+        } else {
+            VStack { ProgressView().padding(); Button("OK") { dismiss() } }
+                .padding()
+        }
+    }
 }

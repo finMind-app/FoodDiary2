@@ -289,26 +289,27 @@ struct PlumpyStatsCard: View {
         PlumpyCard {
             VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.medium) {
                 Text("Card Title")
+                    .overlay(Text(LocalizationManager.shared.localizedString(.cardTitle)).opacity(0))
                     .font(PlumpyTheme.Typography.title3)
                     .fontWeight(.semibold)
                 
-                Text("This is a sample card with some content to demonstrate the new design system.")
+                Text(LocalizationManager.shared.localizedString(.cardSampleText))
                     .font(PlumpyTheme.Typography.body)
                     .foregroundColor(PlumpyTheme.textSecondary)
             }
         }
         
         PlumpyInfoCard(
-            title: "Personal Information",
-            subtitle: "Edit your name, email, and photo",
+            title: LocalizationManager.shared.localizedString(.basicInformation),
+            subtitle: LocalizationManager.shared.localizedString(.profileSummary),
             icon: "person.circle",
             iconColor: PlumpyTheme.primary
         ) {}
         
         PlumpyStatsCard(
-            title: "Total Meals",
+            title: LocalizationManager.shared.localizedString(.mealsLabel),
             value: "156",
-            subtitle: "This month",
+            subtitle: LocalizationManager.shared.localizedString(.thisPeriod),
             icon: "fork.knife",
             iconColor: PlumpyTheme.primary,
             trend: .up

@@ -161,36 +161,36 @@ struct StatisticsView: View {
     private var mainStatistics: some View {
         LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: PlumpyTheme.Spacing.medium) {
             StatisticsCard(
-                title: "Total Calories",
+                title: LocalizationManager.shared.localizedString(.totalCalories),
                 value: String(totalCalories),
-                subtitle: "This period",
+                subtitle: LocalizationManager.shared.localizedString(.thisPeriod),
                 icon: "flame.fill",
                 iconColor: PlumpyTheme.warning,
                 trend: getCaloriesTrend()
             )
             
             StatisticsCard(
-                title: "Meals",
+                title: LocalizationManager.shared.localizedString(.mealsLabel),
                 value: String(totalMeals),
-                subtitle: "This period",
+                subtitle: LocalizationManager.shared.localizedString(.thisPeriod),
                 icon: "fork.knife",
                 iconColor: PlumpyTheme.primaryAccent,
                 trend: getMealsTrend()
             )
             
             StatisticsCard(
-                title: "Avg. Daily",
+                title: LocalizationManager.shared.localizedString(.avgDailyShort),
                 value: String(format: "%.0f", averageDailyCalories),
-                subtitle: "Calories",
+                subtitle: LocalizationManager.shared.localizedString(.calories),
                 icon: "chart.line.uptrend.xyaxis",
                 iconColor: PlumpyTheme.secondaryAccent,
                 trend: getAverageDailyCaloriesTrend()
             )
             
             StatisticsCard(
-                title: "Goal Met",
+                title: LocalizationManager.shared.localizedString(.goalMet),
                 value: String(format: "%.0f%%", getGoalAchievementRate()),
-                subtitle: "Of days",
+                subtitle: LocalizationManager.shared.localizedString(.ofDays),
                 icon: "target",
                 iconColor: PlumpyTheme.success,
                 trend: getGoalTrend()
@@ -526,7 +526,7 @@ struct StatisticsView: View {
                 let averageCalories = getAverageCalories()
                 StatisticsInfoCard(
                     title: LocalizationManager.shared.localizedString(.averageDailyCalories),
-                    subtitle: String(format: "%.0f cal", averageCalories),
+                    subtitle: String(format: "%.0f %@", averageCalories, LocalizationManager.shared.localizedString(.calUnit)),
                     icon: "chart.bar.fill",
                     iconColor: PlumpyTheme.primary,
                     action: {}

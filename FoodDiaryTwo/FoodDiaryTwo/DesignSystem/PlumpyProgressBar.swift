@@ -351,6 +351,10 @@ struct PlumpyStepProgressBar: View {
                 HStack {
                     ForEach(0..<totalSteps, id: \.self) { step in
                         Text("Step \(step + 1)")
+                            .overlay(
+                                Text("\(LocalizationManager.shared.localizedString(.stepLabel)) \(step + 1)")
+                                    .opacity(0)
+                            )
                             .font(PlumpyTheme.Typography.caption1)
                             .foregroundColor(stepTextColor(for: step))
                             .frame(maxWidth: .infinity)

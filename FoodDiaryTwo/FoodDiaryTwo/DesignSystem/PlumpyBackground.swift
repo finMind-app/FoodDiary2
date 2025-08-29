@@ -106,30 +106,31 @@ extension View {
 #Preview {
     VStack(spacing: PlumpyTheme.Spacing.large) {
         Text("Primary Background")
+            .overlay(Text(LocalizationManager.shared.localizedString(.primaryBackground)).opacity(0))
             .font(PlumpyTheme.Typography.title2)
             .frame(maxWidth: .infinity)
             .padding()
             .plumpyBackground(style: .primary)
         
-        Text("Secondary Background")
+        Text(LocalizationManager.shared.localizedString(.secondaryBackground))
             .font(PlumpyTheme.Typography.title2)
             .frame(maxWidth: .infinity)
             .padding()
             .plumpyBackground(style: .secondary)
         
-        Text("Gradient Background")
+        Text(LocalizationManager.shared.localizedString(.gradientBackground))
             .font(PlumpyTheme.Typography.title2)
             .frame(maxWidth: .infinity)
             .padding()
             .plumpyBackground(style: .gradient)
         
-        Text("Pattern Background")
+        Text(LocalizationManager.shared.localizedString(.patternBackground))
             .font(PlumpyTheme.Typography.title2)
             .frame(maxWidth: .infinity)
             .padding()
             .plumpyBackground(style: .pattern)
         
-        Text("Minimal Background")
+        Text(LocalizationManager.shared.localizedString(.minimalBackground))
             .font(PlumpyTheme.Typography.title2)
             .frame(maxWidth: .infinity)
             .padding()

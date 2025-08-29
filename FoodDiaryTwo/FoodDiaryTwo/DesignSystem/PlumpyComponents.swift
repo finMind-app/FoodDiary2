@@ -463,26 +463,26 @@ struct PlumpyEmptyState: View {
             HStack(spacing: PlumpyTheme.Spacing.large) {
                 PlumpyActionIconButton(
                     systemImageName: "plus",
-                    title: "Add",
+                    title: LocalizationManager.shared.localizedString(.add),
                     color: PlumpyTheme.primary
                 ) {}
                 
                 PlumpyActionIconButton(
                     systemImageName: "heart",
-                    title: "Like",
+                    title: LocalizationManager.shared.localizedString(.achievements),
                     color: PlumpyTheme.secondary
                 ) {}
                 
                 PlumpyActionIconButton(
                     systemImageName: "star",
-                    title: "Favorite",
+                    title: LocalizationManager.shared.localizedString(.profile),
                     color: PlumpyTheme.tertiary
                 ) {}
             }
             
             // Chips
             VStack(spacing: PlumpyTheme.Spacing.medium) {
-                Text("Chips")
+                Text(LocalizationManager.shared.localizedString(.chips))
                     .font(PlumpyTheme.Typography.headline)
                 
                 HStack(spacing: PlumpyTheme.Spacing.small) {
@@ -495,7 +495,7 @@ struct PlumpyEmptyState: View {
             
             // Badges
             VStack(spacing: PlumpyTheme.Spacing.medium) {
-                Text("Badges")
+                Text(LocalizationManager.shared.localizedString(.badges))
                     .font(PlumpyTheme.Typography.headline)
                 
                 HStack(spacing: PlumpyTheme.Spacing.medium) {
@@ -507,7 +507,7 @@ struct PlumpyEmptyState: View {
             
             // Loading Indicators
             VStack(spacing: PlumpyTheme.Spacing.medium) {
-                Text("Loading Indicators")
+                Text(LocalizationManager.shared.localizedString(.loadingIndicators))
                     .font(PlumpyTheme.Typography.headline)
                 
                 HStack(spacing: PlumpyTheme.Spacing.large) {
@@ -520,9 +520,9 @@ struct PlumpyEmptyState: View {
             // Empty State
             PlumpyEmptyState(
                 icon: "tray",
-                title: "No meals yet",
-                subtitle: "Start by adding your first meal to track your nutrition journey",
-                actionTitle: "Add Meal"
+                title: LocalizationManager.shared.localizedString(.noMealsToday),
+                subtitle: LocalizationManager.shared.localizedString(.startTrackingHint),
+                actionTitle: LocalizationManager.shared.localizedString(.addMealCta)
             ) {}
         }
         .padding()

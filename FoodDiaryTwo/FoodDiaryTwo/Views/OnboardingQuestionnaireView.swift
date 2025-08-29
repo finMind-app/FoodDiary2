@@ -40,6 +40,9 @@ struct OnboardingQuestionnaireView: View {
                     VStack(spacing: PlumpyTheme.Spacing.medium) {
                         PlumpyField(title: LocalizationManager.shared.localizedString(.userName), placeholder: LocalizationManager.shared.localizedString(.userName), text: $name, icon: "person", isRequired: true)
                         PlumpyField(title: LocalizationManager.shared.localizedString(.ageLabel), placeholder: LocalizationManager.shared.localizedString(.years), text: $age, keyboardType: .numberPad, icon: "number", isRequired: true)
+                        .overlay(
+                            EmptyView()
+                        )
 
                         pickerCard(title: LocalizationManager.shared.localizedString(.gender)) {
                             HStack(spacing: PlumpyTheme.Spacing.small) {
@@ -74,8 +77,8 @@ struct OnboardingQuestionnaireView: View {
                         }
 
                         HStack(spacing: PlumpyTheme.Spacing.medium) {
-                            PlumpyField(title: LocalizationManager.shared.localizedString(.heightCm), placeholder: "175", text: $height, keyboardType: .decimalPad, icon: "ruler", isRequired: true)
-                            PlumpyField(title: LocalizationManager.shared.localizedString(.weightKg), placeholder: "70", text: $weight, keyboardType: .decimalPad, icon: "scalemass", isRequired: true)
+                            PlumpyField(title: LocalizationManager.shared.localizedString(.heightCm), placeholder: LocalizationManager.shared.localizedString(.heightCm), text: $height, keyboardType: .decimalPad, icon: "ruler", isRequired: true)
+                            PlumpyField(title: LocalizationManager.shared.localizedString(.weightKg), placeholder: LocalizationManager.shared.localizedString(.weightKg), text: $weight, keyboardType: .decimalPad, icon: "scalemass", isRequired: true)
                         }
 
                         pickerCard(title: LocalizationManager.shared.localizedString(.activityLevel)) {

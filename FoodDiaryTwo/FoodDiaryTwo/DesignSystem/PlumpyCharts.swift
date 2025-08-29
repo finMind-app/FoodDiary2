@@ -144,13 +144,14 @@ struct PlumpyLineChart: View {
 private struct PlumpyChartTooltip: View {
     let title: String
     let value: Int
+    @StateObject private var localizationManager = LocalizationManager.shared
 
     var body: some View {
         HStack(spacing: PlumpyTheme.Spacing.small) {
             Text(title)
                 .font(PlumpyTheme.Typography.caption2)
                 .foregroundColor(PlumpyTheme.textSecondary)
-            Text("\(value) cal")
+            Text("\(value) \(localizationManager.localizedString(.calUnit))")
                 .font(PlumpyTheme.Typography.caption1)
                 .fontWeight(.medium)
                 .foregroundColor(PlumpyTheme.textPrimary)

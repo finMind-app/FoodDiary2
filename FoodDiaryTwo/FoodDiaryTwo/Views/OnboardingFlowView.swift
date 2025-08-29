@@ -120,7 +120,7 @@ struct OnboardingFlowView: View {
             VStack(spacing: PlumpyTheme.Spacing.large) {
                 HStack(spacing: PlumpyTheme.Spacing.medium) {
                     PlumpyField(title: LocalizationManager.shared.localizedString(.heightCm), placeholder: "175", text: $height, keyboardType: .decimalPad, icon: "ruler", isRequired: true)
-                    PlumpyField(title: LocalizationManager.shared.localizedString(.weightKg), placeholder: "70", text: $weight, keyboardType: .decimalPad, icon: "scalemass", isRequired: true)
+                    PlumpyField(title: LocalizationManager.shared.localizedString(.weightKg), placeholder: LocalizationManager.shared.localizedString(.weightKg), text: $weight, keyboardType: .decimalPad, icon: "scalemass", isRequired: true)
                 }
             }
             .padding(.top, PlumpyTheme.Spacing.large)
