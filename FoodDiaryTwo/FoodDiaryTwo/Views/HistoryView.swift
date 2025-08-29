@@ -7,6 +7,8 @@
 
 import SwiftUI
 import SwiftData
+import UIKit
+import ImageIO
 
 struct HistoryView: View {
     @Environment(\.modelContext) private var modelContext
@@ -16,6 +18,7 @@ struct HistoryView: View {
     @State private var selectedPeriod: HistoryPeriod = .week
     @State private var selectedDate = Date()
     @State private var showingCalendar = false
+    @State private var filteredAll: [FoodEntry] = []
     @State private var pagedEntries: [FoodEntry] = []
     @State private var pageSize = 30
     @State private var isLoadingPage = false
@@ -67,6 +70,11 @@ struct HistoryView: View {
                 }
             }
         }
+        .onAppear { recalcFiltered() }
+        .onChange(of: allFoodEntries) { _, _ in recalcFiltered() }
+        .onChange(of: selectedPeriod) { _, _ in recalcFiltered() }
+        .onChange(of: selectedDate) { _, _ in recalcFiltered() }
+        .onChange(of: searchText) { _, _ in recalcFiltered() }
         .sheet(isPresented: $showingCalendar) {
             CalendarView(selectedDate: $selectedDate)
         }
@@ -136,7 +144,7 @@ struct HistoryView: View {
             
             if !searchText.isEmpty {
                 HStack {
-                    Text("\(filteredEntries.count)")
+                    Text("\(filteredAll.count)")
                         .font(PlumpyTheme.Typography.caption1)
                         .foregroundColor(PlumpyTheme.textSecondary)
                     
@@ -162,7 +170,7 @@ struct HistoryView: View {
                 
                 Spacer()
                 
-                Text("\(filteredEntries.count)")
+                Text("\(filteredAll.count)")
                     .font(PlumpyTheme.Typography.caption1)
                     .foregroundColor(PlumpyTheme.textSecondary)
             }
@@ -199,21 +207,12 @@ struct HistoryView: View {
             }
         }
         .plumpyCard()
-        .task(id: filteredEntries.map(\.id)) {
-            PerformanceLogger.begin("history_filter_compute")
-            // reset paging on new filter
-            pagedEntries = Array(filteredEntries.prefix(pageSize))
-            PerformanceLogger.end("history_filter_compute")
-        }
     }
 
-    private var filteredEntries: [FoodEntry] {
-        var entries = allFoodEntries
-        
-        // Фильтрация по периоду
+    private func computeFiltered(_ input: [FoodEntry]) -> [FoodEntry] {
+        var entries = input
         let calendar = Calendar.current
         let now = Date()
-        
         switch selectedPeriod {
         case .week:
             let weekAgo = calendar.date(byAdding: .day, value: -7, to: now) ?? now
@@ -229,54 +228,45 @@ struct HistoryView: View {
             let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay) ?? startOfDay
             entries = entries.filter { $0.date >= startOfDay && $0.date < endOfDay }
         }
-        
-        // Фильтрация по поиску
         if !searchText.isEmpty {
             let searchLower = searchText.lowercased()
             entries = entries.filter { entry in
-                // Поиск по названию приема пищи
-                if entry.displayName.lowercased().contains(searchLower) {
-                    return true
-                }
-                
-                // Поиск по продуктам
-                if entry.products.contains(where: { product in
-                    product.name.lowercased().contains(searchLower)
-                }) {
-                    return true
-                }
-                
-                // Поиск по заметкам
-                if let notes = entry.notes, notes.lowercased().contains(searchLower) {
-                    return true
-                }
-                
-                // Поиск по типу приема пищи
-                if entry.mealType.displayName.lowercased().contains(searchLower) {
-                    return true
-                }
-                
+                if entry.displayName.lowercased().contains(searchLower) { return true }
+                if entry.products.contains(where: { product in product.name.lowercased().contains(searchLower) }) { return true }
+                if let notes = entry.notes, notes.lowercased().contains(searchLower) { return true }
+                if entry.mealType.displayName.lowercased().contains(searchLower) { return true }
                 return false
             }
         }
-        
-        // Сортировка по дате (новые сначала)
         return entries.sorted { $0.date > $1.date }
+    }
+
+    private func recalcFiltered() {
+        PerformanceLogger.begin("history_filter_compute")
+        let source = allFoodEntries
+        let page = pageSize
+        DispatchQueue.global(qos: .userInitiated).async {
+            let computed = computeFiltered(source)
+            let firstPage = Array(computed.prefix(page))
+            DispatchQueue.main.async {
+                filteredAll = computed
+                pagedEntries = firstPage
+                PerformanceLogger.end("history_filter_compute")
+            }
+        }
     }
 
     private func loadNextPageIfNeeded() {
         guard !isLoadingPage else { return }
         let currentCount = pagedEntries.count
-        guard currentCount < filteredEntries.count else { return }
+        guard currentCount < filteredAll.count else { return }
         isLoadingPage = true
-        let nextEnd = min(currentCount + pageSize, filteredEntries.count)
+        let nextEnd = min(currentCount + pageSize, filteredAll.count)
         DispatchQueue.global(qos: .userInitiated).async {
-            let nextSlice = Array(filteredEntries[currentCount..<nextEnd])
+            let nextSlice = Array(filteredAll[currentCount..<nextEnd])
             DispatchQueue.main.async {
-                withAnimation(.easeInOut(duration: 0.2)) {
-                    pagedEntries.append(contentsOf: nextSlice)
-                    isLoadingPage = false
-                }
+                pagedEntries.append(contentsOf: nextSlice)
+                isLoadingPage = false
             }
         }
     }
@@ -422,11 +412,26 @@ extension FoodEntryHistoryCard {
         if let cached = ImageCache.shared.image(forKey: key) {
             return cached
         }
-        if let ui = UIImage(data: data) {
+        if let ui = downsampledImage(data: data, targetSize: CGSize(width: PlumpyTheme.Spacing.huge, height: PlumpyTheme.Spacing.huge), scale: UIScreen.main.scale) {
             ImageCache.shared.set(ui, forKey: key)
             return ui
         }
         return UIImage()
+    }
+
+    private func downsampledImage(data: Data, targetSize: CGSize, scale: CGFloat) -> UIImage? {
+        let maxDimensionInPixels = max(targetSize.width, targetSize.height) * scale
+        let options: [CFString: Any] = [
+            kCGImageSourceCreateThumbnailFromImageAlways: true,
+            kCGImageSourceShouldCache: false,
+            kCGImageSourceCreateThumbnailWithTransform: true,
+            kCGImageSourceThumbnailMaxPixelSize: Int(maxDimensionInPixels)
+        ]
+        guard let source = CGImageSourceCreateWithData(data as CFData, nil),
+              let cgImage = CGImageSourceCreateThumbnailAtIndex(source, 0, options as CFDictionary) else {
+            return nil
+        }
+        return UIImage(cgImage: cgImage)
     }
 }
 
