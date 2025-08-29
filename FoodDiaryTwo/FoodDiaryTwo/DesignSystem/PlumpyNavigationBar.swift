@@ -51,6 +51,8 @@ struct PlumpyNavigationBar: View {
                         .foregroundColor(PlumpyTheme.textPrimary)
                         .multilineTextAlignment(.center)
                         .lineLimit(2)
+                        .minimumScaleFactor(0.85)
+                        .truncationMode(.tail)
                     
                     if let subtitle = subtitle {
                         Text(subtitle)
@@ -58,6 +60,8 @@ struct PlumpyNavigationBar: View {
                             .foregroundColor(PlumpyTheme.textSecondary)
                             .multilineTextAlignment(.center)
                             .lineLimit(1)
+                            .minimumScaleFactor(0.85)
+                            .truncationMode(.tail)
                     }
                 }
                 .frame(maxWidth: .infinity)

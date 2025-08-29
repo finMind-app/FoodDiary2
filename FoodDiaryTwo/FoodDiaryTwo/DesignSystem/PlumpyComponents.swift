@@ -136,6 +136,8 @@ struct PlumpyChip: View {
                     .font(PlumpyTheme.Typography.caption1)
                     .fontWeight(.medium)
                     .lineLimit(1)
+                    .minimumScaleFactor(0.85)
+                    .truncationMode(.tail)
             }
             .foregroundColor(isSelected ? style.foregroundColor : PlumpyTheme.textSecondary)
             .padding(.horizontal, PlumpyTheme.Spacing.medium)
@@ -236,6 +238,9 @@ struct PlumpyBadge: View {
             .font(size.fontSize)
             .fontWeight(.semibold)
             .foregroundColor(style.foregroundColor)
+            .lineLimit(1)
+            .minimumScaleFactor(0.85)
+            .truncationMode(.tail)
             .padding(.horizontal, size.padding)
             .padding(.vertical, size.padding / 2)
             .background(
