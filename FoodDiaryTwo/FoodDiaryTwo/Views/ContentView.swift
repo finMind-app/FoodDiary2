@@ -40,7 +40,7 @@ struct ContentView: View {
                     selectedTab: $selectedTab,
                     tabs: [
                         PlumpyTabItem(icon: "house.fill", title: i18n.localizedString(.home), color: PlumpyTheme.primary),
-                        PlumpyTabItem(icon: "clock.fill", title: i18n.localizedString(.history), color: PlumpyTheme.primaryAccent),
+                        PlumpyTabItem(icon: "clock.fill", title: i18n.localizedString(.history), color: PlumpyTheme.secondary),
                         PlumpyTabItem(icon: "chart.bar.fill", title: i18n.localizedString(.stats), color: PlumpyTheme.secondaryAccent),
                         PlumpyTabItem(icon: "person.fill", title: i18n.localizedString(.profile), color: PlumpyTheme.tertiary)
                     ]

@@ -63,6 +63,9 @@ struct StatisticsView: View {
                         // Основная статистика
                         mainStatistics
                         
+                        // Статистика по БЖУ
+                        macroStatistics
+
                         // График калорий
                         caloriesChart
                         
@@ -197,6 +200,48 @@ struct StatisticsView: View {
             )
         }
         // убран фиксированный размер, чтобы сетка не накладывалась
+    }
+
+    private var macroStatistics: some View {
+        VStack(spacing: PlumpyTheme.Spacing.medium) {
+            Text(LocalizationManager.shared.localizedString(.nutritionInsights))
+                .font(PlumpyTheme.Typography.headline)
+                .fontWeight(.semibold)
+                .foregroundColor(PlumpyTheme.textPrimary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+            let totalProtein = cachedPeriodEntries.reduce(0.0) { $0 + $1.totalProtein }
+            let totalCarbs = cachedPeriodEntries.reduce(0.0) { $0 + $1.totalCarbs }
+            let totalFat = cachedPeriodEntries.reduce(0.0) { $0 + $1.totalFat }
+
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 3), spacing: PlumpyTheme.Spacing.medium) {
+                StatisticsCard(
+                    title: LocalizationManager.shared.localizedString(.protein),
+                    value: String(format: "%.0fg", totalProtein),
+                    subtitle: LocalizationManager.shared.localizedString(.thisPeriod),
+                    icon: "bolt.heart",
+                    iconColor: PlumpyTheme.secondaryAccent,
+                    trend: .neutral
+                )
+                StatisticsCard(
+                    title: LocalizationManager.shared.localizedString(.carbs),
+                    value: String(format: "%.0fg", totalCarbs),
+                    subtitle: LocalizationManager.shared.localizedString(.thisPeriod),
+                    icon: "leaf",
+                    iconColor: PlumpyTheme.primaryAccent,
+                    trend: .neutral
+                )
+                StatisticsCard(
+                    title: LocalizationManager.shared.localizedString(.fat),
+                    value: String(format: "%.0fg", totalFat),
+                    subtitle: LocalizationManager.shared.localizedString(.thisPeriod),
+                    icon: "drop",
+                    iconColor: PlumpyTheme.tertiaryAccent,
+                    trend: .neutral
+                )
+            }
+        }
+        .statisticsCard()
     }
 
     private var totalMeals: Int {

@@ -17,6 +17,9 @@ struct AddMealView: View {
     @State private var selectedMealType: MealType
     @State private var selectedTime = Date()
     @State private var calories = ""
+    @State private var protein = ""
+    @State private var carbs = ""
+    @State private var fat = ""
     @State private var notes = ""
     @State private var selectedPhotoItem: PhotosPickerItem?
     @State private var selectedImage: UIImage? = nil
@@ -155,6 +158,37 @@ struct AddMealView: View {
                 iconColor: PlumpyTheme.warning,
                 isRequired: true
             )
+
+            // БЖУ
+            HStack(spacing: PlumpyTheme.Spacing.medium) {
+                PlumpyField(
+                    title: LocalizationManager.shared.localizedString(.protein),
+                    placeholder: LocalizationManager.shared.localizedString(.protein),
+                    text: $protein,
+                    keyboardType: .decimalPad,
+                    icon: "bolt.heart",
+                    iconColor: PlumpyTheme.secondaryAccent,
+                    isRequired: false
+                )
+                PlumpyField(
+                    title: LocalizationManager.shared.localizedString(.carbs),
+                    placeholder: LocalizationManager.shared.localizedString(.carbs),
+                    text: $carbs,
+                    keyboardType: .decimalPad,
+                    icon: "leaf",
+                    iconColor: PlumpyTheme.primaryAccent,
+                    isRequired: false
+                )
+                PlumpyField(
+                    title: LocalizationManager.shared.localizedString(.fat),
+                    placeholder: LocalizationManager.shared.localizedString(.fat),
+                    text: $fat,
+                    keyboardType: .decimalPad,
+                    icon: "drop",
+                    iconColor: PlumpyTheme.tertiaryAccent,
+                    isRequired: false
+                )
+            }
         }
         .plumpyCard()
     }
@@ -304,6 +338,16 @@ struct AddMealView: View {
         if calories.isEmpty {
             calories = String(Int(result.totalCalories))
         }
+
+        if protein.isEmpty {
+            protein = String(format: "%.1f", result.totalProtein)
+        }
+        if carbs.isEmpty {
+            carbs = String(format: "%.1f", result.totalCarbs)
+        }
+        if fat.isEmpty {
+            fat = String(format: "%.1f", result.totalFat)
+        }
         
         if notes.isEmpty {
             notes = generateMealNotes(from: result)
@@ -411,9 +455,9 @@ struct AddMealView: View {
         let product = FoodProduct(
             name: mealName,
             caloriesPerServing: caloriesInt,
-            protein: 0, // Можно добавить поля для ввода
-            carbs: 0,
-            fat: 0
+            protein: Double(protein) ?? 0,
+            carbs: Double(carbs) ?? 0,
+            fat: Double(fat) ?? 0
         )
         
         // Конвертируем изображение в Data для сохранения

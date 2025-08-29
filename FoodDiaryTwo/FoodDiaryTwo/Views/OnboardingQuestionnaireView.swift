@@ -19,6 +19,9 @@ struct OnboardingQuestionnaireView: View {
     @State private var activity: ActivityLevel = .moderate
     @State private var goal: Goal = .maintain
     @State private var customCalories: String = ""
+    @State private var customProtein: String = ""
+    @State private var customCarbs: String = ""
+    @State private var customFat: String = ""
 
     var body: some View {
         ZStack {
@@ -163,6 +166,44 @@ struct OnboardingQuestionnaireView: View {
                             isRequired: false
                         )
 
+                        // Рекомендуемые БЖУ с возможностью коррекции
+                        VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.small) {
+                            Text(LocalizationManager.shared.localizedString(.nutritionInsights))
+                                .font(PlumpyTheme.Typography.subheadline)
+                                .fontWeight(.medium)
+                                .foregroundColor(PlumpyTheme.textPrimary)
+
+                            HStack(spacing: PlumpyTheme.Spacing.medium) {
+                                PlumpyField(
+                                    title: LocalizationManager.shared.localizedString(.protein),
+                                    placeholder: LocalizationManager.shared.localizedString(.protein),
+                                    text: $customProtein,
+                                    keyboardType: .decimalPad,
+                                    icon: "bolt.heart",
+                                    iconColor: PlumpyTheme.secondaryAccent,
+                                    isRequired: false
+                                )
+                                PlumpyField(
+                                    title: LocalizationManager.shared.localizedString(.carbs),
+                                    placeholder: LocalizationManager.shared.localizedString(.carbs),
+                                    text: $customCarbs,
+                                    keyboardType: .decimalPad,
+                                    icon: "leaf",
+                                    iconColor: PlumpyTheme.primaryAccent,
+                                    isRequired: false
+                                )
+                                PlumpyField(
+                                    title: LocalizationManager.shared.localizedString(.fat),
+                                    placeholder: LocalizationManager.shared.localizedString(.fat),
+                                    text: $customFat,
+                                    keyboardType: .decimalPad,
+                                    icon: "drop",
+                                    iconColor: PlumpyTheme.tertiaryAccent,
+                                    isRequired: false
+                                )
+                            }
+                        }
+
                         PlumpySpacer(size: .huge)
                     }
                     .padding(.horizontal, PlumpyTheme.Spacing.medium)
@@ -194,6 +235,9 @@ struct OnboardingQuestionnaireView: View {
             activity = u.activityLevel
             goal = u.goal
             customCalories = String(DailyGoalsService.shared.getDailyCalorieGoal(from: modelContext))
+            customProtein = String(format: "%.0f", DailyGoalsService.shared.getDailyProteinGoal(from: modelContext))
+            customCarbs = String(format: "%.0f", DailyGoalsService.shared.getDailyCarbsGoal(from: modelContext))
+            customFat = String(format: "%.0f", DailyGoalsService.shared.getDailyFatGoal(from: modelContext))
         }
     }
 
@@ -213,6 +257,9 @@ struct OnboardingQuestionnaireView: View {
             let auto = UserProfile.calculateCalorieGoal(tdee: tdee, goal: goal)
             let final = Int(customCalories) ?? auto
             u.updateDailyCalorieGoal(final)
+            if let p = Double(customProtein), p > 0 { u.dailyProteinGoal = p }
+            if let c = Double(customCarbs), c > 0 { u.dailyCarbsGoal = c }
+            if let f = Double(customFat), f > 0 { u.dailyFatGoal = f }
             try? modelContext.save()
         } else {
             let g = gender
@@ -221,6 +268,9 @@ struct OnboardingQuestionnaireView: View {
             if let override = Int(customCalories) { 
                 new.updateDailyCalorieGoal(override)
             }
+            if let p = Double(customProtein), p > 0 { new.dailyProteinGoal = p }
+            if let c = Double(customCarbs), c > 0 { new.dailyCarbsGoal = c }
+            if let f = Double(customFat), f > 0 { new.dailyFatGoal = f }
             modelContext.insert(new)
             try? modelContext.save()
         }

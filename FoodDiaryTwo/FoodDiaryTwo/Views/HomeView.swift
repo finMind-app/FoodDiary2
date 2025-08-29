@@ -37,6 +37,15 @@ struct HomeView: View {
     private var totalCaloriesForSelectedDate: Int {
         foodEntriesForSelectedDate.reduce(0) { $0 + $1.totalCalories }
     }
+    private var totalProteinForSelectedDate: Double {
+        foodEntriesForSelectedDate.reduce(0.0) { $0 + $1.totalProtein }
+    }
+    private var totalCarbsForSelectedDate: Double {
+        foodEntriesForSelectedDate.reduce(0.0) { $0 + $1.totalCarbs }
+    }
+    private var totalFatForSelectedDate: Double {
+        foodEntriesForSelectedDate.reduce(0.0) { $0 + $1.totalFat }
+    }
     
     // Записи за последние 7 дней
     private var recentFoodEntries: [FoodEntry] {
@@ -66,6 +75,9 @@ struct HomeView: View {
                         
                         // Кольцевая диаграмма калорий
                         calorieRingChart
+
+                        // Прогресс по БЖУ
+                        macroProgressSection
                         
                         // Быстрые действия
                         quickActionsSection
@@ -213,6 +225,40 @@ struct HomeView: View {
                 showPercentage: true,
                 style: .primary
             )
+        }
+        .plumpyCard()
+    }
+
+    private var macroProgressSection: some View {
+        VStack(spacing: PlumpyTheme.Spacing.medium) {
+            Text(localizationManager.localizedString(.nutritionInsights))
+                .font(PlumpyTheme.Typography.subheadline)
+                .fontWeight(.semibold)
+                .foregroundColor(PlumpyTheme.textPrimary)
+
+            VStack(spacing: PlumpyTheme.Spacing.small) {
+                PlumpyProgressBar(
+                    value: totalProteinForSelectedDate,
+                    maxValue: DailyGoalsService.shared.getDailyProteinGoal(from: modelContext),
+                    title: "\(localizationManager.localizedString(.protein)): \(Int(totalProteinForSelectedDate))/\(Int(DailyGoalsService.shared.getDailyProteinGoal(from: modelContext))) g",
+                    showPercentage: true,
+                    style: .info
+                )
+                PlumpyProgressBar(
+                    value: totalCarbsForSelectedDate,
+                    maxValue: DailyGoalsService.shared.getDailyCarbsGoal(from: modelContext),
+                    title: "\(localizationManager.localizedString(.carbs)): \(Int(totalCarbsForSelectedDate))/\(Int(DailyGoalsService.shared.getDailyCarbsGoal(from: modelContext))) g",
+                    showPercentage: true,
+                    style: .primary
+                )
+                PlumpyProgressBar(
+                    value: totalFatForSelectedDate,
+                    maxValue: DailyGoalsService.shared.getDailyFatGoal(from: modelContext),
+                    title: "\(localizationManager.localizedString(.fat)): \(Int(totalFatForSelectedDate))/\(Int(DailyGoalsService.shared.getDailyFatGoal(from: modelContext))) g",
+                    showPercentage: true,
+                    style: .warning
+                )
+            }
         }
         .plumpyCard()
     }

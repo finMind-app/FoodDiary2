@@ -170,7 +170,18 @@ struct HistoryView: View {
                 
                 Spacer()
                 
-                Text("\(filteredAll.count)")
+                HStack(spacing: PlumpyTheme.Spacing.small) {
+                    Text("\(filteredAll.count)")
+                        .font(PlumpyTheme.Typography.caption1)
+                        .foregroundColor(PlumpyTheme.textSecondary)
+                    // Итоги БЖУ за выборку
+                    let totalP = filteredAll.reduce(0.0) { $0 + $1.totalProtein }
+                    let totalC = filteredAll.reduce(0.0) { $0 + $1.totalCarbs }
+                    let totalF = filteredAll.reduce(0.0) { $0 + $1.totalFat }
+                    PlumpyBadge(text: "P \(Int(totalP))g", style: .info, size: .small)
+                    PlumpyBadge(text: "C \(Int(totalC))g", style: .primary, size: .small)
+                    PlumpyBadge(text: "F \(Int(totalF))g", style: .warning, size: .small)
+                }
                     .font(PlumpyTheme.Typography.caption1)
                     .foregroundColor(PlumpyTheme.textSecondary)
             }
@@ -368,6 +379,11 @@ struct FoodEntryHistoryCard: View {
                         Text(entry.formattedDate)
                             .font(PlumpyTheme.Typography.caption2)
                             .foregroundColor(PlumpyTheme.textSecondary)
+                        
+                        // БЖУ кратко
+                        PlumpyBadge(text: "P \(Int(entry.totalProtein))g", style: .info, size: .small)
+                        PlumpyBadge(text: "C \(Int(entry.totalCarbs))g", style: .primary, size: .small)
+                        PlumpyBadge(text: "F \(Int(entry.totalFat))g", style: .warning, size: .small)
                     }
                     
                     if !entry.products.isEmpty {
