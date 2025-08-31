@@ -101,6 +101,7 @@ class FoodRecognitionViewModel: ObservableObject {
     }
     
     /// Установить изображение
+    @MainActor
     func setImage(_ image: UIImage) {
         print("🖼️ FoodRecognitionViewModel.setImage() вызван")
         print("📐 Размер изображения: \(image.size)")
