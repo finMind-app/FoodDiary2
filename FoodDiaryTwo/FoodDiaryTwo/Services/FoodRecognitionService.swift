@@ -109,7 +109,7 @@ class FoodRecognitionService: FoodRecognitionServiceProtocol, ObservableObject {
 
 // MARK: - Сервис для работы с OpenRouter API
 class OpenRouterAPIService {
-    private let apiKey = "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"
+    private let apiKey = "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"
     private let baseURL = "https://openrouter.ai/api/v1/chat/completions"
     private let model = "qwen/qwen2.5-vl-32b-instruct:free"
     

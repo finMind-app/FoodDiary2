@@ -25,23 +25,15 @@ struct AddMealView: View {
     @State private var selectedImage: UIImage? = nil
     @State private var isImageLoading = false
     
-    // Состояния для работы с фото
-    @State private var showImagePicker = false
-    @State private var sourceType: UIImagePickerController.SourceType = .camera
-    
     // ViewModel для распознавания
     @StateObject private var recognitionViewModel = FoodRecognitionViewModel()
     
-    // Состояния для навигации к результатам
-    @State private var showRecognitionResults = false
+    // Состояния для ошибок
     @State private var showErrorAlert = false
     
     init(mealType: MealType = .breakfast) {
         self._selectedMealType = State(initialValue: mealType)
-        print("🏗️ AddMealView инициализируется")
     }
-    
-    // MealType is defined in FoodEntry.swift
     
     var body: some View {
         ZStack {
@@ -69,70 +61,33 @@ struct AddMealView: View {
                 )
                 
                 ScrollView {
-                    VStack(spacing: PlumpyTheme.Spacing.medium) {
+                    VStack(spacing: 20) {
+                        // Секция фото с распознаванием
+                        photoSection
+                        
                         // Основная информация
                         basicInfoSection
-                        
-                        // Фото с распознаванием
-                        photoSectionWithRecognition
                         
                         // Заметки
                         notesSection
                         
-                        PlumpySpacer(size: .large)
+                        Spacer(minLength: 100)
                     }
-                    .padding(.horizontal, PlumpyTheme.Spacing.medium)
-                    .padding(.top, PlumpyTheme.Spacing.medium)
+                    .padding(.horizontal, 20)
+                    .padding(.top, 20)
                 }
             }
-        }
-        .sheet(isPresented: $showImagePicker) {
-            ImagePicker(
-                selectedImage: $selectedImage, 
-                sourceType: sourceType
-            )
         }
         .onChange(of: selectedPhotoItem) {
             Task {
-                print("🔄 Начинаем загрузку изображения...")
-                print("📸 selectedPhotoItem: \(selectedPhotoItem != nil ? "есть" : "нет")")
-                isImageLoading = true // Set loading state
+                isImageLoading = true
                 if let item = selectedPhotoItem,
                    let data = try? await item.loadTransferable(type: Data.self),
                    let image = UIImage(data: data) {
-                    print("✅ Изображение успешно загружено, размер: \(image.size)")
-                    print("📊 Размер данных изображения: \(data.count) байт")
                     selectedImage = image
-                    print("🖼️ Вызываем recognitionViewModel.setImage()")
-                    print("📸 selectedImage в AddMealView перед setImage: \(selectedImage != nil ? "есть" : "нет")")
                     recognitionViewModel.setImage(image)
-                    print("✅ recognitionViewModel.setImage() завершен")
-                    print("📸 selectedImage в AddMealView после установки: \(selectedImage != nil ? "есть" : "нет")")
-                    print("📸 selectedImage в ViewModel после установки: \(recognitionViewModel.selectedImage != nil ? "есть" : "нет")")
-                } else {
-                    print("❌ Ошибка загрузки изображения")
-                    print("📸 selectedPhotoItem: \(selectedPhotoItem != nil ? "есть" : "нет")")
                 }
-                isImageLoading = false // Reset loading state
-            }
-        }
-        .sheet(isPresented: $showRecognitionResults) {
-            if let result = recognitionViewModel.recognitionResult {
-                NavigationView {
-                    FoodRecognitionResultView(
-                        result: result,
-                        onApply: {
-                            applyRecognitionResults(result)
-                            showRecognitionResults = false
-                        },
-                        onRetry: {
-                            showRecognitionResults = false
-                            Task {
-                                await recognitionViewModel.recognizeFood()
-                            }
-                        }
-                    )
-                }
+                isImageLoading = false
             }
         }
         .alert("Ошибка распознавания", isPresented: $showErrorAlert) {
@@ -141,415 +96,296 @@ struct AddMealView: View {
             Text(recognitionViewModel.errorMessage ?? "Неизвестная ошибка")
         }
         .onReceive(recognitionViewModel.$showError) { showError in
-            print("❌ onReceive showError: \(showError)")
             if showError {
                 showErrorAlert = true
             }
         }
         .onReceive(recognitionViewModel.$recognitionResult) { result in
-            print("📊 onReceive recognitionResult: \(result != nil ? "есть результат" : "нет результата")")
             if let result = result {
-                print("✅ Результат получен: \(result.name), \(result.calories) калорий")
-                
-                // Предзаполняем поля на основе результатов распознавания
+                // Автоматически заполняем поля результатами распознавания
                 mealName = result.name
                 calories = String(format: "%.0f", result.calories)
                 protein = String(format: "%.1f", result.protein)
                 fat = String(format: "%.1f", result.fat)
                 carbs = String(format: "%.1f", result.carbs)
-                
-                print("📝 Поля предзаполнены:")
-                print("   - Название: \(mealName)")
-                print("   - Калории: \(calories)")
-                print("   - Белки: \(protein)")
-                print("   - Жиры: \(fat)")
-                print("   - Углеводы: \(carbs)")
-                
-                showRecognitionResults = true
             }
         }
     }
     
+    // MARK: - Секция фото с распознаванием
+    private var photoSection: some View {
+        VStack(spacing: 16) {
+            if let image = selectedImage {
+                // Показать выбранное изображение
+                ZStack(alignment: .topTrailing) {
+                    Image(uiImage: image)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(height: 240)
+                        .clipped()
+                        .cornerRadius(16)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 16)
+                                .stroke(PlumpyTheme.border, lineWidth: 1)
+                        )
+                    
+                    // Кнопка удаления
+                    Button(action: {
+                        selectedImage = nil
+                        selectedPhotoItem = nil
+                        recognitionViewModel.resetResults()
+                    }) {
+                        Image(systemName: "xmark.circle.fill")
+                            .font(.title2)
+                            .foregroundColor(.white)
+                            .background(Color.black.opacity(0.6))
+                            .clipShape(Circle())
+                    }
+                    .padding(12)
+                }
+                
+                // Кнопка распознавания
+                Button(action: {
+                    Task {
+                        await recognitionViewModel.recognizeFood()
+                    }
+                }) {
+                    HStack(spacing: 8) {
+                        if recognitionViewModel.isProcessing {
+                            ProgressView()
+                                .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                .scaleEffect(0.8)
+                            Text("Анализируем...")
+                                .fontWeight(.medium)
+                        } else {
+                            Image(systemName: "camera.viewfinder")
+                                .font(.title3)
+                            Text("Распознать калории")
+                                .fontWeight(.medium)
+                        }
+                    }
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 48)
+                    .background(recognitionViewModel.isProcessing ? Color.gray : PlumpyTheme.primaryAccent)
+                    .foregroundColor(.white)
+                    .cornerRadius(12)
+                }
+                .disabled(recognitionViewModel.isProcessing || isImageLoading)
+                
+                // Прогресс распознавания
+                if recognitionViewModel.isProcessing {
+                    VStack(spacing: 8) {
+                        ProgressView(value: recognitionViewModel.processingProgress)
+                            .progressViewStyle(LinearProgressViewStyle(tint: PlumpyTheme.primaryAccent))
+                        
+                        Text("Обработка изображения... \(Int(recognitionViewModel.processingProgress * 100))%")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 12)
+                    .background(PlumpyTheme.surfaceSecondary)
+                    .cornerRadius(8)
+                }
+                
+            } else {
+                // Кнопки выбора фото
+                VStack(spacing: 16) {
+                    // Основная кнопка выбора фото
+                    PhotosPicker(selection: $selectedPhotoItem, matching: .images) {
+                        VStack(spacing: 12) {
+                            Image(systemName: "camera.fill")
+                                .font(.system(size: 32))
+                                .foregroundColor(PlumpyTheme.primaryAccent)
+                            
+                            Text("Сфотографируйте еду")
+                                .font(.headline)
+                                .fontWeight(.semibold)
+                                .foregroundColor(PlumpyTheme.textPrimary)
+                            
+                            Text("Автоматическое распознавание калорий и БЖУ")
+                                .font(.subheadline)
+                                .foregroundColor(PlumpyTheme.textSecondary)
+                                .multilineTextAlignment(.center)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 160)
+                        .background(PlumpyTheme.surfaceSecondary)
+                        .cornerRadius(16)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 16)
+                                .stroke(PlumpyTheme.border, lineWidth: 1)
+                        )
+                    }
+                    
+                    // Альтернативная кнопка камеры
+                    Button(action: {
+                        // Здесь можно добавить вызов камеры
+                    }) {
+                        HStack(spacing: 8) {
+                            Image(systemName: "camera")
+                            Text("Использовать камеру")
+                                .fontWeight(.medium)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 44)
+                        .background(PlumpyTheme.surfaceSecondary)
+                        .foregroundColor(PlumpyTheme.textPrimary)
+                        .cornerRadius(12)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(PlumpyTheme.border, lineWidth: 1)
+                        )
+                    }
+                }
+            }
+        }
+        .padding(20)
+        .background(PlumpyTheme.surfacePrimary)
+        .cornerRadius(20)
+    }
+    
+    // MARK: - Секция основной информации
     private var basicInfoSection: some View {
-        VStack(spacing: PlumpyTheme.Spacing.medium) {
-            Text(LocalizationManager.shared.localizedString(.foodDiary))
-                .font(PlumpyTheme.Typography.headline)
-                .fontWeight(.semibold)
-                .foregroundColor(PlumpyTheme.textPrimary)
-                .frame(maxWidth: .infinity, alignment: .leading)
-            
+        VStack(spacing: 20) {
             // Название приема пищи
-            PlumpyField(
-                title: LocalizationManager.shared.localizedString(.mealName),
-                placeholder: LocalizationManager.shared.localizedString(.mealName),
-                text: $mealName,
-                icon: "fork.knife",
-                isRequired: true
-            )
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Название")
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(PlumpyTheme.textPrimary)
+                
+                TextField("Введите название блюда", text: $mealName)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .font(.body)
+            }
             
             // Тип приема пищи
-            VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.small) {
-                Text(LocalizationManager.shared.localizedString(.mealType))
-                    .font(PlumpyTheme.Typography.subheadline)
-                    .fontWeight(.medium)
-                    .foregroundColor(PlumpyTheme.textSecondary)
+            VStack(alignment: .leading, spacing: 12) {
+                Text("Тип приема")
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(PlumpyTheme.textPrimary)
                 
-                LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: PlumpyTheme.Spacing.small) {
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: 12) {
                     ForEach(MealType.allCases, id: \.self) { mealType in
-                        PlumpyChip(
-                            title: mealType.displayName,
-                            icon: mealType.icon,
-                            style: selectedMealType == mealType ? .primary : .outline,
-                            isSelected: selectedMealType == mealType
-                        ) {
+                        Button(action: {
                             selectedMealType = mealType
+                        }) {
+                            HStack(spacing: 8) {
+                                Image(systemName: mealType.icon)
+                                    .font(.title3)
+                                Text(mealType.displayName)
+                                    .fontWeight(.medium)
+                            }
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 44)
+                            .background(selectedMealType == mealType ? PlumpyTheme.primaryAccent : PlumpyTheme.surfaceSecondary)
+                            .foregroundColor(selectedMealType == mealType ? .white : PlumpyTheme.textPrimary)
+                            .cornerRadius(12)
                         }
                     }
                 }
             }
             
             // Время приема пищи
-            VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.small) {
-                Text(LocalizationManager.shared.localizedString(.timeLabel))
-                    .font(PlumpyTheme.Typography.subheadline)
-                    .fontWeight(.medium)
-                    .foregroundColor(PlumpyTheme.textSecondary)
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Время")
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(PlumpyTheme.textPrimary)
                 
                 DatePicker("", selection: $selectedTime, displayedComponents: [.date, .hourAndMinute])
                     .datePickerStyle(.compact)
                     .labelsHidden()
-                    .padding(PlumpyTheme.Spacing.medium)
-                    .plumpyCard(
-                        cornerRadius: PlumpyTheme.Radius.medium,
-                        backgroundColor: PlumpyTheme.surfaceSecondary
-                    )
+                    .padding(12)
+                    .background(PlumpyTheme.surfaceSecondary)
+                    .cornerRadius(12)
             }
             
             // Калории
-            PlumpyField(
-                title: LocalizationManager.shared.localizedString(.calories),
-                placeholder: LocalizationManager.shared.localizedString(.calories),
-                text: $calories,
-                keyboardType: .numberPad,
-                icon: "flame.fill",
-                iconColor: PlumpyTheme.warning,
-                isRequired: true
-            )
-
-            // БЖУ
-            HStack(spacing: PlumpyTheme.Spacing.medium) {
-                PlumpyField(
-                    title: LocalizationManager.shared.localizedString(.protein),
-                    placeholder: LocalizationManager.shared.localizedString(.protein),
-                    text: $protein,
-                    keyboardType: .decimalPad,
-                    icon: "bolt.heart",
-                    iconColor: PlumpyTheme.secondaryAccent,
-                    isRequired: false
-                )
-                PlumpyField(
-                    title: LocalizationManager.shared.localizedString(.carbs),
-                    placeholder: LocalizationManager.shared.localizedString(.carbs),
-                    text: $carbs,
-                    keyboardType: .decimalPad,
-                    icon: "leaf",
-                    iconColor: PlumpyTheme.primaryAccent,
-                    isRequired: false
-                )
-                PlumpyField(
-                    title: LocalizationManager.shared.localizedString(.fat),
-                    placeholder: LocalizationManager.shared.localizedString(.fat),
-                    text: $fat,
-                    keyboardType: .decimalPad,
-                    icon: "drop",
-                    iconColor: PlumpyTheme.tertiaryAccent,
-                    isRequired: false
-                )
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Калории")
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(PlumpyTheme.textPrimary)
+                
+                TextField("0", text: $calories)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .keyboardType(.numberPad)
+                    .font(.body)
             }
-        }
-        .plumpyCard()
-    }
-    
-    // MARK: - Секция фото с распознаванием
-    private var photoSectionWithRecognition: some View {
-        VStack(spacing: PlumpyTheme.Spacing.medium) {
-            Text(LocalizationManager.shared.localizedString(.recognizeCalories))
-                .font(PlumpyTheme.Typography.headline)
-                .fontWeight(.semibold)
-                .foregroundColor(PlumpyTheme.textPrimary)
-                .frame(maxWidth: .infinity, alignment: .leading)
             
-            // Выбор фото
-            VStack(spacing: PlumpyTheme.Spacing.small) {
-                if let image = selectedImage {
-                    // Показать выбранное изображение
-                    Image(uiImage: image)
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(height: 200)
-                        .clipped()
-                        .cornerRadius(PlumpyTheme.Radius.medium)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
-                                .stroke(PlumpyTheme.border, lineWidth: 1)
-                        )
+            // БЖУ
+            HStack(spacing: 12) {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Белки")
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .foregroundColor(PlumpyTheme.textSecondary)
                     
-                    // Кнопки действий с фото
-                    HStack(spacing: PlumpyTheme.Spacing.medium) {
-                        // Кнопка распознавания калорий
-                        Button(action: {
-                            print("🔘 Кнопка распознавания нажата")
-                            print("📸 selectedImage в AddMealView: \(selectedImage != nil ? "есть" : "нет")")
-                            print("📸 selectedImage в ViewModel: \(recognitionViewModel.selectedImage != nil ? "есть" : "нет")")
-                            print("🔄 isProcessing: \(recognitionViewModel.isProcessing)")
-                            print("🔄 isImageLoading: \(isImageLoading)")
-                            print("📊 processingProgress: \(recognitionViewModel.processingProgress)")
-                            
-                            // Дополнительная проверка
-                            if let image = selectedImage {
-                                print("📸 Размер изображения в AddMealView: \(image.size)")
-                            }
-                            if let image = recognitionViewModel.selectedImage {
-                                print("📸 Размер изображения в ViewModel: \(image.size)")
-                            }
-                            
-                            Task {
-                                await recognitionViewModel.recognizeFood()
-                            }
-                        }) {
-                            HStack {
-                                if recognitionViewModel.isProcessing {
-                                    ProgressView()
-                                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                                        .scaleEffect(0.8)
-                                    Text("Распознаем...")
-                                        .foregroundColor(.white)
-                                } else {
-                                    Image(systemName: "camera.viewfinder")
-                                    Text("Распознать калории")
-                                }
-                            }
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(recognitionViewModel.isProcessing ? Color.gray : Color.blue)
-                            .foregroundColor(.white)
-                            .cornerRadius(10)
-                        }
-                        .disabled(recognitionViewModel.isProcessing || isImageLoading)
-                        
-                        // Прогресс-бар
-                        if recognitionViewModel.isProcessing {
-                            VStack(alignment: .leading, spacing: 8) {
-                                ProgressView(value: recognitionViewModel.processingProgress)
-                                    .progressViewStyle(LinearProgressViewStyle())
-                                    .scaleEffect(y: 2)
-                                
-                                Text("Обработка изображения... \(Int(recognitionViewModel.processingProgress * 100))%")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
-                            .padding(.horizontal)
-                        }
-                        
-                        // Кнопка сброса
-                        Button(action: {
-                            selectedImage = nil
-                            selectedPhotoItem = nil
-                            recognitionViewModel.resetResults()
-                        }) {
-                            Image(systemName: "trash")
-                                .foregroundColor(.red)
-                                .frame(width: 44, height: 44)
-                                .background(PlumpyTheme.surfaceSecondary)
-                                .cornerRadius(PlumpyTheme.Radius.medium)
-                        }
-                        .disabled(recognitionViewModel.isProcessing)
-                    }
+                    TextField("0", text: $protein)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .keyboardType(.decimalPad)
+                        .font(.body)
+                }
+                
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Жиры")
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .foregroundColor(PlumpyTheme.textSecondary)
                     
-                    // Прогресс распознавания
-                    if recognitionViewModel.isProcessing {
-                        VStack(spacing: PlumpyTheme.Spacing.small) {
-                            ProgressView(value: recognitionViewModel.processingProgress)
-                                .progressViewStyle(LinearProgressViewStyle(tint: PlumpyTheme.primaryAccent))
-                            
-                            Text("Анализируем изображение... \(Int(recognitionViewModel.processingProgress * 100))%")
-                                .font(PlumpyTheme.Typography.caption1)
-                                .foregroundColor(PlumpyTheme.textSecondary)
-                        }
-                        .padding(.horizontal, PlumpyTheme.Spacing.medium)
-                        .padding(.vertical, PlumpyTheme.Spacing.small)
-                        .background(PlumpyTheme.surfaceSecondary)
-                        .cornerRadius(PlumpyTheme.Radius.small)
-                    } else if isImageLoading {
-                        // Индикатор загрузки изображения
-                        HStack {
-                            ProgressView()
-                                .scaleEffect(0.8)
-                                .progressViewStyle(CircularProgressViewStyle(tint: PlumpyTheme.primaryAccent))
-                            Text("Загружаем изображение...")
-                                .font(PlumpyTheme.Typography.caption1)
-                                .foregroundColor(PlumpyTheme.textSecondary)
-                        }
-                        .padding(.horizontal, PlumpyTheme.Spacing.medium)
-                        .padding(.vertical, PlumpyTheme.Spacing.small)
-                        .background(PlumpyTheme.surfaceSecondary)
-                        .cornerRadius(PlumpyTheme.Radius.small)
-                    } else if recognitionViewModel.recognitionResult != nil {
-                        // Сообщение об успешном распознавании
-                        HStack {
-                            Image(systemName: "checkmark.circle.fill")
-                                .foregroundColor(.green)
-                            Text("Распознавание завершено! Нажмите для просмотра результатов")
-                                .font(PlumpyTheme.Typography.caption1)
-                                .foregroundColor(.green)
-                        }
-                        .padding(.horizontal, PlumpyTheme.Spacing.medium)
-                        .padding(.vertical, PlumpyTheme.Spacing.small)
-                        .background(Color.green.opacity(0.1))
-                        .cornerRadius(PlumpyTheme.Radius.small)
-                        .onTapGesture {
-                            showRecognitionResults = true
-                        }
-                    } else {
-                        // Простое сообщение о готовности фото
-                        HStack {
-                            Image(systemName: "checkmark.circle.fill")
-                                .foregroundColor(.green)
-                            Text(LocalizationManager.shared.localizedString(.photoReady))
-                                .font(PlumpyTheme.Typography.caption1)
-                                .foregroundColor(.green)
-                        }
-                        .padding(.horizontal, PlumpyTheme.Spacing.medium)
-                        .padding(.vertical, PlumpyTheme.Spacing.small)
-                        .background(Color.green.opacity(0.1))
-                        .cornerRadius(PlumpyTheme.Radius.small)
-                    }
+                    TextField("0", text: $fat)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .keyboardType(.decimalPad)
+                        .font(.body)
+                }
+                
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Углеводы")
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .foregroundColor(PlumpyTheme.textSecondary)
                     
-                } else {
-                    // Показать кнопки выбора фото
-                    VStack(spacing: PlumpyTheme.Spacing.medium) {
-                        // Кнопка выбора из галереи
-                        PhotosPicker(selection: $selectedPhotoItem, matching: .images) {
-                            HStack {
-                                Image(systemName: "photo.on.rectangle")
-                                Text(LocalizationManager.shared.localizedString(.pickFromGallery))
-                                    .fontWeight(.medium)
-                            }
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, PlumpyTheme.Spacing.medium)
-                            .background(PlumpyTheme.primaryAccent)
-                            .foregroundColor(.white)
-                            .cornerRadius(PlumpyTheme.Radius.medium)
-                        }
-                        
-                        // Кнопка камеры
-                        Button(action: {
-                            sourceType = .camera
-                            showImagePicker = true
-                        }) {
-                            HStack {
-                                Image(systemName: "camera.fill")
-                                Text(LocalizationManager.shared.localizedString(.takePhoto))
-                                    .fontWeight(.medium)
-                            }
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, PlumpyTheme.Spacing.medium)
-                            .background(PlumpyTheme.surfaceSecondary)
-                            .foregroundColor(PlumpyTheme.textPrimary)
-                            .cornerRadius(PlumpyTheme.Radius.medium)
-                        }
-                        
-                        // Информация о распознавании
-                        VStack(spacing: PlumpyTheme.Spacing.small) {
-                            Image(systemName: "camera.viewfinder")
-                                .font(.title2)
-                                .foregroundColor(PlumpyTheme.primaryAccent)
-                            
-                            Text("Сделайте фото еды для автоматического распознавания калорий и БЖУ")
-                                .font(PlumpyTheme.Typography.caption1)
-                                .foregroundColor(PlumpyTheme.textSecondary)
-                                .multilineTextAlignment(.center)
-                        }
-                        .padding(PlumpyTheme.Spacing.medium)
-                        .background(PlumpyTheme.surfaceSecondary)
-                        .cornerRadius(PlumpyTheme.Radius.medium)
-                    }
+                    TextField("0", text: $carbs)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .keyboardType(.decimalPad)
+                        .font(.body)
                 }
             }
         }
-        .plumpyCard()
+        .padding(20)
+        .background(PlumpyTheme.surfacePrimary)
+        .cornerRadius(20)
     }
     
     // MARK: - Секция заметок
     private var notesSection: some View {
-        VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.medium) {
-            Text(LocalizationManager.shared.localizedString(.notes))
-                .font(PlumpyTheme.Typography.headline)
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Заметки")
+                .font(.headline)
                 .fontWeight(.semibold)
                 .foregroundColor(PlumpyTheme.textPrimary)
-                .frame(maxWidth: .infinity, alignment: .leading)
             
-            VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.small) {
-                Text(LocalizationManager.shared.localizedString(.notes))
-                    .font(PlumpyTheme.Typography.caption1)
-                    .fontWeight(.medium)
-                    .foregroundColor(PlumpyTheme.textSecondary)
-                
-                ZStack(alignment: .topLeading) {
-                    RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
-                        .fill(PlumpyTheme.neutral50)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
-                                .stroke(PlumpyTheme.neutral200, lineWidth: 1)
-                        )
-                        .shadow(
-                            color: PlumpyTheme.shadow.opacity(0.02),
-                            radius: PlumpyTheme.Shadow.small.radius,
-                            x: PlumpyTheme.Shadow.small.x,
-                            y: PlumpyTheme.Shadow.small.y
-                        )
-                    
-                    if notes.isEmpty {
-                        Text(LocalizationManager.shared.localizedString(.notes))
-                            .font(PlumpyTheme.Typography.body)
-                            .foregroundColor(PlumpyTheme.textTertiary)
-                            .padding(.horizontal, PlumpyTheme.Spacing.medium)
-                            .padding(.top, PlumpyTheme.Spacing.medium)
-                    }
-                    
-                    TextEditor(text: $notes)
-                        .font(PlumpyTheme.Typography.body)
-                        .foregroundColor(PlumpyTheme.textPrimary)
-                        .padding(.horizontal, PlumpyTheme.Spacing.medium)
-                        .padding(.vertical, PlumpyTheme.Spacing.medium)
-                        .background(Color.clear)
-                        .frame(minHeight: 80, maxHeight: 120)
-                }
-            }
+            TextField("Добавить заметки (необязательно)", text: $notes, axis: .vertical)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+                .lineLimit(3...6)
+                .font(.body)
         }
-        .plumpyCard()
-    }
-    
-    // MARK: - Применение результатов распознавания
-    private func applyRecognitionResults(_ result: FoodRecognitionResult) {
-        // Применяем результаты к полям формы
-        mealName = result.name
-        calories = String(Int(result.calories))
-        protein = String(format: "%.1f", result.protein)
-        fat = String(format: "%.1f", result.fat)
-        carbs = String(format: "%.1f", result.carbs)
+        .padding(20)
+        .background(PlumpyTheme.surfacePrimary)
+        .cornerRadius(20)
     }
     
     private func saveMeal() {
         // Валидация данных
         guard !mealName.isEmpty else {
-            // Можно добавить алерт для пользователя
             print("Meal name is required")
             return
         }
         
         guard let caloriesInt = Int(calories), caloriesInt > 0 else {
-            // Можно добавить алерт для пользователя
             print("Valid calories are required")
             return
         }
@@ -588,10 +424,8 @@ struct AddMealView: View {
             dismiss()
         } catch {
             print("Error saving meal: \(error)")
-            // Можно добавить алерт для пользователя
         }
     }
-
 }
 
 #Preview {
