@@ -99,11 +99,6 @@ struct AddMealView: View {
                 }
             }
         }
-        .onChange(of: selectedImage) { _, newImage in
-            if let image = newImage {
-                recognitionViewModel.setImage(image)
-            }
-        }
         .sheet(isPresented: $showRecognitionResults) {
             if let result = recognitionViewModel.recognitionResult {
                 NavigationView {
@@ -459,13 +454,11 @@ struct AddMealView: View {
     // MARK: - Применение результатов распознавания
     private func applyRecognitionResults(_ result: FoodRecognitionResult) {
         // Применяем результаты к полям формы
-        if let firstFood = result.recognizedFoods.first {
-            mealName = firstFood.name
-            calories = String(Int(firstFood.calories))
-            protein = String(format: "%.1f", firstFood.protein)
-            fat = String(format: "%.1f", firstFood.fat)
-            carbs = String(format: "%.1f", firstFood.carbs)
-        }
+        mealName = result.name
+        calories = String(Int(result.calories))
+        protein = String(format: "%.1f", result.protein)
+        fat = String(format: "%.1f", result.fat)
+        carbs = String(format: "%.1f", result.carbs)
     }
     
     private func saveMeal() {

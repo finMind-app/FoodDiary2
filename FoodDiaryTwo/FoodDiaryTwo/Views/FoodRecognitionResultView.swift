@@ -26,9 +26,6 @@ struct FoodRecognitionResultView: View {
                 // Общая информация
                 summarySection
                 
-                // Детали по продуктам
-                foodDetailsSection
-                
                 // Кнопки действий
                 actionButtonsSection
                 
@@ -45,15 +42,16 @@ struct FoodRecognitionResultView: View {
     private var headerSection: some View {
         VStack(spacing: PlumpyTheme.Spacing.medium) {
             // Иконка результата
-            Image(systemName: result.isHighConfidence ? "checkmark.circle.fill" : "exclamationmark.triangle.fill")
+            Image(systemName: "checkmark.circle.fill")
                 .font(.system(size: 60))
-                .foregroundColor(result.isHighConfidence ? .green : .orange)
+                .foregroundColor(.green)
             
-            // Текст уверенности
-            Text(result.confidenceText)
+            // Название блюда
+            Text(result.name)
                 .font(PlumpyTheme.Typography.title2)
                 .fontWeight(.semibold)
                 .foregroundColor(PlumpyTheme.textPrimary)
+                .multilineTextAlignment(.center)
             
             // Время обработки
             Text(String(format: LocalizationManager.shared.localizedString(.processingTimeSec), result.processingTime))
@@ -82,7 +80,7 @@ struct FoodRecognitionResultView: View {
                 
                 NutritionCard(
                     title: LocalizationManager.shared.localizedString(.calories),
-                    value: "\(Int(result.totalCalories))",
+                    value: "\(Int(result.calories))",
                     unit: LocalizationManager.shared.localizedString(.calUnit),
                     color: .orange,
                     icon: "flame.fill"
@@ -90,7 +88,7 @@ struct FoodRecognitionResultView: View {
                 
                 NutritionCard(
                     title: LocalizationManager.shared.localizedString(.protein),
-                    value: "\(String(format: "%.1f", result.totalProtein))",
+                    value: "\(String(format: "%.1f", result.protein))",
                     unit: "g",
                     color: .blue,
                     icon: "circle.hexagongrid.fill"
@@ -98,7 +96,7 @@ struct FoodRecognitionResultView: View {
                 
                 NutritionCard(
                     title: LocalizationManager.shared.localizedString(.fat),
-                    value: "\(String(format: "%.1f", result.totalFat))",
+                    value: "\(String(format: "%.1f", result.fat))",
                     unit: "g",
                     color: .yellow,
                     icon: "drop.fill"
@@ -106,29 +104,11 @@ struct FoodRecognitionResultView: View {
                 
                 NutritionCard(
                     title: LocalizationManager.shared.localizedString(.carbs),
-                    value: "\(String(format: "%.1f", result.totalCarbs))",
+                    value: "\(String(format: "%.1f", result.carbs))",
                     unit: "g",
                     color: .green,
                     icon: "leaf.fill"
                 )
-            }
-        }
-        .padding(PlumpyTheme.Spacing.medium)
-        .background(PlumpyTheme.surface)
-        .cornerRadius(PlumpyTheme.Radius.large)
-    }
-    
-    // MARK: - Детали по продуктам
-    private var foodDetailsSection: some View {
-        VStack(spacing: PlumpyTheme.Spacing.medium) {
-            Text(LocalizationManager.shared.localizedString(.recognizedProductsTitle))
-                .font(PlumpyTheme.Typography.title3)
-                .fontWeight(.semibold)
-                .foregroundColor(PlumpyTheme.textPrimary)
-                .frame(maxWidth: .infinity, alignment: .leading)
-            
-            ForEach(result.recognizedFoods) { food in
-                RecognizedFoodRow(food: food)
             }
         }
         .padding(PlumpyTheme.Spacing.medium)
@@ -209,134 +189,16 @@ struct NutritionCard: View {
     }
 }
 
-// MARK: - Строка распознанного продукта
-struct RecognizedFoodRow: View {
-    let food: RecognizedFood
-    
-    var body: some View {
-        VStack(spacing: PlumpyTheme.Spacing.small) {
-            HStack {
-                // Иконка категории
-                Text(food.category.icon)
-                    .font(.title2)
-                
-                VStack(alignment: .leading, spacing: 2) {
-                    // Название продукта
-                    Text(food.name)
-                        .font(PlumpyTheme.Typography.subheadline)
-                        .fontWeight(.semibold)
-                        .foregroundColor(PlumpyTheme.textPrimary)
-                    
-                    // Размер порции
-                    Text(food.estimatedServingSize)
-                        .font(PlumpyTheme.Typography.caption1)
-                        .foregroundColor(PlumpyTheme.textSecondary)
-                }
-                
-                Spacer()
-                
-                // Уверенность
-                VStack(alignment: .trailing, spacing: 2) {
-                    Text("\(Int(food.confidence * 100))%")
-                        .font(PlumpyTheme.Typography.caption1)
-                        .fontWeight(.semibold)
-                        .foregroundColor(food.confidenceColor)
-                    
-                    Text(LocalizationManager.shared.localizedString(.confidenceLabel))
-                        .font(PlumpyTheme.Typography.caption2)
-                        .foregroundColor(PlumpyTheme.textTertiary)
-                }
-            }
-            
-            // Детали питания
-            HStack(spacing: PlumpyTheme.Spacing.medium) {
-                NutritionBadge(label: LocalizationManager.shared.localizedString(.caloriesShort), value: "\(Int(food.calories))")
-                NutritionBadge(label: LocalizationManager.shared.localizedString(.proteinShort), value: "\(String(format: "%.1f", food.protein))")
-                NutritionBadge(label: LocalizationManager.shared.localizedString(.fatShort), value: "\(String(format: "%.1f", food.fat))")
-                NutritionBadge(label: LocalizationManager.shared.localizedString(.carbsShort), value: "\(String(format: "%.1f", food.carbs))")
-                
-                Spacer()
-                
-                // Способ приготовления
-                if let cookingMethod = food.cookingMethod {
-                    HStack(spacing: 4) {
-                        Text(cookingMethod.icon)
-                        Text(cookingMethod.rawValue)
-                            .font(PlumpyTheme.Typography.caption2)
-                            .foregroundColor(PlumpyTheme.textSecondary)
-                    }
-                }
-            }
-        }
-        .padding(PlumpyTheme.Spacing.medium)
-        .background(PlumpyTheme.surfaceSecondary)
-        .cornerRadius(PlumpyTheme.Radius.medium)
-    }
-}
-
-// MARK: - Бейдж питания
-struct NutritionBadge: View {
-    let label: String
-    let value: String
-    
-    var body: some View {
-        VStack(spacing: 2) {
-            Text(value)
-                .font(PlumpyTheme.Typography.caption1)
-                .fontWeight(.semibold)
-                .foregroundColor(PlumpyTheme.textPrimary)
-            
-            Text(label)
-                .font(PlumpyTheme.Typography.caption2)
-                .foregroundColor(PlumpyTheme.textSecondary)
-        }
-        .padding(.horizontal, PlumpyTheme.Spacing.small)
-        .padding(.vertical, 4)
-        .background(PlumpyTheme.surface)
-        .cornerRadius(PlumpyTheme.Radius.small)
-    }
-}
-
 // MARK: - Preview
 #Preview {
     NavigationView {
         FoodRecognitionResultView(
             result: FoodRecognitionResult(
-                confidence: 0.85,
-                recognizedFoods: [
-                    RecognizedFood(
-                        name: "Куриная грудка",
-                        confidence: 0.9,
-                        estimatedWeight: 174,
-                        calories: 165,
-                        protein: 31,
-                        fat: 3.6,
-                        carbs: 0,
-                        category: .protein,
-                        boundingBox: nil,
-                        isProcessed: true,
-                        cookingMethod: .grilled,
-                        estimatedServingSize: "1 грудка (174г)"
-                    ),
-                    RecognizedFood(
-                        name: "Рис отварной",
-                        confidence: 0.8,
-                        estimatedWeight: 158,
-                        calories: 130,
-                        protein: 2.7,
-                        fat: 0.3,
-                        carbs: 28,
-                        category: .grains,
-                        boundingBox: nil,
-                        isProcessed: true,
-                        cookingMethod: .boiled,
-                        estimatedServingSize: "1 чашка (158г)"
-                    )
-                ],
-                totalCalories: 295,
-                totalProtein: 33.7,
-                totalFat: 3.9,
-                totalCarbs: 28,
+                name: "Куриная грудка с рисом",
+                calories: 295,
+                protein: 33.7,
+                fat: 3.9,
+                carbs: 28,
                 processingTime: 2.3,
                 imageSize: CGSize(width: 512, height: 512)
             ),

@@ -11,64 +11,32 @@ import SwiftUI
 // MARK: - Результат распознавания еды
 struct FoodRecognitionResult: Identifiable, Codable {
     var id = UUID()
-    let confidence: Double // Уверенность в распознавании (0.0 - 1.0)
-    let recognizedFoods: [RecognizedFood]
-    let totalCalories: Double
-    let totalProtein: Double
-    let totalFat: Double
-    let totalCarbs: Double
+    let name: String
+    let calories: Double
+    let protein: Double
+    let fat: Double
+    let carbs: Double
     var processingTime: TimeInterval
     var imageSize: CGSize
     
-    // Вычисляемые свойства
-    var isHighConfidence: Bool { confidence >= 0.7 }
-    var isMediumConfidence: Bool { confidence >= 0.4 && confidence < 0.7 }
-    var isLowConfidence: Bool { confidence < 0.4 }
-    
-    var confidenceText: String {
-        switch confidence {
-        case 0.8...1.0: return "Высокая уверенность"
-        case 0.6..<0.8: return "Хорошая уверенность"
-        case 0.4..<0.6: return "Средняя уверенность"
-        default: return "Низкая уверенность"
-        }
-    }
-    
     // Инициализатор из ответа OpenRouter API
     init(from openRouterResponse: OpenRouterFoodAnalysis) {
-        self.confidence = 0.85 // По умолчанию высокая уверенность для AI модели
-        self.recognizedFoods = [
-            RecognizedFood(
-                name: openRouterResponse.название,
-                confidence: 0.85,
-                estimatedWeight: 100.0, // По умолчанию 100г
-                calories: openRouterResponse.калории,
-                protein: openRouterResponse.бжу.белки,
-                fat: openRouterResponse.бжу.жиры,
-                carbs: openRouterResponse.бжу.углеводы,
-                category: .other, // Будет определено позже
-                boundingBox: nil,
-                isProcessed: true, // По умолчанию
-                cookingMethod: .unknown,
-                estimatedServingSize: "1 порция (100г)"
-            )
-        ]
-        self.totalCalories = openRouterResponse.калории
-        self.totalProtein = openRouterResponse.бжу.белки
-        self.totalFat = openRouterResponse.бжу.жиры
-        self.totalCarbs = openRouterResponse.бжу.углеводы
+        self.name = openRouterResponse.название
+        self.calories = openRouterResponse.калории
+        self.protein = openRouterResponse.бжу.белки
+        self.fat = openRouterResponse.бжу.жиры
+        self.carbs = openRouterResponse.бжу.углеводы
         self.processingTime = 2.0 // Примерное время обработки
         self.imageSize = CGSize(width: 512, height: 512) // Стандартный размер
     }
     
     // Стандартный инициализатор
-    init(confidence: Double, recognizedFoods: [RecognizedFood], totalCalories: Double, totalProtein: Double, totalFat: Double, totalCarbs: Double, processingTime: TimeInterval, imageSize: CGSize) {
-        self.confidence = confidence
-        self.recognizedFoods = recognizedFoods
-        self.totalCalories = totalCalories
-        self.totalProtein = totalProtein
-        self.totalFat = totalFat
-        self.totalCarbs = totalCarbs
+    init(name: String, calories: Double, protein: Double, fat: Double, carbs: Double, processingTime: TimeInterval, imageSize: CGSize) {
+        self.name = name
+        self.calories = calories
+        self.protein = protein
+        self.fat = fat
+        self.carbs = carbs
         self.processingTime = processingTime
         self.imageSize = imageSize
     }
@@ -79,24 +47,12 @@ struct OpenRouterFoodAnalysis: Codable {
     let название: String
     let калории: Double
     let бжу: БЖУ
-    
-    enum CodingKeys: String, CodingKey {
-        case название
-        case калории
-        case бжу
-    }
 }
 
 struct БЖУ: Codable {
     let белки: Double
     let жиры: Double
     let углеводы: Double
-    
-    enum CodingKeys: String, CodingKey {
-        case белки
-        case жиры
-        case углеводы
-    }
 }
 
 // MARK: - Структуры для запроса к OpenRouter API
@@ -164,87 +120,6 @@ struct OpenRouterUsage: Codable {
     let prompt_tokens: Int
     let completion_tokens: Int
     let total_tokens: Int
-}
-
-// MARK: - Распознанная еда
-struct RecognizedFood: Identifiable, Codable {
-    var id = UUID()
-    let name: String
-    let confidence: Double
-    let estimatedWeight: Double // в граммах
-    let calories: Double
-    let protein: Double
-    let fat: Double
-    let carbs: Double
-    let category: FoodCategory
-    let boundingBox: BoundingBox? // Область на изображении
-    
-    // Дополнительная информация
-    let isProcessed: Bool // Обработанная еда или сырая
-    let cookingMethod: CookingMethod?
-    let estimatedServingSize: String
-    
-    var confidenceColor: Color {
-        switch confidence {
-        case 0.8...1.0: return .green
-        case 0.6..<0.8: return .orange
-        default: return .red
-        }
-    }
-}
-
-// MARK: - Область на изображении (Codable версия CGRect)
-struct BoundingBox: Codable {
-    let x: Double
-    let y: Double
-    let width: Double
-    let height: Double
-    
-    init(x: Double, y: Double, width: Double, height: Double) {
-        self.x = x
-        self.y = y
-        self.width = width
-        self.height = height
-    }
-    
-    init(from rect: CGRect) {
-        self.x = rect.origin.x
-        self.y = rect.origin.y
-        self.width = rect.size.width
-        self.height = rect.size.height
-    }
-    
-    var cgRect: CGRect {
-        CGRect(x: x, y: y, width: width, height: height)
-    }
-}
-
-// MARK: - Категории еды
-// Используем FoodCategory из FoodProduct.swift
-
-// MARK: - Способы приготовления
-enum CookingMethod: String, CaseIterable, Codable {
-    case raw = "Сырое"
-    case boiled = "Вареное"
-    case fried = "Жареное"
-    case grilled = "Жаренное на гриле"
-    case baked = "Запеченное"
-    case steamed = "На пару"
-    case roasted = "Тушеное"
-    case unknown = "Неизвестно"
-    
-    var icon: String {
-        switch self {
-        case .raw: return "🥗"
-        case .boiled: return "🍲"
-        case .fried: return "🍳"
-        case .grilled: return "🔥"
-        case .baked: return "🥧"
-        case .steamed: return "♨️"
-        case .roasted: return "🍖"
-        case .unknown: return "❓"
-        }
-    }
 }
 
 // MARK: - Ошибки распознавания

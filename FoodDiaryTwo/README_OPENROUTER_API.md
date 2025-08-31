@@ -84,6 +84,20 @@
 }
 ```
 
+### Модель результата
+
+```swift
+struct FoodRecognitionResult {
+    let name: String           // Название блюда
+    let calories: Double       // Калории
+    let protein: Double        // Белки (г)
+    let fat: Double           // Жиры (г)
+    let carbs: Double         // Углеводы (г)
+    var processingTime: TimeInterval  // Время обработки
+    var imageSize: CGSize     // Размер изображения
+}
+```
+
 ## Обработка ошибок
 
 ### Типы ошибок
@@ -212,8 +226,10 @@ await viewModel.recognizeFood()
 ```swift
 if let result = viewModel.recognitionResult {
     // Применение результатов к форме
-    mealName = result.recognizedFoods.first?.name ?? ""
-    calories = String(Int(result.totalCalories))
-    // ...
+    mealName = result.name
+    calories = String(Int(result.calories))
+    protein = String(format: "%.1f", result.protein)
+    fat = String(format: "%.1f", result.fat)
+    carbs = String(format: "%.1f", result.carbs)
 }
 ```

@@ -32,11 +32,11 @@ class OpenRouterAPITest {
             
             print("✅ API тест успешен!")
             print("📊 Результат:")
-            print("   - Название: \(result.recognizedFoods.first?.name ?? "Неизвестно")")
-            print("   - Калории: \(result.totalCalories)")
-            print("   - Белки: \(result.totalProtein)g")
-            print("   - Жиры: \(result.totalFat)g")
-            print("   - Углеводы: \(result.totalCarbs)g")
+            print("   - Название: \(result.name)")
+            print("   - Калории: \(result.calories)")
+            print("   - Белки: \(result.protein)g")
+            print("   - Жиры: \(result.fat)g")
+            print("   - Углеводы: \(result.carbs)g")
             print("   - Время обработки: \(result.processingTime) сек")
             
         } catch {
