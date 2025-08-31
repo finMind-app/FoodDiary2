@@ -30,6 +30,9 @@ class FoodRecognitionService: FoodRecognitionServiceProtocol, ObservableObject {
     
     // MARK: - Основной метод распознавания
     func recognizeFood(from image: UIImage) async throws -> FoodRecognitionResult {
+        print("🔄 FoodRecognitionService: Начинаем обработку изображения")
+        print("📐 Размер изображения: \(image.size)")
+        
         await MainActor.run { 
             isProcessing = true 
             processingProgress = 0.0
@@ -37,7 +40,9 @@ class FoodRecognitionService: FoodRecognitionServiceProtocol, ObservableObject {
         
         // Анализируем качество изображения
         let qualityResult = analyzeImageQuality(image)
+        print("📊 Качество изображения: \(qualityResult.isSuitable ? "подходит" : "не подходит")")
         guard qualityResult.isSuitable else {
+            print("❌ Изображение не подходит для анализа")
             throw FoodRecognitionError.imageTooSmall
         }
         
@@ -45,24 +50,30 @@ class FoodRecognitionService: FoodRecognitionServiceProtocol, ObservableObject {
         
         // Предобработка изображения
         guard let processedImage = preprocessImage(image) else {
+            print("❌ Ошибка предобработки изображения")
             throw FoodRecognitionError.processingFailed
         }
         
+        print("✅ Изображение предобработано")
         await MainActor.run { processingProgress = 0.2 }
         
         // Конвертируем изображение в base64
         guard let imageData = processedImage.jpegData(compressionQuality: 0.8),
               let base64String = imageData.base64EncodedString().addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
+            print("❌ Ошибка конвертации изображения в base64")
             throw FoodRecognitionError.imageConversionFailed
         }
         
+        print("✅ Изображение конвертировано в base64, размер данных: \(imageData.count) байт")
         await MainActor.run { processingProgress = 0.3 }
         
         // Отправляем запрос к OpenRouter API
+        print("🌐 Отправляем запрос к OpenRouter API...")
         let startTime = Date()
         let result = try await openRouterAPI.analyzeFoodImage(base64String: base64String)
         let processingTime = Date().timeIntervalSince(startTime)
         
+        print("✅ Ответ получен от API за \(processingTime) секунд")
         await MainActor.run { 
             processingProgress = 1.0
             isProcessing = false 
@@ -73,6 +84,7 @@ class FoodRecognitionService: FoodRecognitionServiceProtocol, ObservableObject {
         finalResult.processingTime = processingTime
         finalResult.imageSize = image.size
         
+        print("🎯 Финальный результат: \(finalResult.name), \(finalResult.calories) калорий")
         return finalResult
     }
     
@@ -102,6 +114,10 @@ class OpenRouterAPIService {
     private let model = "qwen/qwen2.5-vl-32b-instruct:free"
     
     func analyzeFoodImage(base64String: String) async throws -> FoodRecognitionResult {
+        print("🌐 OpenRouterAPIService: Начинаем анализ изображения")
+        print("📡 URL: \(baseURL)")
+        print("🤖 Модель: \(model)")
+        
         let url = URL(string: baseURL)!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
@@ -113,21 +129,29 @@ class OpenRouterAPIService {
         
         do {
             request.httpBody = try JSONEncoder().encode(openRouterRequest)
+            print("📦 Запрос подготовлен, размер: \(request.httpBody?.count ?? 0) байт")
         } catch {
+            print("❌ Ошибка кодирования запроса: \(error)")
             throw FoodRecognitionError.processingFailed
         }
         
+        print("🚀 Отправляем HTTP запрос...")
         let (data, response) = try await URLSession.shared.data(for: request)
         
         // Проверяем HTTP статус
         guard let httpResponse = response as? HTTPURLResponse else {
+            print("❌ Неверный тип ответа")
             throw FoodRecognitionError.networkError
         }
         
+        print("📡 HTTP статус: \(httpResponse.statusCode)")
         guard httpResponse.statusCode == 200 else {
             let errorMessage = String(data: data, encoding: .utf8) ?? "Неизвестная ошибка"
+            print("❌ HTTP ошибка: \(httpResponse.statusCode) - \(errorMessage)")
             throw FoodRecognitionError.apiError("HTTP \(httpResponse.statusCode): \(errorMessage)")
         }
+        
+        print("✅ HTTP ответ успешен, размер данных: \(data.count) байт")
         
         // Парсим ответ
         do {
@@ -135,16 +159,20 @@ class OpenRouterAPIService {
             
             guard let firstChoice = openRouterResponse.choices.first,
                   let content = firstChoice.message.content.data(using: .utf8) else {
+                print("❌ Неверная структура ответа API")
                 throw FoodRecognitionError.invalidResponse
             }
             
+            print("📄 Контент ответа: \(firstChoice.message.content)")
+            
             // Парсим JSON из content
             let foodAnalysis = try JSONDecoder().decode(OpenRouterFoodAnalysis.self, from: content)
+            print("✅ JSON успешно распарсен: \(foodAnalysis.название)")
             
             return FoodRecognitionResult(from: foodAnalysis)
             
         } catch {
-            print("Ошибка парсинга ответа: \(error)")
+            print("❌ Ошибка парсинга ответа: \(error)")
             throw FoodRecognitionError.invalidResponse
         }
     }

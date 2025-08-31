@@ -23,6 +23,7 @@ struct AddMealView: View {
     @State private var notes = ""
     @State private var selectedPhotoItem: PhotosPickerItem?
     @State private var selectedImage: UIImage? = nil
+    @State private var isImageLoading = false
     
     // Состояния для работы с фото
     @State private var showImagePicker = false
@@ -92,11 +93,19 @@ struct AddMealView: View {
         }
         .onChange(of: selectedPhotoItem) { _, newItem in
             Task {
+                print("🔄 Начинаем загрузку изображения...")
+                isImageLoading = true
+                
                 if let data = try? await newItem?.loadTransferable(type: Data.self),
                    let image = UIImage(data: data) {
+                    print("✅ Изображение успешно загружено, размер: \(image.size)")
                     selectedImage = image
                     recognitionViewModel.setImage(image)
+                } else {
+                    print("❌ Ошибка загрузки изображения")
                 }
+                
+                isImageLoading = false
             }
         }
         .sheet(isPresented: $showRecognitionResults) {
@@ -284,7 +293,7 @@ struct AddMealView: View {
                             .foregroundColor(.white)
                             .cornerRadius(PlumpyTheme.Radius.medium)
                         }
-                        .disabled(recognitionViewModel.isProcessing)
+                        .disabled(recognitionViewModel.isProcessing || isImageLoading)
                         
                         // Кнопка сброса
                         Button(action: {
@@ -308,6 +317,20 @@ struct AddMealView: View {
                                 .progressViewStyle(LinearProgressViewStyle(tint: PlumpyTheme.primaryAccent))
                             
                             Text("Анализируем изображение... \(Int(recognitionViewModel.processingProgress * 100))%")
+                                .font(PlumpyTheme.Typography.caption1)
+                                .foregroundColor(PlumpyTheme.textSecondary)
+                        }
+                        .padding(.horizontal, PlumpyTheme.Spacing.medium)
+                        .padding(.vertical, PlumpyTheme.Spacing.small)
+                        .background(PlumpyTheme.surfaceSecondary)
+                        .cornerRadius(PlumpyTheme.Radius.small)
+                    } else if isImageLoading {
+                        // Индикатор загрузки изображения
+                        HStack {
+                            ProgressView()
+                                .scaleEffect(0.8)
+                                .progressViewStyle(CircularProgressViewStyle(tint: PlumpyTheme.primaryAccent))
+                            Text("Загружаем изображение...")
                                 .font(PlumpyTheme.Typography.caption1)
                                 .foregroundColor(PlumpyTheme.textSecondary)
                         }

@@ -44,29 +44,38 @@ class FoodRecognitionViewModel: ObservableObject {
     
     /// Распознать еду на изображении
     func recognizeFood() async {
+        print("🔍 Начинаем распознавание еды...")
+        print("📸 selectedImage: \(selectedImage != nil ? "установлено" : "не установлено")")
+        
         guard let image = selectedImage else {
+            print("❌ Изображение не выбрано")
             showError(message: "Изображение не выбрано")
             return
         }
         
+        print("✅ Изображение найдено, размер: \(image.size)")
         isProcessing = true
         processingProgress = 0.0
         errorMessage = nil
         
         do {
+            print("🚀 Отправляем изображение на сервер...")
             // Используем новый сервис с OpenRouter API
             let result = try await recognitionService.recognizeFood(from: image)
             
+            print("✅ Распознавание завершено успешно")
             recognitionResult = result
             isProcessing = false
             processingProgress = 1.0
             
         } catch let error as FoodRecognitionError {
+            print("❌ Ошибка распознавания: \(error.localizedDescription)")
             isProcessing = false
             processingProgress = 0.0
             showError(message: error.localizedDescription)
             
         } catch {
+            print("❌ Неизвестная ошибка: \(error.localizedDescription)")
             isProcessing = false
             processingProgress = 0.0
             showError(message: "Неизвестная ошибка: \(error.localizedDescription)")
