@@ -25,7 +25,9 @@ class FoodRecognitionViewModel: ObservableObject {
     
     // MARK: - Инициализация
     init(recognitionService: FoodRecognitionServiceProtocol = FoodRecognitionService()) {
+        print("🏗️ FoodRecognitionViewModel инициализируется")
         self.recognitionService = recognitionService
+        print("✅ recognitionService установлен: \(recognitionService != nil ? "да" : "нет")")
     }
     
     // MARK: - Публичные методы
@@ -46,6 +48,8 @@ class FoodRecognitionViewModel: ObservableObject {
     func recognizeFood() async {
         print("🔍 Начинаем распознавание еды...")
         print("📸 selectedImage: \(selectedImage != nil ? "установлено" : "не установлено")")
+        print("📸 selectedImage размер: \(selectedImage?.size ?? CGSize.zero)")
+        print("📸 selectedImage описание: \(selectedImage?.description ?? "nil")")
         
         guard let image = selectedImage else {
             print("❌ Изображение не выбрано")
@@ -54,6 +58,8 @@ class FoodRecognitionViewModel: ObservableObject {
         }
         
         print("✅ Изображение найдено, размер: \(image.size)")
+        print("🚀 Начинаем процесс распознавания...")
+        
         isProcessing = true
         processingProgress = 0.0
         errorMessage = nil
@@ -84,17 +90,30 @@ class FoodRecognitionViewModel: ObservableObject {
     
     /// Сбросить результаты
     func resetResults() {
+        print("🔄 FoodRecognitionViewModel.resetResults() вызван")
+        print("📸 selectedImage до сброса: \(selectedImage != nil ? "есть" : "нет")")
         recognitionResult = nil
-        selectedImage = nil
+        // НЕ сбрасываем selectedImage здесь!
         errorMessage = nil
         showError = false
         processingProgress = 0.0
+        print("📸 selectedImage после сброса: \(selectedImage != nil ? "есть" : "нет")")
     }
     
     /// Установить изображение
     func setImage(_ image: UIImage) {
+        print("🖼️ FoodRecognitionViewModel.setImage() вызван")
+        print("📐 Размер изображения: \(image.size)")
+        
         selectedImage = image
-        resetResults() // Сбрасываем предыдущие результаты
+        print("✅ selectedImage установлен: \(selectedImage != nil ? "да" : "нет")")
+        
+        // Сбрасываем только результаты, НЕ изображение
+        recognitionResult = nil
+        errorMessage = nil
+        showError = false
+        processingProgress = 0.0
+        print("🔄 Результаты сброшены, selectedImage сохранен")
     }
     
     // MARK: - Приватные методы

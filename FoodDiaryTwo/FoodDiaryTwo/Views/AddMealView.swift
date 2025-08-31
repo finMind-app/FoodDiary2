@@ -32,12 +32,9 @@ struct AddMealView: View {
     // ViewModel для распознавания
     @StateObject private var recognitionViewModel = FoodRecognitionViewModel()
     
-    // Состояния для навигации к результатам
-    @State private var showRecognitionResults = false
-    @State private var showErrorAlert = false
-    
     init(mealType: MealType = .breakfast) {
         self._selectedMealType = State(initialValue: mealType)
+        print("🏗️ AddMealView инициализируется")
     }
     
     // MealType is defined in FoodEntry.swift
@@ -100,7 +97,9 @@ struct AddMealView: View {
                    let image = UIImage(data: data) {
                     print("✅ Изображение успешно загружено, размер: \(image.size)")
                     selectedImage = image
+                    print("🖼️ Вызываем recognitionViewModel.setImage()")
                     recognitionViewModel.setImage(image)
+                    print("✅ recognitionViewModel.setImage() завершен")
                 } else {
                     print("❌ Ошибка загрузки изображения")
                 }
@@ -272,6 +271,13 @@ struct AddMealView: View {
                     HStack(spacing: PlumpyTheme.Spacing.medium) {
                         // Кнопка распознавания калорий
                         Button(action: {
+                            print("🔘 Кнопка распознавания нажата")
+                            print("📸 selectedImage в AddMealView: \(selectedImage != nil ? "есть" : "нет")")
+                            print("📸 selectedImage в ViewModel: \(recognitionViewModel.selectedImage != nil ? "есть" : "нет")")
+                            print("🔄 isProcessing: \(recognitionViewModel.isProcessing)")
+                            print("🔄 isImageLoading: \(isImageLoading)")
+                            print("📊 processingProgress: \(recognitionViewModel.processingProgress)")
+                            
                             Task {
                                 await recognitionViewModel.recognizeFood()
                             }
