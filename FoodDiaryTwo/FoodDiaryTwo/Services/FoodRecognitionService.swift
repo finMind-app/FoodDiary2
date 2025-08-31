@@ -124,6 +124,10 @@ class OpenRouterAPIService {
         request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
+        // Добавляем дополнительные заголовки для OpenRouter
+        request.setValue("FoodDiaryTwo/1.0", forHTTPHeaderField: "HTTP-Referer")
+        request.setValue("https://fooddiary.app", forHTTPHeaderField: "X-Title")
+        
         // Создаем запрос согласно API
         let openRouterRequest = createOpenRouterRequest(base64String: base64String)
         

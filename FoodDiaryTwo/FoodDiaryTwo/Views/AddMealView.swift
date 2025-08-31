@@ -111,7 +111,7 @@ struct AddMealView: View {
                     print("📸 selectedImage в ViewModel после установки: \(recognitionViewModel.selectedImage != nil ? "есть" : "нет")")
                 } else {
                     print("❌ Ошибка загрузки изображения")
-                    print("📸 selectedPhotoItem: \(selectedPhotoItem?.description ?? "nil")")
+                    print("📸 selectedPhotoItem: \(selectedPhotoItem != nil ? "есть" : "нет")")
                 }
                 isImageLoading = false // Reset loading state
             }
@@ -148,7 +148,23 @@ struct AddMealView: View {
         }
         .onReceive(recognitionViewModel.$recognitionResult) { result in
             print("📊 onReceive recognitionResult: \(result != nil ? "есть результат" : "нет результата")")
-            if result != nil {
+            if let result = result {
+                print("✅ Результат получен: \(result.name), \(result.calories) калорий")
+                
+                // Предзаполняем поля на основе результатов распознавания
+                mealName = result.name
+                calories = String(format: "%.0f", result.calories)
+                protein = String(format: "%.1f", result.protein)
+                fat = String(format: "%.1f", result.fat)
+                carbs = String(format: "%.1f", result.carbs)
+                
+                print("📝 Поля предзаполнены:")
+                print("   - Название: \(mealName)")
+                print("   - Калории: \(calories)")
+                print("   - Белки: \(protein)")
+                print("   - Жиры: \(fat)")
+                print("   - Углеводы: \(carbs)")
+                
                 showRecognitionResults = true
             }
         }
@@ -304,21 +320,36 @@ struct AddMealView: View {
                             HStack {
                                 if recognitionViewModel.isProcessing {
                                     ProgressView()
-                                        .scaleEffect(0.8)
                                         .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                        .scaleEffect(0.8)
+                                    Text("Распознаем...")
+                                        .foregroundColor(.white)
                                 } else {
                                     Image(systemName: "camera.viewfinder")
+                                    Text("Распознать калории")
                                 }
-                                Text(recognitionViewModel.isProcessing ? "Анализируем..." : LocalizationManager.shared.localizedString(.recognizeCalories))
-                                    .fontWeight(.medium)
                             }
                             .frame(maxWidth: .infinity)
-                            .padding(.vertical, PlumpyTheme.Spacing.small)
-                            .background(recognitionViewModel.isProcessing ? PlumpyTheme.surfaceSecondary : PlumpyTheme.primaryAccent)
+                            .padding()
+                            .background(recognitionViewModel.isProcessing ? Color.gray : Color.blue)
                             .foregroundColor(.white)
-                            .cornerRadius(PlumpyTheme.Radius.medium)
+                            .cornerRadius(10)
                         }
                         .disabled(recognitionViewModel.isProcessing || isImageLoading)
+                        
+                        // Прогресс-бар
+                        if recognitionViewModel.isProcessing {
+                            VStack(alignment: .leading, spacing: 8) {
+                                ProgressView(value: recognitionViewModel.processingProgress)
+                                    .progressViewStyle(LinearProgressViewStyle())
+                                    .scaleEffect(y: 2)
+                                
+                                Text("Обработка изображения... \(Int(recognitionViewModel.processingProgress * 100))%")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                            .padding(.horizontal)
+                        }
                         
                         // Кнопка сброса
                         Button(action: {
