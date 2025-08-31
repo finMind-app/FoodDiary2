@@ -32,6 +32,10 @@ struct AddMealView: View {
     // ViewModel для распознавания
     @StateObject private var recognitionViewModel = FoodRecognitionViewModel()
     
+    // Состояния для навигации к результатам
+    @State private var showRecognitionResults = false
+    @State private var showErrorAlert = false
+    
     init(mealType: MealType = .breakfast) {
         self._selectedMealType = State(initialValue: mealType)
         print("🏗️ AddMealView инициализируется")
@@ -91,20 +95,23 @@ struct AddMealView: View {
         .onChange(of: selectedPhotoItem) { _, newItem in
             Task {
                 print("🔄 Начинаем загрузку изображения...")
-                isImageLoading = true
-                
+                print("📸 selectedPhotoItem: \(newItem != nil ? "есть" : "нет")")
+                isImageLoading = true // Set loading state
                 if let data = try? await newItem?.loadTransferable(type: Data.self),
                    let image = UIImage(data: data) {
                     print("✅ Изображение успешно загружено, размер: \(image.size)")
+                    print("📊 Размер данных изображения: \(data.count) байт")
                     selectedImage = image
                     print("🖼️ Вызываем recognitionViewModel.setImage()")
                     recognitionViewModel.setImage(image)
                     print("✅ recognitionViewModel.setImage() завершен")
+                    print("📸 selectedImage в AddMealView после установки: \(selectedImage != nil ? "есть" : "нет")")
+                    print("📸 selectedImage в ViewModel после установки: \(recognitionViewModel.selectedImage != nil ? "есть" : "нет")")
                 } else {
                     print("❌ Ошибка загрузки изображения")
+                    print("�� newItem: \(newItem?.description ?? "nil")")
                 }
-                
-                isImageLoading = false
+                isImageLoading = false // Reset loading state
             }
         }
         .sheet(isPresented: $showRecognitionResults) {
@@ -132,11 +139,13 @@ struct AddMealView: View {
             Text(recognitionViewModel.errorMessage ?? "Неизвестная ошибка")
         }
         .onReceive(recognitionViewModel.$showError) { showError in
+            print("❌ onReceive showError: \(showError)")
             if showError {
                 showErrorAlert = true
             }
         }
         .onReceive(recognitionViewModel.$recognitionResult) { result in
+            print("📊 onReceive recognitionResult: \(result != nil ? "есть результат" : "нет результата")")
             if result != nil {
                 showRecognitionResults = true
             }
