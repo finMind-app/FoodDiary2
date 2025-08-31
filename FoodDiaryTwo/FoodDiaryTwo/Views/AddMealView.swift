@@ -92,12 +92,12 @@ struct AddMealView: View {
                 sourceType: sourceType
             )
         }
-        .onChange(of: selectedPhotoItem) { newItem in
+        .onChange(of: selectedPhotoItem) {
             Task {
                 print("🔄 Начинаем загрузку изображения...")
-                print("📸 selectedPhotoItem: \(newItem != nil ? "есть" : "нет")")
+                print("📸 selectedPhotoItem: \(selectedPhotoItem != nil ? "есть" : "нет")")
                 isImageLoading = true // Set loading state
-                if let item = newItem,
+                if let item = selectedPhotoItem,
                    let data = try? await item.loadTransferable(type: Data.self),
                    let image = UIImage(data: data) {
                     print("✅ Изображение успешно загружено, размер: \(image.size)")
@@ -111,7 +111,7 @@ struct AddMealView: View {
                     print("📸 selectedImage в ViewModel после установки: \(recognitionViewModel.selectedImage != nil ? "есть" : "нет")")
                 } else {
                     print("❌ Ошибка загрузки изображения")
-                    print("📸 newItem: \(newItem?.description ?? "nil")")
+                    print("📸 selectedPhotoItem: \(selectedPhotoItem?.description ?? "nil")")
                 }
                 isImageLoading = false // Reset loading state
             }

@@ -108,6 +108,7 @@ class FoodRecognitionViewModel: ObservableObject {
         
         selectedImage = image
         print("✅ selectedImage установлен: \(selectedImage != nil ? "да" : "нет")")
+        print("📐 Размер selectedImage после установки: \(selectedImage?.size ?? CGSize.zero)")
         
         // Сбрасываем только результаты, НЕ изображение
         recognitionResult = nil
