@@ -76,11 +76,11 @@ class FoodRecognitionTest {
     
     static func runAllTests() {
         print("🚀 Запускаем все тесты системы распознавания...")
-        print("=" * 50)
+        print(String(repeating: "=", count: 50))
         
         testSimplifiedModel()
         
-        print("\n" + "=" * 50)
+        print("\n" + String(repeating: "=", count: 50))
         print("✅ Все тесты завершены!")
     }
 }
