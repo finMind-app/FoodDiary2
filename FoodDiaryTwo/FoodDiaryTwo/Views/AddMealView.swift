@@ -92,7 +92,7 @@ struct AddMealView: View {
                 sourceType: sourceType
             )
         }
-        .onChange(of: selectedPhotoItem) { _, newItem in
+        .onChange(of: selectedPhotoItem) { newItem in
             Task {
                 print("🔄 Начинаем загрузку изображения...")
                 print("📸 selectedPhotoItem: \(newItem != nil ? "есть" : "нет")")
@@ -288,6 +288,14 @@ struct AddMealView: View {
                             print("🔄 isProcessing: \(recognitionViewModel.isProcessing)")
                             print("🔄 isImageLoading: \(isImageLoading)")
                             print("📊 processingProgress: \(recognitionViewModel.processingProgress)")
+                            
+                            // Дополнительная проверка
+                            if let image = selectedImage {
+                                print("📸 Размер изображения в AddMealView: \(image.size)")
+                            }
+                            if let image = recognitionViewModel.selectedImage {
+                                print("📸 Размер изображения в ViewModel: \(image.size)")
+                            }
                             
                             Task {
                                 await recognitionViewModel.recognizeFood()

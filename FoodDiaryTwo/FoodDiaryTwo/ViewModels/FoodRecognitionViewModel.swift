@@ -27,7 +27,7 @@ class FoodRecognitionViewModel: ObservableObject {
     init(recognitionService: FoodRecognitionServiceProtocol = FoodRecognitionService()) {
         print("🏗️ FoodRecognitionViewModel инициализируется")
         self.recognitionService = recognitionService
-        print("✅ recognitionService установлен: \(recognitionService != nil ? "да" : "нет")")
+        print("✅ recognitionService установлен")
     }
     
     // MARK: - Публичные методы
