@@ -17,8 +17,8 @@ struct FoodRecognitionResult: Identifiable, Codable {
     let totalProtein: Double
     let totalFat: Double
     let totalCarbs: Double
-    let processingTime: TimeInterval
-    let imageSize: CGSize
+    var processingTime: TimeInterval
+    var imageSize: CGSize
     
     // Вычисляемые свойства
     var isHighConfidence: Bool { confidence >= 0.7 }
@@ -33,6 +33,137 @@ struct FoodRecognitionResult: Identifiable, Codable {
         default: return "Низкая уверенность"
         }
     }
+    
+    // Инициализатор из ответа OpenRouter API
+    init(from openRouterResponse: OpenRouterFoodAnalysis) {
+        self.confidence = 0.85 // По умолчанию высокая уверенность для AI модели
+        self.recognizedFoods = [
+            RecognizedFood(
+                name: openRouterResponse.название,
+                confidence: 0.85,
+                estimatedWeight: 100.0, // По умолчанию 100г
+                calories: openRouterResponse.калории,
+                protein: openRouterResponse.бжу.белки,
+                fat: openRouterResponse.бжу.жиры,
+                carbs: openRouterResponse.бжу.углеводы,
+                category: .other, // Будет определено позже
+                boundingBox: nil,
+                isProcessed: true, // По умолчанию
+                cookingMethod: .unknown,
+                estimatedServingSize: "1 порция (100г)"
+            )
+        ]
+        self.totalCalories = openRouterResponse.калории
+        self.totalProtein = openRouterResponse.бжу.белки
+        self.totalFat = openRouterResponse.бжу.жиры
+        self.totalCarbs = openRouterResponse.бжу.углеводы
+        self.processingTime = 2.0 // Примерное время обработки
+        self.imageSize = CGSize(width: 512, height: 512) // Стандартный размер
+    }
+    
+    // Стандартный инициализатор
+    init(confidence: Double, recognizedFoods: [RecognizedFood], totalCalories: Double, totalProtein: Double, totalFat: Double, totalCarbs: Double, processingTime: TimeInterval, imageSize: CGSize) {
+        self.confidence = confidence
+        self.recognizedFoods = recognizedFoods
+        self.totalCalories = totalCalories
+        self.totalProtein = totalProtein
+        self.totalFat = totalFat
+        self.totalCarbs = totalCarbs
+        self.processingTime = processingTime
+        self.imageSize = imageSize
+    }
+}
+
+// MARK: - Структуры для парсинга ответа OpenRouter API
+struct OpenRouterFoodAnalysis: Codable {
+    let название: String
+    let калории: Double
+    let бжу: БЖУ
+    
+    enum CodingKeys: String, CodingKey {
+        case название
+        case калории
+        case бжу
+    }
+}
+
+struct БЖУ: Codable {
+    let белки: Double
+    let жиры: Double
+    let углеводы: Double
+    
+    enum CodingKeys: String, CodingKey {
+        case белки
+        case жиры
+        case углеводы
+    }
+}
+
+// MARK: - Структуры для запроса к OpenRouter API
+struct OpenRouterRequest: Codable {
+    let model: String
+    let messages: [OpenRouterMessage]
+    let max_tokens: Int
+    let temperature: Double
+    let response_format: OpenRouterResponseFormat
+}
+
+struct OpenRouterMessage: Codable {
+    let role: String
+    let content: [OpenRouterContent]
+}
+
+struct OpenRouterContent: Codable {
+    let type: String
+    let text: String?
+    let image_url: OpenRouterImageURL?
+}
+
+struct OpenRouterImageURL: Codable {
+    let url: String
+}
+
+struct OpenRouterResponseFormat: Codable {
+    let type: String
+    let json_schema: OpenRouterJSONSchema
+}
+
+struct OpenRouterJSONSchema: Codable {
+    let name: String
+    let schema: OpenRouterSchema
+}
+
+struct OpenRouterSchema: Codable {
+    let type: String
+    let properties: [String: OpenRouterProperty]
+    let required: [String]
+}
+
+struct OpenRouterProperty: Codable {
+    let type: String
+    let properties: [String: OpenRouterProperty]?
+}
+
+// MARK: - Ответ от OpenRouter API
+struct OpenRouterResponse: Codable {
+    let id: String
+    let choices: [OpenRouterChoice]
+    let usage: OpenRouterUsage
+}
+
+struct OpenRouterChoice: Codable {
+    let message: OpenRouterResponseMessage
+    let finish_reason: String
+}
+
+struct OpenRouterResponseMessage: Codable {
+    let content: String
+}
+
+struct OpenRouterUsage: Codable {
+    let prompt_tokens: Int
+    let completion_tokens: Int
+    let total_tokens: Int
 }
 
 // MARK: - Распознанная еда
@@ -125,6 +256,9 @@ enum FoodRecognitionError: Error, LocalizedError {
     case networkError
     case noFoodDetected
     case lowConfidence
+    case apiError(String)
+    case invalidResponse
+    case imageConversionFailed
     
     var errorDescription: String? {
         switch self {
@@ -142,6 +276,12 @@ enum FoodRecognitionError: Error, LocalizedError {
             return "Еда не обнаружена на изображении"
         case .lowConfidence:
             return "Низкая уверенность в распознавании"
+        case .apiError(let message):
+            return "Ошибка API: \(message)"
+        case .invalidResponse:
+            return "Неверный ответ от сервера"
+        case .imageConversionFailed:
+            return "Ошибка конвертации изображения"
         }
     }
     
@@ -161,6 +301,12 @@ enum FoodRecognitionError: Error, LocalizedError {
             return "Убедитесь, что на изображении есть еда"
         case .lowConfidence:
             return "Попробуйте сделать более четкое фото еды"
+        case .apiError:
+            return "Попробуйте еще раз через несколько секунд"
+        case .invalidResponse:
+            return "Попробуйте другое изображение"
+        case .imageConversionFailed:
+            return "Попробуйте другое изображение"
         }
     }
 }

@@ -21,11 +21,11 @@ class FoodRecognitionViewModel: ObservableObject {
     @Published var showError = false
     
     // MARK: - Сервисы
-    // private let recognitionService: FoodRecognitionServiceProtocol
+    private let recognitionService: FoodRecognitionServiceProtocol
     
     // MARK: - Инициализация
-    init() {
-        // self.recognitionService = recognitionService
+    init(recognitionService: FoodRecognitionServiceProtocol = FoodRecognitionService()) {
+        self.recognitionService = recognitionService
     }
     
     // MARK: - Публичные методы
@@ -51,15 +51,26 @@ class FoodRecognitionViewModel: ObservableObject {
         
         isProcessing = true
         processingProgress = 0.0
-        
-        // Используем центральный сервис для распознавания
-        let result = await FoodDataService.shared.recognizeFoodFromImage(image)
-        
-        recognitionResult = result
         errorMessage = nil
         
-        isProcessing = false
-        processingProgress = 0.0
+        do {
+            // Используем новый сервис с OpenRouter API
+            let result = try await recognitionService.recognizeFood(from: image)
+            
+            recognitionResult = result
+            isProcessing = false
+            processingProgress = 1.0
+            
+        } catch let error as FoodRecognitionError {
+            isProcessing = false
+            processingProgress = 0.0
+            showError(message: error.localizedDescription)
+            
+        } catch {
+            isProcessing = false
+            processingProgress = 0.0
+            showError(message: "Неизвестная ошибка: \(error.localizedDescription)")
+        }
     }
     
     /// Сбросить результаты
@@ -67,7 +78,14 @@ class FoodRecognitionViewModel: ObservableObject {
         recognitionResult = nil
         selectedImage = nil
         errorMessage = nil
+        showError = false
         processingProgress = 0.0
+    }
+    
+    /// Установить изображение
+    func setImage(_ image: UIImage) {
+        selectedImage = image
+        resetResults() // Сбрасываем предыдущие результаты
     }
     
     // MARK: - Приватные методы

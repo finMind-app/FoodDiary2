@@ -18,7 +18,7 @@ protocol FoodRecognitionServiceProtocol {
     func preprocessImage(_ image: UIImage) -> UIImage?
 }
 
-// MARK: - Сервис распознавания еды
+// MARK: - Сервис распознавания еды с OpenRouter API
 class FoodRecognitionService: FoodRecognitionServiceProtocol, ObservableObject {
     
     // MARK: - Свойства
@@ -26,6 +26,7 @@ class FoodRecognitionService: FoodRecognitionServiceProtocol, ObservableObject {
     @Published var processingProgress: Double = 0.0
     
     private let imageAnalyzer = ImageQualityAnalyzer()
+    private let openRouterAPI = OpenRouterAPIService()
     
     // MARK: - Основной метод распознавания
     func recognizeFood(from image: UIImage) async throws -> FoodRecognitionResult {
@@ -40,25 +41,39 @@ class FoodRecognitionService: FoodRecognitionServiceProtocol, ObservableObject {
             throw FoodRecognitionError.imageTooSmall
         }
         
-        // Имитируем прогресс обработки
-        await simulateProcessingProgress()
+        await MainActor.run { processingProgress = 0.1 }
         
         // Предобработка изображения
         guard let processedImage = preprocessImage(image) else {
             throw FoodRecognitionError.processingFailed
         }
         
+        await MainActor.run { processingProgress = 0.2 }
+        
+        // Конвертируем изображение в base64
+        guard let imageData = processedImage.jpegData(compressionQuality: 0.8),
+              let base64String = imageData.base64EncodedString().addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
+            throw FoodRecognitionError.imageConversionFailed
+        }
+        
         await MainActor.run { processingProgress = 0.3 }
         
-        // Используем центральный сервис для распознавания
-        let result = await FoodDataService.shared.recognizeFoodFromImage(processedImage)
+        // Отправляем запрос к OpenRouter API
+        let startTime = Date()
+        let result = try await openRouterAPI.analyzeFoodImage(base64String: base64String)
+        let processingTime = Date().timeIntervalSince(startTime)
         
         await MainActor.run { 
             processingProgress = 1.0
             isProcessing = false 
         }
         
-        return result
+        // Создаем результат с реальным временем обработки
+        var finalResult = result
+        finalResult.processingTime = processingTime
+        finalResult.imageSize = image.size
+        
+        return finalResult
     }
     
     // MARK: - Анализ качества изображения
@@ -78,15 +93,112 @@ class FoodRecognitionService: FoodRecognitionServiceProtocol, ObservableObject {
         
         return resizedImage
     }
+}
+
+// MARK: - Сервис для работы с OpenRouter API
+class OpenRouterAPIService {
+    private let apiKey = "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"
+    private let baseURL = "https://openrouter.ai/api/v1/chat/completions"
+    private let model = "qwen/qwen2.5-vl-32b-instruct:free"
     
-    // MARK: - Приватные методы
-    
-    private func simulateProcessingProgress() async {
-        let steps = [0.1, 0.2, 0.25]
-        for step in steps {
-            try? await Task.sleep(nanoseconds: UInt64(0.5 * 1_000_000_000)) // 0.5 сек
-            await MainActor.run { processingProgress = step }
+    func analyzeFoodImage(base64String: String) async throws -> FoodRecognitionResult {
+        let url = URL(string: baseURL)!
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        // Создаем запрос согласно API
+        let openRouterRequest = createOpenRouterRequest(base64String: base64String)
+        
+        do {
+            request.httpBody = try JSONEncoder().encode(openRouterRequest)
+        } catch {
+            throw FoodRecognitionError.processingFailed
         }
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        // Проверяем HTTP статус
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw FoodRecognitionError.networkError
+        }
+        
+        guard httpResponse.statusCode == 200 else {
+            let errorMessage = String(data: data, encoding: .utf8) ?? "Неизвестная ошибка"
+            throw FoodRecognitionError.apiError("HTTP \(httpResponse.statusCode): \(errorMessage)")
+        }
+        
+        // Парсим ответ
+        do {
+            let openRouterResponse = try JSONDecoder().decode(OpenRouterResponse.self, from: data)
+            
+            guard let firstChoice = openRouterResponse.choices.first,
+                  let content = firstChoice.message.content.data(using: .utf8) else {
+                throw FoodRecognitionError.invalidResponse
+            }
+            
+            // Парсим JSON из content
+            let foodAnalysis = try JSONDecoder().decode(OpenRouterFoodAnalysis.self, from: content)
+            
+            return FoodRecognitionResult(from: foodAnalysis)
+            
+        } catch {
+            print("Ошибка парсинга ответа: \(error)")
+            throw FoodRecognitionError.invalidResponse
+        }
+    }
+    
+    private func createOpenRouterRequest(base64String: String) -> OpenRouterRequest {
+        let imageURL = "data:image/jpeg;base64,\(base64String)"
+        
+        let content = [
+            OpenRouterContent(
+                type: "text",
+                text: "Проанализируй это фото блюда. Выведи только: название блюда, примерное количество калорий и БЖУ (белки, жиры, углеводы).",
+                image_url: nil
+            ),
+            OpenRouterContent(
+                type: "image_url",
+                text: nil,
+                image_url: OpenRouterImageURL(url: imageURL)
+            )
+        ]
+        
+        let message = OpenRouterMessage(role: "user", content: content)
+        
+        let jsonSchema = OpenRouterJSONSchema(
+            name: "meal_analysis_mobile",
+            schema: OpenRouterSchema(
+                type: "object",
+                properties: [
+                    "название": OpenRouterProperty(type: "string", properties: nil),
+                    "калории": OpenRouterProperty(type: "number", properties: nil),
+                    "бжу": OpenRouterProperty(
+                        type: "object",
+                        properties: [
+                            "белки": OpenRouterProperty(type: "number", properties: nil),
+                            "жиры": OpenRouterProperty(type: "number", properties: nil),
+                            "углеводы": OpenRouterProperty(type: "number", properties: nil)
+                        ]
+                    )
+                ],
+                required: ["название", "калории", "бжу"]
+            )
+        )
+        
+        let responseFormat = OpenRouterResponseFormat(
+            type: "json_schema",
+            json_schema: jsonSchema
+        )
+        
+        return OpenRouterRequest(
+            model: model,
+            messages: [message],
+            max_tokens: 150,
+            temperature: 0,
+            response_format: responseFormat
+        )
     }
 }
 
