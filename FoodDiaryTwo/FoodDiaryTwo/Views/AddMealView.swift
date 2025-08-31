@@ -241,7 +241,7 @@ struct AddMealView: View {
             }
         }
         .padding(20)
-        .background(PlumpyTheme.surfacePrimary)
+        .background(PlumpyTheme.surface)
         .cornerRadius(20)
     }
     
@@ -356,7 +356,7 @@ struct AddMealView: View {
             }
         }
         .padding(20)
-        .background(PlumpyTheme.surfacePrimary)
+        .background(PlumpyTheme.surface)
         .cornerRadius(20)
     }
     
@@ -374,7 +374,7 @@ struct AddMealView: View {
                 .font(.body)
         }
         .padding(20)
-        .background(PlumpyTheme.surfacePrimary)
+        .background(PlumpyTheme.surface)
         .cornerRadius(20)
     }
     
