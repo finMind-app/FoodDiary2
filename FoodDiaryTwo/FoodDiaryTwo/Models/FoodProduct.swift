@@ -136,3 +136,28 @@ enum FoodCategory: String, CaseIterable, Codable {
         }
     }
 }
+
+// MARK: - Способы приготовления
+enum CookingMethod: String, CaseIterable, Codable {
+    case raw = "Сырое"
+    case boiled = "Вареное"
+    case fried = "Жареное"
+    case grilled = "Жаренное на гриле"
+    case baked = "Запеченное"
+    case steamed = "На пару"
+    case roasted = "Тушеное"
+    case unknown = "Неизвестно"
+    
+    var icon: String {
+        switch self {
+        case .raw: return "🥗"
+        case .boiled: return "🍲"
+        case .fried: return "🍳"
+        case .grilled: return "🔥"
+        case .baked: return "🥧"
+        case .steamed: return "♨️"
+        case .roasted: return "🍖"
+        case .unknown: return "❓"
+        }
+    }
+}

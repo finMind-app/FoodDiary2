@@ -129,47 +129,18 @@ class FoodDataService: ObservableObject {
         return Array(shuffled.prefix(min(count, allFoods.count)))
     }
     
-    /// Распознать еду на изображении (моковая логика для демонстрации)
-    func recognizeFoodFromImage(_ image: UIImage) async -> FoodRecognitionResult {
-        // Имитируем задержку обработки
-        try? await Task.sleep(nanoseconds: UInt64(1.0 * 1_000_000_000))
-        
-        // Генерируем случайные результаты
-        let randomFoods = getRandomFoods(count: Int.random(in: 1...3))
-        let recognizedFoods = randomFoods.map { food in
-            let confidence = Double.random(in: 0.7...0.95)
-            let weightVariation = Double.random(in: 0.8...1.2)
-            
-            return RecognizedFood(
-                name: food.name,
-                confidence: confidence,
-                estimatedWeight: food.estimatedWeight * weightVariation,
-                calories: food.calories * weightVariation,
-                protein: food.protein * weightVariation,
-                fat: food.fat * weightVariation,
-                carbs: food.carbs * weightVariation,
-                category: food.category,
-                boundingBox: nil,
-                isProcessed: food.isProcessed,
-                cookingMethod: food.cookingMethod,
-                estimatedServingSize: food.estimatedServingSize
-            )
-        }
-        
-        let totalCalories = recognizedFoods.reduce(0) { $0 + $1.calories }
-        let totalProtein = recognizedFoods.reduce(0) { $0 + $1.protein }
-        let totalFat = recognizedFoods.reduce(0) { $0 + $1.fat }
-        let totalCarbs = recognizedFoods.reduce(0) { $0 + $1.carbs }
+    /// Создать тестовый результат распознавания (для демонстрации)
+    func createTestRecognitionResult() -> FoodRecognitionResult {
+        let randomFood = getRandomFoods(count: 1).first ?? foodDatabase["apple"]!
         
         return FoodRecognitionResult(
-            confidence: Double.random(in: 0.7...0.95),
-            recognizedFoods: recognizedFoods,
-            totalCalories: totalCalories,
-            totalProtein: totalProtein,
-            totalFat: totalFat,
-            totalCarbs: totalCarbs,
+            name: randomFood.name,
+            calories: randomFood.calories,
+            protein: randomFood.protein,
+            fat: randomFood.fat,
+            carbs: randomFood.carbs,
             processingTime: Double.random(in: 1.5...3.0),
-            imageSize: image.size
+            imageSize: CGSize(width: 512, height: 512)
         )
     }
 }
