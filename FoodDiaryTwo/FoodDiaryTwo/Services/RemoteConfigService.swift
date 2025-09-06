@@ -116,23 +116,15 @@ class RemoteConfigService: RemoteConfigServiceProtocol, ObservableObject {
     
     // MARK: - Парсинг API ключа из CSV
     private func parseAPIKeyFromCSV(_ csvString: String) -> String? {
-        let lines = csvString.components(separatedBy: .newlines)
-        
-        for line in lines {
-            let columns = line.components(separatedBy: ",")
-            
-            // Ищем строку с apiKey
-            if columns.count >= 2 && columns[0].trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == "apikey" {
-                let apiKey = columns[1].trimmingCharacters(in: .whitespacesAndNewlines)
-                if !apiKey.isEmpty {
-                    return apiKey
-                }
-            }
-        }
-        
-        return nil
+        let lines = csvString.components(separatedBy: .newlines).filter { !$0.isEmpty }
+
+        // Берём первую строку целиком
+        guard let firstLine = lines.first else { return nil }
+
+        let apiKey = firstLine.trimmingCharacters(in: .whitespacesAndNewlines)
+        return apiKey.isEmpty ? nil : apiKey
     }
-    
+
     // MARK: - Кэширование API ключа
     private func cacheAPIKey(_ apiKey: String) {
         UserDefaults.standard.set(apiKey, forKey: apiKeyKey)
