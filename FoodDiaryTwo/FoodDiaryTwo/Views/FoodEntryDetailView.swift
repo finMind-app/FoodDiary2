@@ -125,21 +125,24 @@ struct FoodEntryDetailView: View {
     private var photoSection: some View {
         VStack(spacing: PlumpyTheme.Spacing.medium) {
             if let photoData = $foodEntry.photoData.wrappedValue, let uiImage = UIImage(data: photoData) {
-                Image(uiImage: uiImage)
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(height: 200)
-                    .clipShape(RoundedRectangle(cornerRadius: PlumpyTheme.Radius.large))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: PlumpyTheme.Radius.large)
-                            .stroke(PlumpyTheme.neutral200, lineWidth: 1)
-                    )
-                    .shadow(
-                        color: PlumpyTheme.shadow.opacity(0.1),
-                        radius: PlumpyTheme.Shadow.medium.radius,
-                        x: PlumpyTheme.Shadow.medium.x,
-                        y: PlumpyTheme.Shadow.medium.y
-                    )
+                GeometryReader { geometry in
+                    Image(uiImage: uiImage)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: geometry.size.width, height: 200)
+                        .clipShape(RoundedRectangle(cornerRadius: PlumpyTheme.Radius.large))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: PlumpyTheme.Radius.large)
+                                .stroke(PlumpyTheme.neutral200, lineWidth: 1)
+                        )
+                        .shadow(
+                            color: PlumpyTheme.shadow.opacity(0.1),
+                            radius: PlumpyTheme.Shadow.medium.radius,
+                            x: PlumpyTheme.Shadow.medium.x,
+                            y: PlumpyTheme.Shadow.medium.y
+                        )
+                }
+                .frame(height: 200)
             } else {
                 RoundedRectangle(cornerRadius: PlumpyTheme.Radius.large)
                     .fill(PlumpyTheme.neutral100)

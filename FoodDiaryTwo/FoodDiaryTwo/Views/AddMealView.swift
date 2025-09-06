@@ -117,32 +117,35 @@ struct AddMealView: View {
         VStack(spacing: 16) {
             if let image = selectedImage {
                 // Показать выбранное изображение
-                ZStack(alignment: .topTrailing) {
-                    Image(uiImage: image)
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(height: 240)
-                        .clipped()
-                        .cornerRadius(16)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 16)
-                                .stroke(PlumpyTheme.border, lineWidth: 1)
-                        )
-                    
-                    // Кнопка удаления
-                    Button(action: {
-                        selectedImage = nil
-                        selectedPhotoItem = nil
-                        recognitionViewModel.resetResults()
-                    }) {
-                        Image(systemName: "xmark.circle.fill")
-                            .font(.title2)
-                            .foregroundColor(.white)
-                            .background(Color.black.opacity(0.6))
-                            .clipShape(Circle())
+                GeometryReader { geometry in
+                    ZStack(alignment: .topTrailing) {
+                        Image(uiImage: image)
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: geometry.size.width, height: 240)
+                            .clipped()
+                            .cornerRadius(16)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 16)
+                                    .stroke(PlumpyTheme.border, lineWidth: 1)
+                            )
+                        
+                        // Кнопка удаления
+                        Button(action: {
+                            selectedImage = nil
+                            selectedPhotoItem = nil
+                            recognitionViewModel.resetResults()
+                        }) {
+                            Image(systemName: "xmark.circle.fill")
+                                .font(.title2)
+                                .foregroundColor(.white)
+                                .background(Color.black.opacity(0.6))
+                                .clipShape(Circle())
+                        }
+                        .padding(12)
                     }
-                    .padding(12)
                 }
+                .frame(height: 240)
                 
                 // Кнопка распознавания
                 Button(action: {
