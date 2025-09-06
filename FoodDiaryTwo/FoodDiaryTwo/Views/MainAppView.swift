@@ -43,6 +43,9 @@ struct MainAppView: View {
 
                     // Evaluate achievements on launch to seed and refresh
                     _ = AchievementsService.shared.evaluateAndSync(in: modelContext)
+                    
+                    // Initialize RemoteConfigService to preload API key
+                    initializeRemoteConfig()
 
                     // Показываем сплеш скрин на 2.5 секунды
                     DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
@@ -56,6 +59,21 @@ struct MainAppView: View {
                         }
                     }
                 }
+            }
+        }
+    }
+    
+    // MARK: - RemoteConfig Initialization
+    private func initializeRemoteConfig() {
+        let remoteConfigService = RemoteConfigService()
+        
+        // Preload API key during splash screen
+        remoteConfigService.getAPIKey { apiKey in
+            if let apiKey = apiKey {
+                print("✅ MainAppView: API ключ успешно загружен при запуске")
+                print("🔑 Ключ: \(String(apiKey.prefix(20)))...")
+            } else {
+                print("⚠️ MainAppView: Не удалось загрузить API ключ при запуске")
             }
         }
     }
