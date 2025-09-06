@@ -109,14 +109,30 @@ class FoodRecognitionService: FoodRecognitionServiceProtocol, ObservableObject {
 
 // MARK: - Сервис для работы с OpenRouter API
 class OpenRouterAPIService {
-    private let apiKey = "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"
+    private let remoteConfigService = RemoteConfigService()
     private let baseURL = "https://openrouter.ai/api/v1/chat/completions"
     private let model = "qwen/qwen2.5-vl-32b-instruct:free"
+    
+    // MARK: - Получение API ключа
+    private func getAPIKey() async throws -> String {
+        return try await withCheckedThrowingContinuation { continuation in
+            remoteConfigService.getAPIKey { apiKey in
+                if let apiKey = apiKey {
+                    continuation.resume(returning: apiKey)
+                } else {
+                    continuation.resume(throwing: FoodRecognitionError.apiError("Не удалось получить API ключ"))
+                }
+            }
+        }
+    }
     
     func analyzeFoodImage(base64String: String) async throws -> FoodRecognitionResult {
         print("🌐 OpenRouterAPIService: Начинаем анализ изображения")
         print("📡 URL: \(baseURL)")
         print("🤖 Модель: \(model)")
+        
+        // Получаем API ключ асинхронно
+        let apiKey = try await getAPIKey()
         
         let url = URL(string: baseURL)!
         var request = URLRequest(url: url)
