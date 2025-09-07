@@ -220,15 +220,16 @@ class OpenRouterAPIService {
             schema: OpenRouterSchema(
                 type: "object",
                 properties: [
-                    "название": OpenRouterProperty(type: "string", properties: nil),
-                    "калории": OpenRouterProperty(type: "number", properties: nil),
+                    "название": OpenRouterProperty(type: "string", properties: nil, items: nil),
+                    "калории": OpenRouterProperty(type: "number", properties: nil, items: nil),
                     "бжу": OpenRouterProperty(
                         type: "object",
                         properties: [
-                            "белки": OpenRouterProperty(type: "number", properties: nil),
-                            "жиры": OpenRouterProperty(type: "number", properties: nil),
-                            "углеводы": OpenRouterProperty(type: "number", properties: nil)
-                        ]
+                            "белки": OpenRouterProperty(type: "number", properties: nil, items: nil),
+                            "жиры": OpenRouterProperty(type: "number", properties: nil, items: nil),
+                            "углеводы": OpenRouterProperty(type: "number", properties: nil, items: nil)
+                        ],
+                        items: nil
                     )
                 ],
                 required: ["название", "калории", "бжу"]
