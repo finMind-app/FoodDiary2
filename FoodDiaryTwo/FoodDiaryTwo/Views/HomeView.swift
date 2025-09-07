@@ -380,24 +380,27 @@ struct RecipeFromFridgeEntry: View {
     var body: some View {
         VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.small) {
             HStack(spacing: PlumpyTheme.Spacing.small) {
-                Image(systemName: "frying.pan.fill")
+                Image(systemName: "sparkles")
                     .foregroundColor(PlumpyTheme.secondaryAccent)
-                Text(i18n.localizedString(.recipeFromFridgeTitle))
-                    .font(PlumpyTheme.Typography.subheadline)
-                    .fontWeight(.semibold)
-                    .foregroundColor(PlumpyTheme.textPrimary)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(i18n.localizedString(.recipeFromFridgeTitle))
+                        .font(PlumpyTheme.Typography.subheadline)
+                        .fontWeight(.semibold)
+                        .foregroundColor(PlumpyTheme.textPrimary)
+                    Text(i18n.localizedString(.nutritionInsights))
+                        .font(PlumpyTheme.Typography.caption2)
+                        .foregroundColor(PlumpyTheme.textSecondary)
+                }
                 Spacer()
+                Button(i18n.localizedString(.recipeGenerateCta)) { showSheet = true }
+                    .padding(.horizontal, PlumpyTheme.Spacing.small)
+                    .padding(.vertical, 8)
+                    .background(PlumpyTheme.primary)
+                    .foregroundColor(.white)
+                    .cornerRadius(PlumpyTheme.Radius.small)
             }
-            Button(i18n.localizedString(.recipeGenerateCta)) {
-                showSheet = true
-            }
-            .padding(.vertical, PlumpyTheme.Spacing.small)
-            .frame(maxWidth: .infinity)
-            .background(PlumpyTheme.primary.opacity(0.1))
-            .foregroundColor(PlumpyTheme.primary)
-            .cornerRadius(PlumpyTheme.Radius.small)
         }
-        .plumpyCard()
+        .plumpyCard(cornerRadius: PlumpyTheme.Radius.medium, backgroundColor: PlumpyTheme.secondaryBackground)
         .sheet(isPresented: $showSheet) {
             RecipeFromFridgeView()
         }

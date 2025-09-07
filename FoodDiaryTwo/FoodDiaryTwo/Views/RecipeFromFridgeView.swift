@@ -29,6 +29,9 @@ struct RecipeFromFridgeView: View {
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, PlumpyTheme.Spacing.small)
+                    .background(PlumpyTheme.primary)
+                    .foregroundColor(.white)
+                    .cornerRadius(PlumpyTheme.Radius.small)
 
                     if let error = errorMessage {
                         Text(error)
@@ -90,10 +93,15 @@ struct RecipeFromFridgeView: View {
                                 .plumpyCard(cornerRadius: PlumpyTheme.Radius.small, backgroundColor: PlumpyTheme.success.opacity(0.1))
                             }
                         }
+                        .plumpyCard()
                     }
                 }
                 .padding(PlumpyTheme.Spacing.medium)
             }
+            .background(
+                PlumpyBackground(style: .primary)
+                    .ignoresSafeArea()
+            )
             .navigationTitle(i18n.localizedString(.recipeFromFridgeTitle))
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
@@ -119,8 +127,12 @@ struct RecipeFromFridgeView: View {
             let s = try await service.generateRecipe(ingredients: items, language: i18n.currentLanguage)
             suggestion = s
         } catch let FoodRecognitionError.apiError(message) {
-            if message.contains("429") { errorMessage = i18n.localizedString(.recipeRateLimitError) }
-            else { errorMessage = message }
+            if message.contains("429") {
+                // Silent on rate limit due to fallback strategy
+                errorMessage = nil
+            } else {
+                errorMessage = message
+            }
         } catch {
             errorMessage = i18n.localizedString(.recipeApiGenericError)
         }

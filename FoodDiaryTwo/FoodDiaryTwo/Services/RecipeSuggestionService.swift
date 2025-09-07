@@ -10,7 +10,11 @@ import Foundation
 final class RecipeSuggestionService {
     private let remoteConfigService = RemoteConfigService()
     private let baseURL = "https://openrouter.ai/api/v1/chat/completions"
-    private let model = "google/gemini-2.0-flash-exp:free"
+    private let primaryModel = "google/gemini-2.0-flash-exp:free"
+    private let fallbackModels = [
+        "meta-llama/llama-3.3-8b-instruct:free",
+        "qwen/qwen3-14b:free"
+    ]
 
     private func getAPIKey() async throws -> String {
         return try await withCheckedThrowingContinuation { continuation in
@@ -33,6 +37,28 @@ final class RecipeSuggestionService {
         }()
         print("🔐 RecipeSuggestionService: Using API key: \(maskedKey)")
 
+        // Try primary then fallbacks on 429
+        let modelsToTry = [primaryModel] + fallbackModels
+        for (index, model) in modelsToTry.enumerated() {
+            do {
+                let result = try await sendRequest(apiKey: apiKey, model: model, ingredients: ingredients, language: language)
+                if index > 0 { print("🔁 Fallback success with model: \(model)") }
+                return result
+            } catch let FoodRecognitionError.apiError(message) {
+                // Detect 429 from either HTTP or OpenRouter error payload
+                if message.contains("429") || message.lowercased().contains("rate-limited") {
+                    print("⚠️ Rate limited on model: \(model). Trying fallback if available...")
+                    continue
+                }
+                throw error
+            } catch {
+                throw error
+            }
+        }
+        throw FoodRecognitionError.apiError("All models failed")
+    }
+
+    private func sendRequest(apiKey: String, model: String, ingredients: [String], language: Language) async throws -> RecipeSuggestion {
         let url = URL(string: baseURL)!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
@@ -77,15 +103,24 @@ final class RecipeSuggestionService {
         request.httpBody = httpBody
 
         if let bodyString = String(data: httpBody, encoding: .utf8) {
-            print("📤 RecipeSuggestionService Request JSON:\n\(bodyString)")
+            print("📤 RecipeSuggestionService Request JSON (model=\(model)):\n\(bodyString)")
         }
 
         let (data, response) = try await URLSession.shared.data(for: request)
         if let httpResponse = response as? HTTPURLResponse {
-            print("📡 HTTP status: \(httpResponse.statusCode)")
+            print("📡 HTTP status: \(httpResponse.statusCode) (model=\(model))")
+            if httpResponse.statusCode == 429 {
+                throw FoodRecognitionError.apiError("HTTP 429")
+            }
         }
         if let responseString = String(data: data, encoding: .utf8) {
-            print("📥 RecipeSuggestionService Response JSON:\n\(responseString)")
+            print("📥 RecipeSuggestionService Response JSON (model=\(model)):\n\(responseString)")
+        }
+
+        // Some providers return 200 with an error payload
+        struct OpenRouterErrorResponse: Codable { struct E: Codable { let code: Int?; let message: String? } let error: E? }
+        if let err = try? JSONDecoder().decode(OpenRouterErrorResponse.self, from: data), let code = err.error?.code, code == 429 {
+            throw FoodRecognitionError.apiError("HTTP 429: rate-limited")
         }
 
         let openRouterResponse = try JSONDecoder().decode(OpenRouterResponse.self, from: data)
