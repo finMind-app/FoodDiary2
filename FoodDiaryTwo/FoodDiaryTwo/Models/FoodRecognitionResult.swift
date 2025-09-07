@@ -96,9 +96,13 @@ struct OpenRouterSchema: Codable {
 }
 
 struct OpenRouterProperty: Codable {
+    struct ArrayItems: Codable {
+        let type: String
+        let properties: [String: OpenRouterProperty]?
+    }
     let type: String
     let properties: [String: OpenRouterProperty]?
-    let items: OpenRouterProperty?
+    let items: ArrayItems?
 }
 
 // MARK: - Ответ от OpenRouter API

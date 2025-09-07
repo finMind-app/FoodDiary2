@@ -275,8 +275,8 @@ class OpenRouterAPIService {
                 type: "object",
                 properties: [
                     "title": OpenRouterProperty(type: "string", properties: nil, items: nil),
-                    "ingredients": OpenRouterProperty(type: "array", properties: nil, items: OpenRouterProperty(type: "string", properties: nil, items: nil)),
-                    "steps": OpenRouterProperty(type: "array", properties: nil, items: OpenRouterProperty(type: "string", properties: nil, items: nil)),
+                    "ingredients": OpenRouterProperty(type: "array", properties: nil, items: OpenRouterProperty.ArrayItems(type: "string", properties: nil)),
+                    "steps": OpenRouterProperty(type: "array", properties: nil, items: OpenRouterProperty.ArrayItems(type: "string", properties: nil)),
                     "nutritionTip": OpenRouterProperty(type: "string", properties: nil, items: nil)
                 ],
                 required: ["title", "ingredients", "steps", "nutritionTip"]

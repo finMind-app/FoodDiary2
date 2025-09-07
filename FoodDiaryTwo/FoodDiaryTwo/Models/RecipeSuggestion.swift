@@ -14,21 +14,4 @@ struct RecipeSuggestion: Codable, Equatable {
     let nutritionTip: String
 }
 
-// MARK: - OpenRouter recipe response wiring
-struct OpenRouterRecipeSchema: Codable {
-    let name: String
-    let schema: OpenRouterRecipeSchemaBody
-}
-
-struct OpenRouterRecipeSchemaBody: Codable {
-    let type: String
-    let properties: [String: OpenRouterRecipeProperty]
-    let required: [String]
-}
-
-struct OpenRouterRecipeProperty: Codable {
-    let type: String
-    let items: OpenRouterRecipeProperty?
-}
-
 
