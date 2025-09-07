@@ -88,6 +88,9 @@ struct HomeView: View {
                         // Рекомендации
                         recommendationsSection
                         
+                        // AI Recommendations Dashboard - Recipe from fridge
+                        RecipeFromFridgeCard()
+                        
                         PlumpySpacer(size: .large)
                     }
                     .padding(.horizontal, PlumpyTheme.Spacing.medium)
@@ -362,6 +365,111 @@ struct HomeView: View {
                         cornerRadius: PlumpyTheme.Radius.small,
                         backgroundColor: PlumpyTheme.warning.opacity(0.1)
                     )
+                }
+            }
+        }
+        .plumpyCard()
+    }
+}
+
+// MARK: - Recipe From Fridge Card
+struct RecipeFromFridgeCard: View {
+    @StateObject private var vm = RecipeSuggestionViewModel()
+    @StateObject private var i18n = LocalizationManager.shared
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.medium) {
+            HStack(spacing: PlumpyTheme.Spacing.small) {
+                Image(systemName: "frying.pan.fill")
+                    .foregroundColor(PlumpyTheme.secondaryAccent)
+                Text(i18n.localizedString(.recipeFromFridgeTitle))
+                    .font(PlumpyTheme.Typography.subheadline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(PlumpyTheme.textPrimary)
+                Spacer()
+            }
+
+            VStack(spacing: PlumpyTheme.Spacing.small) {
+                TextField(i18n.localizedString(.recipeInputPlaceholder), text: $vm.ingredientsInput, axis: .vertical)
+                    .textFieldStyle(.roundedBorder)
+                    .lineLimit(1...3)
+                HStack {
+                    Spacer()
+                    Button(action: { Task { await vm.generate() } }) {
+                        if vm.isLoading {
+                            ProgressView()
+                                .progressViewStyle(.circular)
+                        } else {
+                            Text(i18n.localizedString(.recipeGenerateCta))
+                        }
+                    }
+                    .buttonStyle(PlumpyButtonStyle())
+                }
+            }
+            
+            if let error = vm.errorMessage, !error.isEmpty {
+                HStack(alignment: .top, spacing: PlumpyTheme.Spacing.small) {
+                    Image(systemName: "exclamationmark.triangle.fill").foregroundColor(PlumpyTheme.warning)
+                    Text(error)
+                        .font(PlumpyTheme.Typography.caption2)
+                        .foregroundColor(PlumpyTheme.warning)
+                    Spacer()
+                }
+                .padding(PlumpyTheme.Spacing.small)
+                .plumpyCard(cornerRadius: PlumpyTheme.Radius.small, backgroundColor: PlumpyTheme.warning.opacity(0.1))
+            }
+
+            if let s = vm.suggestion {
+                VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.small) {
+                    Text(s.title)
+                        .font(PlumpyTheme.Typography.title3)
+                        .fontWeight(.bold)
+                        .foregroundColor(PlumpyTheme.textPrimary)
+                    
+                    Text(i18n.localizedString(.ingredientsTitle))
+                        .font(PlumpyTheme.Typography.caption1)
+                        .foregroundColor(PlumpyTheme.textSecondary)
+                        .padding(.top, PlumpyTheme.Spacing.tiny)
+                    VStack(alignment: .leading, spacing: 6) {
+                        ForEach(s.ingredients, id: \.self) { item in
+                            HStack(alignment: .top, spacing: 8) {
+                                Circle().fill(PlumpyTheme.secondaryAccent).frame(width: 6, height: 6)
+                                Text(item).foregroundColor(PlumpyTheme.textPrimary).font(PlumpyTheme.Typography.caption1)
+                                Spacer()
+                            }
+                        }
+                    }
+                    
+                    Text(i18n.localizedString(.stepsTitle))
+                        .font(PlumpyTheme.Typography.caption1)
+                        .foregroundColor(PlumpyTheme.textSecondary)
+                        .padding(.top, PlumpyTheme.Spacing.small)
+                    VStack(alignment: .leading, spacing: 6) {
+                        ForEach(Array(s.steps.enumerated()), id: \.offset) { idx, step in
+                            HStack(alignment: .top, spacing: 8) {
+                                Text("\(idx + 1).")
+                                    .font(PlumpyTheme.Typography.caption1)
+                                    .foregroundColor(PlumpyTheme.secondaryAccent)
+                                    .frame(width: 18, alignment: .leading)
+                                Text(step)
+                                    .foregroundColor(PlumpyTheme.textPrimary)
+                                    .font(PlumpyTheme.Typography.caption1)
+                                Spacer()
+                            }
+                        }
+                    }
+
+                    if !s.nutritionTip.isEmpty {
+                        HStack(alignment: .top, spacing: PlumpyTheme.Spacing.small) {
+                            Image(systemName: "heart.fill").foregroundColor(PlumpyTheme.success)
+                            Text(s.nutritionTip)
+                                .font(PlumpyTheme.Typography.caption2)
+                                .foregroundColor(PlumpyTheme.textPrimary)
+                            Spacer()
+                        }
+                        .padding(PlumpyTheme.Spacing.small)
+                        .plumpyCard(cornerRadius: PlumpyTheme.Radius.small, backgroundColor: PlumpyTheme.success.opacity(0.1))
+                    }
                 }
             }
         }

@@ -248,6 +248,64 @@ class OpenRouterAPIService {
             response_format: responseFormat
         )
     }
+
+    // MARK: - Gemini Recipe Generation
+    func generateRecipe(ingredients: [String], language: Language) async throws -> RecipeSuggestion {
+        let apiKey = try await getAPIKey()
+        let url = URL(string: baseURL)!
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("FoodDiaryTwo/1.0", forHTTPHeaderField: "HTTP-Referer")
+        request.setValue("https://fooddiary.app", forHTTPHeaderField: "X-Title")
+
+        let promptLanguageCode = language.rawValue
+        let prompt = "Ты шеф-повар. Составь полностью готовый рецепт на выбранном в приложении языке (передать его сюда) с названием блюда и пошаговой инструкцией. Ингредиенты: \(ingredients.joined(separator: ", ")). Язык: \(promptLanguageCode). Верни строго JSON по схеме."
+
+        let content = [
+            OpenRouterContent(type: "text", text: prompt, image_url: nil)
+        ]
+        let message = OpenRouterMessage(role: "user", content: content)
+
+        // JSON schema for structured recipe
+        let jsonSchema = OpenRouterJSONSchema(
+            name: "recipe_suggestion",
+            schema: OpenRouterSchema(
+                type: "object",
+                properties: [
+                    "title": OpenRouterProperty(type: "string", properties: nil, items: nil),
+                    "ingredients": OpenRouterProperty(type: "array", properties: nil, items: OpenRouterProperty(type: "string", properties: nil, items: nil)),
+                    "steps": OpenRouterProperty(type: "array", properties: nil, items: OpenRouterProperty(type: "string", properties: nil, items: nil)),
+                    "nutritionTip": OpenRouterProperty(type: "string", properties: nil, items: nil)
+                ],
+                required: ["title", "ingredients", "steps", "nutritionTip"]
+            )
+        )
+        let responseFormat = OpenRouterResponseFormat(type: "json_schema", json_schema: jsonSchema)
+
+        let requestBody = OpenRouterRequest(
+            model: "google/gemini-2.0-flash-exp:free",
+            messages: [message],
+            max_tokens: 500,
+            temperature: 0.7,
+            response_format: responseFormat
+        )
+        request.httpBody = try JSONEncoder().encode(requestBody)
+
+        let (data, response) = try await URLSession.shared.data(for: request)
+        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+            let errorMessage = String(data: data, encoding: .utf8) ?? "Unknown error"
+            throw FoodRecognitionError.apiError(errorMessage)
+        }
+        let openRouterResponse = try JSONDecoder().decode(OpenRouterResponse.self, from: data)
+        guard let firstChoice = openRouterResponse.choices.first,
+              let contentString = firstChoice.message.content.data(using: .utf8) else {
+            throw FoodRecognitionError.invalidResponse
+        }
+        let suggestion = try JSONDecoder().decode(RecipeSuggestion.self, from: contentString)
+        return suggestion
+    }
 }
 
 // MARK: - Анализатор качества изображения

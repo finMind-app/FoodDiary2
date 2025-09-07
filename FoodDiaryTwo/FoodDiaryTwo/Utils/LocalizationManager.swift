@@ -298,6 +298,17 @@ enum LocalizationKey: String, CaseIterable {
     case cardTitle = "card_title"
     case cardSampleText = "card_sample_text"
 
+    // Recipe feature
+    case recipeFromFridgeTitle = "recipe_from_fridge_title"
+    case recipeInputPlaceholder = "recipe_input_placeholder"
+    case recipeGenerateCta = "recipe_generate_cta"
+    case ingredientsTitle = "ingredients_title"
+    case stepsTitle = "steps_title"
+    case recipeEmptyInputError = "recipe_empty_input_error"
+    case recipeModelNoAnswer = "recipe_model_no_answer"
+    case recipeRateLimitError = "recipe_rate_limit_error"
+    case recipeApiGenericError = "recipe_api_generic_error"
+
     // Achievements (titles and details)
     case achFirstMealTitle = "ach_first_meal_title"
     case achFirstMealDetail = "ach_first_meal_detail"
@@ -534,6 +545,16 @@ enum LocalizationKey: String, CaseIterable {
             .cardTitle: "Card Title",
             .cardSampleText: "This is a sample card with some content to demonstrate the new design system."
             ,
+            // Recipe feature
+            .recipeFromFridgeTitle: "What to cook from my fridge",
+            .recipeInputPlaceholder: "Enter ingredients, comma-separated (e.g., chicken, rice, tomato)",
+            .recipeGenerateCta: "Generate Recipe",
+            .ingredientsTitle: "Ingredients",
+            .stepsTitle: "Steps",
+            .recipeEmptyInputError: "Please enter at least one ingredient",
+            .recipeModelNoAnswer: "The model didn't return an answer. Try again.",
+            .recipeRateLimitError: "Rate limit reached. Please try later.",
+            .recipeApiGenericError: "Something went wrong. Please try again.",
             // Achievements
             .achFirstMealTitle: "First Meal",
             .achFirstMealDetail: "Log your very first meal.",
