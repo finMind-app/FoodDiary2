@@ -94,6 +94,8 @@ struct RecipeFromFridgeView: View {
                             }
                         }
                         .plumpyCard()
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                        .animation(.spring(response: 0.5, dampingFraction: 0.85), value: s.title)
                     }
                 }
                 .padding(PlumpyTheme.Spacing.medium)

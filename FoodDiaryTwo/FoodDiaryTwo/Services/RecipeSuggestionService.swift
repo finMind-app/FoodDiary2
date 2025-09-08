@@ -92,7 +92,7 @@ final class RecipeSuggestionService {
         let body = OpenRouterRequest(
             model: model,
             messages: [message],
-            max_tokens: 500,
+            max_tokens: 1200,
             temperature: 0.7,
             response_format: responseFormat
         )
@@ -118,7 +118,13 @@ final class RecipeSuggestionService {
         }
 
         // Some providers return 200 with an error payload
-        struct OpenRouterErrorResponse: Codable { struct E: Codable { let code: Int?; let message: String? } let error: E? }
+        struct OpenRouterErrorResponse: Codable {
+            struct ErrorPayload: Codable {
+                let code: Int?
+                let message: String?
+            }
+            let error: ErrorPayload?
+        }
         if let err = try? JSONDecoder().decode(OpenRouterErrorResponse.self, from: data), let code = err.error?.code, code == 429 {
             throw FoodRecognitionError.apiError("HTTP 429: rate-limited")
         }
