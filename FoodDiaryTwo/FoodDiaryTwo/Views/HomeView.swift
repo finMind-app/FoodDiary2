@@ -400,7 +400,7 @@ struct RecipeFromFridgeEntry: View {
                     .cornerRadius(PlumpyTheme.Radius.small)
             }
         }
-        .plumpyCard(cornerRadius: PlumpyTheme.Radius.medium, backgroundColor: PlumpyTheme.secondaryBackground)
+        .plumpyCard(cornerRadius: PlumpyTheme.Radius.medium)
         .sheet(isPresented: $showSheet) {
             RecipeFromFridgeView()
         }
