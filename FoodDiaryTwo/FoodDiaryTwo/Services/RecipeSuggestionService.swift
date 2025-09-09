@@ -50,7 +50,7 @@ final class RecipeSuggestionService {
                     print("⚠️ Rate limited on model: \(model). Trying fallback if available...")
                     continue
                 }
-                throw error
+                throw FoodRecognitionError.apiError(message)
             } catch {
                 throw error
             }
