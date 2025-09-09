@@ -188,16 +188,37 @@ struct HistoryView: View {
             
             let entries = pagedEntries
             if entries.isEmpty {
-                PlumpyEmptyState(
-                    icon: "clock",
-                    title: searchText.isEmpty ? LocalizationManager.shared.localizedString(.noMealsToday) : LocalizationManager.shared.localizedString(.search),
-                    subtitle: searchText.isEmpty ? 
-                        LocalizationManager.shared.localizedString(.startTrackingHint) :
-                        LocalizationManager.shared.localizedString(.search),
-                    actionTitle: searchText.isEmpty ? LocalizationManager.shared.localizedString(.addMealCta) : LocalizationManager.shared.localizedString(.cancel)
-                ) {
-                    if !searchText.isEmpty {
-                        searchText = ""
+                if selectedPeriod == .custom {
+                    VStack(spacing: PlumpyTheme.Spacing.medium) {
+                        Image(systemName: "clock")
+                            .font(.system(size: 28))
+                            .foregroundColor(PlumpyTheme.textTertiary)
+                        Text(LocalizationManager.shared.localizedString(.noMealsToday))
+                            .font(PlumpyTheme.Typography.subheadline)
+                            .foregroundColor(PlumpyTheme.textPrimary)
+                        Text(LocalizationManager.shared.localizedString(.startTrackingHint))
+                            .font(PlumpyTheme.Typography.caption2)
+                            .foregroundColor(PlumpyTheme.textSecondary)
+                            .multilineTextAlignment(.center)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(PlumpyTheme.Spacing.large)
+                    .background(
+                        RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
+                            .fill(PlumpyTheme.surfaceSecondary)
+                    )
+                } else {
+                    PlumpyEmptyState(
+                        icon: "clock",
+                        title: searchText.isEmpty ? LocalizationManager.shared.localizedString(.noMealsToday) : LocalizationManager.shared.localizedString(.search),
+                        subtitle: searchText.isEmpty ? 
+                            LocalizationManager.shared.localizedString(.startTrackingHint) :
+                            LocalizationManager.shared.localizedString(.search),
+                        actionTitle: searchText.isEmpty ? LocalizationManager.shared.localizedString(.addMealCta) : LocalizationManager.shared.localizedString(.cancel)
+                    ) {
+                        if !searchText.isEmpty {
+                            searchText = ""
+                        }
                     }
                 }
             } else {
