@@ -205,7 +205,7 @@ class OpenRouterAPIService {
         let content = [
             OpenRouterContent(
                 type: "text",
-                text: "Analyze this food photo. Return ONLY JSON with English keys {name, calories, macros:{protein, fat, carbs}}. Write the dish name and any textual values in the user's language (lang=") + locale + ") without extra commentary.",
+                text: "Analyze this food photo. Return ONLY JSON with English keys {name, calories, macros:{protein, fat, carbs}}. Write the dish name and any textual values in the user's language (lang=\(locale)) without extra commentary.",
                 image_url: nil
             ),
             OpenRouterContent(
