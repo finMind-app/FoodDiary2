@@ -885,6 +885,17 @@ enum LocalizationKey: String, CaseIterable {
             .goodConsumption: "Хорошее потребление",
             .excellentConsumption: "Отличное потребление",
             .exceededConsumption: "Превышение нормы"
+            ,
+            // Recipe feature
+            .recipeFromFridgeTitle: "Что приготовить из холодильника",
+            .recipeInputPlaceholder: "Введите ингредиенты, через запятую (например: курица, рис, томат)",
+            .recipeGenerateCta: "Сгенерировать рецепт",
+            .ingredientsTitle: "Ингредиенты",
+            .stepsTitle: "Шаги",
+            .recipeEmptyInputError: "Введите хотя бы один ингредиент",
+            .recipeModelNoAnswer: "Модель не вернула ответ. Попробуйте снова.",
+            .recipeRateLimitError: "Превышен лимит. Попробуйте позже.",
+            .recipeApiGenericError: "Что-то пошло не так. Попробуйте еще раз."
         ]
     }
 
@@ -1087,6 +1098,17 @@ enum LocalizationKey: String, CaseIterable {
             .goodConsumption: "Buen consumo",
             .excellentConsumption: "Excelente consumo",
             .exceededConsumption: "Consumo excedido"
+            ,
+            // Recipe feature
+            .recipeFromFridgeTitle: "Qué cocinar con lo que tengo",
+            .recipeInputPlaceholder: "Introduce ingredientes, separados por comas (p. ej., pollo, arroz, tomate)",
+            .recipeGenerateCta: "Generar receta",
+            .ingredientsTitle: "Ingredientes",
+            .stepsTitle: "Pasos",
+            .recipeEmptyInputError: "Introduce al menos un ingrediente",
+            .recipeModelNoAnswer: "El modelo no devolvió respuesta. Inténtalo de nuevo.",
+            .recipeRateLimitError: "Límite de solicitudes alcanzado. Inténtalo más tarde.",
+            .recipeApiGenericError: "Algo salió mal. Inténtalo de nuevo."
         ]
     }
 
@@ -1289,6 +1311,17 @@ enum LocalizationKey: String, CaseIterable {
             .goodConsumption: "Bonne consommation",
             .excellentConsumption: "Excellente consommation",
             .exceededConsumption: "Consommation dépassée"
+            ,
+            // Recipe feature
+            .recipeFromFridgeTitle: "Que cuisiner avec mon frigo",
+            .recipeInputPlaceholder: "Saisissez des ingrédients, séparés par des virgules (ex. poulet, riz, tomate)",
+            .recipeGenerateCta: "Générer une recette",
+            .ingredientsTitle: "Ingrédients",
+            .stepsTitle: "Étapes",
+            .recipeEmptyInputError: "Veuillez saisir au moins un ingrédient",
+            .recipeModelNoAnswer: "Le modèle n'a pas renvoyé de réponse. Réessayez.",
+            .recipeRateLimitError: "Limite atteinte. Réessayez plus tard.",
+            .recipeApiGenericError: "Un problème est survenu. Réessayez."
         ]
     }
 }
