@@ -34,7 +34,6 @@ class LocalizationManager: ObservableObject {
 enum Language: String, CaseIterable {
     case english = "en"
     case russian = "ru"
-    case ukrainian = "uk"
     case spanish = "es"
     case french = "fr"
     
@@ -44,8 +43,6 @@ enum Language: String, CaseIterable {
             return "English"
         case .russian:
             return "Русский"
-        case .ukrainian:
-            return "Українська"
         case .spanish:
             return "Español"
         case .french:
@@ -59,8 +56,6 @@ enum Language: String, CaseIterable {
             return "🇺🇸"
         case .russian:
             return "🇷🇺"
-        case .ukrainian:
-            return "🇺🇦"
         case .spanish:
             return "🇪🇸"
         case .french:
@@ -367,8 +362,6 @@ enum LocalizationKey: String, CaseIterable {
             return englishStrings[self] ?? rawValue
         case .russian:
             return russianStrings[self] ?? rawValue
-        case .ukrainian:
-            return ukrainianStrings[self] ?? rawValue
         case .spanish:
             return spanishStrings[self] ?? rawValue
         case .french:
@@ -815,175 +808,6 @@ enum LocalizationKey: String, CaseIterable {
             .recForecastEvening: "День подходит к концу. Осталось %d ккал. Легкий ужин",
             .recForecastGreatDay: "Отличный день! Вы достигли цели",
             .recForecastOverLimit: "Превышение нормы. Завтра начните заново"
-        ]
-    }
-    
-    private var ukrainianStrings: [LocalizationKey: String] {
-        [
-            .appName: "Щоденник Харчування",
-            .ok: "ОК",
-            .cancel: "Скасувати",
-            .save: "Зберегти",
-            .delete: "Видалити",
-            .edit: "Змінити",
-            .add: "Додати",
-            .search: "Пошук",
-            .timeLabel: "Час",
-            .items: "елементів",
-            .calUnit: "ккал",
-            .home: "Головна",
-            .stats: "Статистика",
-            .profile: "Профіль",
-            .settings: "Налаштування",
-            .history: "Історія",
-            .foodDiary: "Щоденник Харчування",
-            .addMeal: "Додати Прийом Їжі",
-            .mealName: "Назва Прийому",
-            .mealType: "Тип Прийому",
-            .mealTime: "Час Прийому",
-            .notes: "Нотатки",
-            .totalCaloriesToday: "Всього калорій сьогодні",
-            .todaysMeals: "Сьогоднішні прийоми їжі",
-            .quickActions: "Швидкі дії",
-            .aiRecommendations: "Рекомендації ШІ",
-            .noMealsToday: "Сьогодні ще немає прийомів їжі",
-            .startTrackingHint: "Почніть вести щоденник, додавши перший прийом",
-            .addMealCta: "Додати прийом",
-            .breakfast: "Сніданок",
-            .lunch: "Обід",
-            .dinner: "Вечеря",
-            .snack: "Перекус",
-            .products: "Продукти",
-            .addProduct: "Додати Продукт",
-            .productName: "Назва Продукту",
-            .brand: "Бренд",
-            .servingSize: "Розмір Порції",
-            .calories: "Калорії",
-            .protein: "Білки",
-            .carbs: "Вуглеводи",
-            .fat: "Жири",
-            .fiber: "Клітковина",
-            .sugar: "Цукор",
-            .sodium: "Натрій",
-            .dailyProgress: "Денний Прогрес",
-            .totalCalories: "Загальні Калорії",
-            .dailyGoal: "Денна Мета",
-            .remaining: "Залишилось",
-            .progress: "Прогрес",
-            .goalLabel: "Мета",
-            .userName: "Ім'я",
-            .age: "Вік",
-            .gender: "Стать",
-            .height: "Зріст",
-            .weight: "Вага",
-            .activityLevel: "Рівень Активності",
-            .goal: "Мета",
-            .loseWeight: "Схуднути",
-            .maintainWeight: "Підтримувати Вагу",
-            .gainWeight: "Набрати Вагу",
-            .sedentary: "Сидячий",
-            .light: "Легкий",
-            .moderate: "Помірний",
-            .active: "Активний",
-            .veryActive: "Дуже Активний",
-            .editProfile: "Редагувати профіль",
-            .allTime: "За весь час",
-            .mealsLabel: "Прийоми",
-            .avgPerDay: "Сер./день",
-            .achievements: "Досягнення",
-            .unlockedFormat: "Відкрито: %d/%d",
-            .editDailyCalories: "Редагувати денні калорії",
-            .runQuestionnaire: "Пройти анкету",
-            .profileSummary: "Підсумок профілю",
-            .heightLabel: "Зріст",
-            .weightLabel: "Вага",
-            .bmiLabel: "ІМТ",
-            .ageLabel: "Вік",
-            .yearsSuffix: "років",
-            .cmUnit: "см",
-            .kgUnit: "кг",
-            .profilePhoto: "Фото профілю",
-            .tapToChangePhoto: "Торкніться, щоб змінити фото",
-            .firstName: "Ім'я",
-            .lastName: "Прізвище",
-            .emailAddress: "Email",
-            .enterFirstName: "Введіть ім'я",
-            .enterLastName: "Введіть прізвище",
-            .enterEmail: "Введіть email",
-            .recognizeCalories: "Розпізнати калорії",
-            .photoReady: "Фото готове до аналізу",
-            .pickFromGallery: "Обрати з галереї",
-            .takePhoto: "Зробити фото",
-            .photoHint: "Зфотографуйте їжу для авто-розпізнавання калорій та БЖВ",
-            .statisticsTitle: "Статистика",
-            .nutritionInsights: "Ваші інсайти харчування",
-            .caloriesOverTime: "Калорії з часом",
-            .loadingData: "Завантаження даних...",
-            .noDataForPeriod: "Немає даних за цей період",
-            .monthlyActivity: "Місячна активність",
-            .additionalInsights: "Додаткові відомості",
-            .unlocked: "Відкрито",
-            .meals: "Прийоми",
-            .less: "Менше",
-            .more: "Більше",
-            .mostCommonMeal: "Найчастіший прийом",
-            .mostCaloricMeal: "Найкалорійніший прийом",
-            .bestDay: "Найкращий день",
-            .currentStreak: "Поточна серія",
-            .daysInARow: "днів поспіль",
-            .averageDailyCalories: "Середні денні калорії",
-            .goalAchievement: "Досягнення цілі",
-            .maxLabel: "Макс",
-            .thisPeriod: "Цей період",
-            .avgDailyShort: "Сер. за день",
-            .caloriesShortUnit: "ккал",
-            .goalMet: "Досягнуто",
-            .ofDays: "Днів",
-            .noneLabel: "Немає",
-            // Settings
-            .notifications: "Сповіщення",
-            .reminderTime: "Час нагадування",
-            .calorieReminders: "Нагадування про калорії",
-            .getRemindedAboutGoals: "Отримуйте нагадування про цілі та ведення щоденника",
-            .appearance: "Оформлення",
-            .darkMode: "Темна тема",
-            .language: "Мова",
-            .region: "Регіон",
-            .languageRegion: "Мова та регіон",
-            .dataManagement: "Керування даними",
-            .exportDataTitle: "Експорт даних",
-            .exportYourDataOrResetApp: "Експортуйте дані або скиньте застосунок",
-            .clearAllData: "Видалити всі дані",
-            .clearAll: "Видалити все",
-            .clearAllDataAlertTitle: "Видалити всі дані",
-            .clearAllDataAlertMessage: "Це назавжди видалить усі дані щоденника. Дію не можна скасувати.",
-            .version: "Версія",
-            .termsOfService: "Умови користування",
-            .privacyPolicy: "Політика конфіденційності",
-            .about: "Про застосунок",
-            .done: "Готово",
-            .share: "Поділитися",
-            // History/Calendar
-            .week: "Тиждень",
-            .month: "Місяць",
-            .year: "Рік",
-            .custom: "Користувацький",
-            .selectDate: "Виберіть дату",
-            // Additional
-            .trackJourney: "Ведіть свій шлях харчування",
-            .basicInformation: "Базова інформація"
-            ,
-            .stepLabel: "Крок",
-            .primaryBackground: "Основний фон",
-            .secondaryBackground: "Вторинний фон",
-            .gradientBackground: "Градієнтний фон",
-            .patternBackground: "Візерунковий фон",
-            .minimalBackground: "Мінімальний фон",
-            .chips: "Чіпси",
-            .badges: "Бейджі",
-            .loadingIndicators: "Індикатори завантаження",
-            .cardTitle: "Заголовок картки",
-            .cardSampleText: "Зразок картки з текстом для демонстрації дизайн-системи."
         ]
     }
 

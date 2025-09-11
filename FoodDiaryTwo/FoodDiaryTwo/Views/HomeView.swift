@@ -84,13 +84,12 @@ struct HomeView: View {
                         
                         // Список приемов пищи
                         foodEntriesList
-                        
-                        // Рекомендации
-                        recommendationsSection
-                        
-                        // AI Recommendations Dashboard - entry point button
+
                         RecipeFromFridgeEntry()
-                        
+
+                        // Рекомендации
+//                        recommendationsSection
+
                         PlumpySpacer(size: .large)
                     }
                     .padding(.horizontal, PlumpyTheme.Spacing.medium)
