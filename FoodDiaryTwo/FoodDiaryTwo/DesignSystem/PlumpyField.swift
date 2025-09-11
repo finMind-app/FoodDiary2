@@ -127,41 +127,28 @@ struct PlumpyField: View {
     // MARK: - Computed Properties
     
     private var backgroundColor: Color {
-        if isEditing {
-            return PlumpyTheme.surface
-        } else if errorMessage != nil {
-            return PlumpyTheme.error.opacity(0.05)
-        } else {
-            return Color(UIColor { tc in
-                tc.userInterfaceStyle == .dark ? UIColor(PlumpyTheme.surfaceSecondary) : UIColor(PlumpyTheme.neutral50)
-            })
+        if errorMessage != nil {
+            return PlumpyTheme.error.opacity(0.06)
         }
+        // Unify field background across themes
+        return Color(UIColor { tc in
+            tc.userInterfaceStyle == .dark ? UIColor(PlumpyTheme.surfaceSecondary) : UIColor(PlumpyTheme.surface)
+        })
     }
     
     private var borderColor: Color {
-        if isEditing {
-            return PlumpyTheme.primary
-        } else if errorMessage != nil {
+        if errorMessage != nil {
             return PlumpyTheme.error
-        } else {
-            return PlumpyTheme.neutral200
         }
+        return isFocused ? PlumpyTheme.primary : PlumpyTheme.neutral200
     }
     
     private var borderWidth: CGFloat {
-        if isEditing || errorMessage != nil {
-            return 1.5
-        } else {
-            return 1
-        }
+        return (isFocused || errorMessage != nil) ? 1.5 : 1
     }
     
     private var shadowColor: Color {
-        if isEditing {
-            return PlumpyTheme.primary.opacity(0.1)
-        } else {
-            return PlumpyTheme.shadow.opacity(0.02)
-        }
+        return isFocused ? PlumpyTheme.primary.opacity(0.08) : PlumpyTheme.shadow.opacity(0.02)
     }
 }
 

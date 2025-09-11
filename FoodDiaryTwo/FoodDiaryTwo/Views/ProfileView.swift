@@ -243,7 +243,7 @@ struct ProfileView: View {
         .onAppear {
             let newly = AchievementsService.shared.evaluateAndSync(in: modelContext)
             if let first = newly.first {
-                toastText = "\(LocalizationManager.shared.localizedString(.unlocked)) : \(first.title)"
+                toastText = "\(LocalizationManager.shared.localizedString(.unlocked)) : \(first.localizedTitle)"
                 withAnimation { showAchievementToast = true }
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
                     withAnimation { showAchievementToast = false }

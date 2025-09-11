@@ -21,11 +21,11 @@ struct FoodRecognitionResult: Identifiable, Codable {
     
     // Инициализатор из ответа OpenRouter API
     init(from openRouterResponse: OpenRouterFoodAnalysis) {
-        self.name = openRouterResponse.название
-        self.calories = openRouterResponse.калории
-        self.protein = openRouterResponse.бжу.белки
-        self.fat = openRouterResponse.бжу.жиры
-        self.carbs = openRouterResponse.бжу.углеводы
+        self.name = openRouterResponse.name
+        self.calories = openRouterResponse.calories
+        self.protein = openRouterResponse.macros.protein
+        self.fat = openRouterResponse.macros.fat
+        self.carbs = openRouterResponse.macros.carbs
         self.processingTime = 2.0 // Примерное время обработки
         self.imageSize = CGSize(width: 512, height: 512) // Стандартный размер
     }
@@ -44,15 +44,15 @@ struct FoodRecognitionResult: Identifiable, Codable {
 
 // MARK: - Структуры для парсинга ответа OpenRouter API
 struct OpenRouterFoodAnalysis: Codable {
-    let название: String
-    let калории: Double
-    let бжу: БЖУ
+    let name: String
+    let calories: Double
+    let macros: Macros
 }
 
-struct БЖУ: Codable {
-    let белки: Double
-    let жиры: Double
-    let углеводы: Double
+struct Macros: Codable {
+    let protein: Double
+    let fat: Double
+    let carbs: Double
 }
 
 // MARK: - Структуры для запроса к OpenRouter API

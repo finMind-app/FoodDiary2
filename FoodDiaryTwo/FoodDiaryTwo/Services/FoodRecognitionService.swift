@@ -13,7 +13,7 @@ import CoreGraphics
 
 // MARK: - Протокол для сервиса распознавания
 protocol FoodRecognitionServiceProtocol {
-    func recognizeFood(from image: UIImage) async throws -> FoodRecognitionResult
+    func recognizeFood(from image: UIImage, language: Language) async throws -> FoodRecognitionResult
     func analyzeImageQuality(_ image: UIImage) -> ImageQualityResult
     func preprocessImage(_ image: UIImage) -> UIImage?
 }
@@ -29,7 +29,7 @@ class FoodRecognitionService: FoodRecognitionServiceProtocol, ObservableObject {
     private let openRouterAPI = OpenRouterAPIService()
     
     // MARK: - Основной метод распознавания
-    func recognizeFood(from image: UIImage) async throws -> FoodRecognitionResult {
+    func recognizeFood(from image: UIImage, language: Language) async throws -> FoodRecognitionResult {
         print("🔄 FoodRecognitionService: Начинаем обработку изображения")
         print("📐 Размер изображения: \(image.size)")
         
@@ -70,7 +70,7 @@ class FoodRecognitionService: FoodRecognitionServiceProtocol, ObservableObject {
         // Отправляем запрос к OpenRouter API
         print("🌐 Отправляем запрос к OpenRouter API...")
         let startTime = Date()
-        let result = try await openRouterAPI.analyzeFoodImage(base64String: base64String)
+        let result = try await openRouterAPI.analyzeFoodImage(base64String: base64String, language: language)
         let processingTime = Date().timeIntervalSince(startTime)
         
         print("✅ Ответ получен от API за \(processingTime) секунд")
@@ -126,7 +126,7 @@ class OpenRouterAPIService {
         }
     }
     
-    func analyzeFoodImage(base64String: String) async throws -> FoodRecognitionResult {
+    func analyzeFoodImage(base64String: String, language: Language) async throws -> FoodRecognitionResult {
         print("🌐 OpenRouterAPIService: Начинаем анализ изображения")
         print("📡 URL: \(baseURL)")
         print("🤖 Модель: \(model)")
@@ -145,7 +145,7 @@ class OpenRouterAPIService {
         request.setValue("https://fooddiary.app", forHTTPHeaderField: "X-Title")
         
         // Создаем запрос согласно API
-        let openRouterRequest = createOpenRouterRequest(base64String: base64String)
+        let openRouterRequest = createOpenRouterRequest(base64String: base64String, language: language)
         
         do {
             request.httpBody = try JSONEncoder().encode(openRouterRequest)
@@ -187,7 +187,7 @@ class OpenRouterAPIService {
             
             // Парсим JSON из content
             let foodAnalysis = try JSONDecoder().decode(OpenRouterFoodAnalysis.self, from: content)
-            print("✅ JSON успешно распарсен: \(foodAnalysis.название)")
+            print("✅ JSON успешно распарсен: \(foodAnalysis.name)")
             
             return FoodRecognitionResult(from: foodAnalysis)
             
@@ -197,13 +197,15 @@ class OpenRouterAPIService {
         }
     }
     
-    private func createOpenRouterRequest(base64String: String) -> OpenRouterRequest {
+    private func createOpenRouterRequest(base64String: String, language: Language) -> OpenRouterRequest {
         let imageURL = "data:image/jpeg;base64,\(base64String)"
         
+        // Instruct model: return JSON with English keys, but dish name/value text in selected language
+        let locale = language.rawValue
         let content = [
             OpenRouterContent(
                 type: "text",
-                text: "Проанализируй это фото блюда. Выведи только: название блюда, примерное количество калорий и БЖУ (белки, жиры, углеводы).",
+                text: "Analyze this food photo. Return ONLY JSON with English keys {name, calories, macros:{protein, fat, carbs}}. Write the dish name and any textual values in the user's language (lang=") + locale + ") without extra commentary.",
                 image_url: nil
             ),
             OpenRouterContent(
@@ -220,19 +222,19 @@ class OpenRouterAPIService {
             schema: OpenRouterSchema(
                 type: "object",
                 properties: [
-                    "название": OpenRouterProperty(type: "string", properties: nil, items: nil),
-                    "калории": OpenRouterProperty(type: "number", properties: nil, items: nil),
-                    "бжу": OpenRouterProperty(
+                    "name": OpenRouterProperty(type: "string", properties: nil, items: nil),
+                    "calories": OpenRouterProperty(type: "number", properties: nil, items: nil),
+                    "macros": OpenRouterProperty(
                         type: "object",
                         properties: [
-                            "белки": OpenRouterProperty(type: "number", properties: nil, items: nil),
-                            "жиры": OpenRouterProperty(type: "number", properties: nil, items: nil),
-                            "углеводы": OpenRouterProperty(type: "number", properties: nil, items: nil)
+                            "protein": OpenRouterProperty(type: "number", properties: nil, items: nil),
+                            "fat": OpenRouterProperty(type: "number", properties: nil, items: nil),
+                            "carbs": OpenRouterProperty(type: "number", properties: nil, items: nil)
                         ],
                         items: nil
                     )
                 ],
-                required: ["название", "калории", "бжу"]
+                required: ["name", "calories", "macros"]
             )
         )
         

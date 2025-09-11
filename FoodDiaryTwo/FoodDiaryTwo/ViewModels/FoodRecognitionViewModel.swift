@@ -67,7 +67,7 @@ class FoodRecognitionViewModel: ObservableObject {
         do {
             print("🚀 Отправляем изображение на сервер...")
             // Используем новый сервис с OpenRouter API
-            let result = try await recognitionService.recognizeFood(from: image)
+            let result = try await recognitionService.recognizeFood(from: image, language: LocalizationManager.shared.currentLanguage)
             
             print("✅ Распознавание завершено успешно")
             recognitionResult = result

@@ -23,7 +23,7 @@ struct SettingsView: View {
     @State private var exportData: String?
     
     let languages = ["English", "Русский", "Español", "Français"]
-    let regions = ["United States", "Russia", "Spain", "France", "Germany", "United Kingdom"]
+    // Region selection removed per request
     
     init(modelContext: ModelContext) {
         self.settingsManager = AppSettingsManager(modelContext: modelContext)
@@ -106,7 +106,7 @@ struct SettingsView: View {
                     Text(i18n.localizedString(.appearance))
                 }
                 
-                // MARK: - Language & Region
+                // MARK: - Language
                 Section {
                     HStack {
                         Image(systemName: "globe")
@@ -120,18 +120,8 @@ struct SettingsView: View {
                     .onTapGesture {
                         showingLanguagePicker = true
                     }
-                    
-                    HStack {
-                        Image(systemName: "flag.fill")
-                            .foregroundColor(.orange)
-                            .frame(width: 24)
-                        Text(i18n.localizedString(.region))
-                        Spacer()
-                        Text(settingsManager?.settings?.region ?? "United States")
-                            .foregroundColor(.secondary)
-                    }
                 } header: {
-                    Text(i18n.localizedString(.languageRegion))
+                    Text(i18n.localizedString(.language))
                 }
                 
                 // MARK: - Data Management
