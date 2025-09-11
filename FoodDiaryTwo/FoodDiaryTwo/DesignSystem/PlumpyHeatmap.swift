@@ -201,7 +201,7 @@ struct HeatmapCell: View {
                         if dataPoint.count >= 3 {
                             Text("\(dataPoint.count)")
                                 .font(.system(size: 8, weight: .bold))
-                                .foregroundColor(.white)
+                                .foregroundColor(PlumpyTheme.textInverse)
                         }
                     }
                 }
