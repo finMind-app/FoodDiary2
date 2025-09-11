@@ -264,15 +264,15 @@ enum CalorieStatus: String, CaseIterable {
     var displayName: String {
         switch self {
         case .low:
-            return "Низкое потребление"
+            return LocalizationManager.shared.localizedString(.lowConsumption)
         case .moderate:
-            return "Умеренное потребление"
+            return LocalizationManager.shared.localizedString(.moderateConsumption)
         case .good:
-            return "Хорошее потребление"
+            return LocalizationManager.shared.localizedString(.goodConsumption)
         case .excellent:
-            return "Отличное потребление"
+            return LocalizationManager.shared.localizedString(.excellentConsumption)
         case .exceeded:
-            return "Превышение нормы"
+            return LocalizationManager.shared.localizedString(.exceededConsumption)
         }
     }
     

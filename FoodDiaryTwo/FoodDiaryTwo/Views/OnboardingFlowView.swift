@@ -411,7 +411,7 @@ struct OnboardingFlowView: View {
             if let f = Double(customFat), f > 0 { u.dailyFatGoal = f }
             try? modelContext.save()
         } else {
-            let new = UserProfile(name: name.isEmpty ? "User" : name, age: a, gender: gender, height: h, weight: w, activityLevel: activity, goal: goal)
+            let new = UserProfile(name: name.isEmpty ? LocalizationManager.shared.localizedString(.defaultUserName) : name, age: a, gender: gender, height: h, weight: w, activityLevel: activity, goal: goal)
             if !skip {
                 new.updateDailyCalorieGoal(finalCalories)
             }

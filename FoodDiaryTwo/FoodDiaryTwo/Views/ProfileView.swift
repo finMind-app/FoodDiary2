@@ -224,8 +224,7 @@ struct ProfileView: View {
                             }
                             .buttonStyle(PlainButtonStyle())
                             
-                            Text(ach.title)
-                                .overlay(Text(ach.localizedTitle).opacity(0))
+                            Text(ach.localizedTitle)
                                 .font(PlumpyTheme.Typography.caption1)
                                 .fontWeight(.medium)
                                 .foregroundColor(PlumpyTheme.textPrimary)

@@ -215,6 +215,7 @@ enum LocalizationKey: String, CaseIterable {
     case customOptional = "custom_optional"
     case summaryTitle = "summary_title"
     case questionnaireTitle = "questionnaire_title"
+    case defaultUserName = "default_user_name"
 
     // Recognition result
     case analysisResults = "analysis_results"
@@ -364,6 +365,13 @@ enum LocalizationKey: String, CaseIterable {
     case recForecastEvening = "rec_forecast_evening"
     case recForecastGreatDay = "rec_forecast_great_day"
     case recForecastOverLimit = "rec_forecast_over_limit"
+
+    // Calorie status labels
+    case lowConsumption = "low_consumption"
+    case moderateConsumption = "moderate_consumption"
+    case goodConsumption = "good_consumption"
+    case excellentConsumption = "excellent_consumption"
+    case exceededConsumption = "exceeded_consumption"
     
     func localizedString(for language: Language) -> String {
         switch language {
@@ -473,6 +481,7 @@ enum LocalizationKey: String, CaseIterable {
             .enterFirstName: "Enter first name",
             .enterLastName: "Enter last name",
             .enterEmail: "Enter email address",
+            .defaultUserName: "User",
             .recognizeCalories: "Recognize Calories",
             .photoReady: "Photo is ready for analysis",
             .pickFromGallery: "Pick from Gallery",
@@ -716,6 +725,7 @@ enum LocalizationKey: String, CaseIterable {
             .pickFromGallery: "Выбрать из галереи",
             .takePhoto: "Сделать фото",
             .photoHint: "Сфотографируйте еду для авто-распознавания калорий и БЖУ",
+            .defaultUserName: "Пользователь",
             .analyzing: "Анализируем...",
             .imageProcessingProgress: "Обработка изображения... %d%%",
             .photoSectionTitle: "Сфотографируйте еду",
@@ -834,7 +844,13 @@ enum LocalizationKey: String, CaseIterable {
             .recForecastGoalReached: "Цель достигнута! Можно легкий перекус",
             .recForecastEvening: "День подходит к концу. Осталось %d ккал. Легкий ужин",
             .recForecastGreatDay: "Отличный день! Вы достигли цели",
-            .recForecastOverLimit: "Превышение нормы. Завтра начните заново"
+            .recForecastOverLimit: "Превышение нормы. Завтра начните заново",
+            // Calorie status labels
+            .lowConsumption: "Низкое потребление",
+            .moderateConsumption: "Умеренное потребление",
+            .goodConsumption: "Хорошее потребление",
+            .excellentConsumption: "Отличное потребление",
+            .exceededConsumption: "Превышение нормы"
         ]
     }
 
@@ -935,6 +951,7 @@ enum LocalizationKey: String, CaseIterable {
             .pickFromGallery: "Elegir de la galería",
             .takePhoto: "Tomar foto",
             .photoHint: "Fotografía la comida para detectar calorías y macros",
+            .defaultUserName: "Usuario",
             .analyzing: "Analizando...",
             .imageProcessingProgress: "Procesando imagen... %d%%",
             .photoSectionTitle: "Fotografía tu comida",
@@ -1012,7 +1029,13 @@ enum LocalizationKey: String, CaseIterable {
             .badges: "Insignias",
             .loadingIndicators: "Indicadores de carga",
             .cardTitle: "Título de la tarjeta",
-            .cardSampleText: "Tarjeta de ejemplo con contenido para demostrar el sistema de diseño."
+            .cardSampleText: "Tarjeta de ejemplo con contenido para demostrar el sistema de diseño.",
+            // Calorie status labels
+            .lowConsumption: "Consumo bajo",
+            .moderateConsumption: "Consumo moderado",
+            .goodConsumption: "Buen consumo",
+            .excellentConsumption: "Excelente consumo",
+            .exceededConsumption: "Consumo excedido"
         ]
     }
 
@@ -1113,6 +1136,7 @@ enum LocalizationKey: String, CaseIterable {
             .pickFromGallery: "Choisir depuis la galerie",
             .takePhoto: "Prendre une photo",
             .photoHint: "Photographiez la nourriture pour détecter calories et macros",
+            .defaultUserName: "Utilisateur",
             .analyzing: "Analyse...",
             .imageProcessingProgress: "Traitement de l'image... %d%%",
             .photoSectionTitle: "Photographiez votre repas",
@@ -1190,7 +1214,13 @@ enum LocalizationKey: String, CaseIterable {
             .badges: "Badges",
             .loadingIndicators: "Indicateurs de chargement",
             .cardTitle: "Titre de la carte",
-            .cardSampleText: "Exemple de carte avec du contenu pour démontrer le système de conception."
+            .cardSampleText: "Exemple de carte avec du contenu pour démontrer le système de conception.",
+            // Calorie status labels
+            .lowConsumption: "Consommation faible",
+            .moderateConsumption: "Consommation modérée",
+            .goodConsumption: "Bonne consommation",
+            .excellentConsumption: "Excellente consommation",
+            .exceededConsumption: "Consommation dépassée"
         ]
     }
 }
