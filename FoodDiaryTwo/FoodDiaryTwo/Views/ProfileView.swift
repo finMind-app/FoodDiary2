@@ -608,7 +608,7 @@ struct AchievementDetailSheet: View {
         if let ach = selectedAchievement {
             AchievementDetailView(achievement: ach)
         } else {
-            VStack { ProgressView().padding(); Button("OK") { dismiss() } }
+            VStack { ProgressView().padding(); Button(LocalizationManager.shared.localizedString(.ok)) { dismiss() } }
                 .padding()
         }
     }

@@ -163,6 +163,15 @@ enum LocalizationKey: String, CaseIterable {
     case pickFromGallery = "pick_from_gallery"
     case takePhoto = "take_photo"
     case photoHint = "photo_hint"
+    case analyzing = "analyzing"
+    case imageProcessingProgress = "image_processing_progress" // expects %d
+    case photoSectionTitle = "photo_section_title"
+    case photoSectionSubtitle = "photo_section_subtitle"
+    case useCamera = "use_camera"
+    case recognitionErrorTitle = "recognition_error_title"
+    case unknownError = "unknown_error"
+    case enterMealName = "enter_meal_name"
+    case addNotesOptional = "add_notes_optional"
 
     // Статистика (доп.)
     case statisticsTitle = "statistics_title"
@@ -469,6 +478,15 @@ enum LocalizationKey: String, CaseIterable {
             .pickFromGallery: "Pick from Gallery",
             .takePhoto: "Take Photo",
             .photoHint: "Photograph food to auto-detect calories and macros",
+            .analyzing: "Analyzing...",
+            .imageProcessingProgress: "Processing image... %d%%",
+            .photoSectionTitle: "Photograph your food",
+            .photoSectionSubtitle: "Automatic calorie and macros recognition",
+            .useCamera: "Use Camera",
+            .recognitionErrorTitle: "Recognition Error",
+            .unknownError: "Unknown error",
+            .enterMealName: "Enter meal name",
+            .addNotesOptional: "Add notes (optional)",
             .statisticsTitle: "Statistics",
             .nutritionInsights: "Your nutrition insights",
             .caloriesOverTime: "Calories Over Time",
@@ -698,6 +716,15 @@ enum LocalizationKey: String, CaseIterable {
             .pickFromGallery: "Выбрать из галереи",
             .takePhoto: "Сделать фото",
             .photoHint: "Сфотографируйте еду для авто-распознавания калорий и БЖУ",
+            .analyzing: "Анализируем...",
+            .imageProcessingProgress: "Обработка изображения... %d%%",
+            .photoSectionTitle: "Сфотографируйте еду",
+            .photoSectionSubtitle: "Автоматическое распознавание калорий и БЖУ",
+            .useCamera: "Использовать камеру",
+            .recognitionErrorTitle: "Ошибка распознавания",
+            .unknownError: "Неизвестная ошибка",
+            .enterMealName: "Введите название блюда",
+            .addNotesOptional: "Добавить заметки (необязательно)",
             .statisticsTitle: "Статистика",
             .nutritionInsights: "Ваши инсайты питания",
             .caloriesOverTime: "Калории со временем",
@@ -908,6 +935,15 @@ enum LocalizationKey: String, CaseIterable {
             .pickFromGallery: "Elegir de la galería",
             .takePhoto: "Tomar foto",
             .photoHint: "Fotografía la comida para detectar calorías y macros",
+            .analyzing: "Analizando...",
+            .imageProcessingProgress: "Procesando imagen... %d%%",
+            .photoSectionTitle: "Fotografía tu comida",
+            .photoSectionSubtitle: "Reconocimiento automático de calorías y macros",
+            .useCamera: "Usar la cámara",
+            .recognitionErrorTitle: "Error de reconocimiento",
+            .unknownError: "Error desconocido",
+            .enterMealName: "Introduce el nombre del plato",
+            .addNotesOptional: "Añadir notas (opcional)",
             .statisticsTitle: "Estadísticas",
             .nutritionInsights: "Tus insights de nutrición",
             .caloriesOverTime: "Calorías en el tiempo",
@@ -1077,6 +1113,15 @@ enum LocalizationKey: String, CaseIterable {
             .pickFromGallery: "Choisir depuis la galerie",
             .takePhoto: "Prendre une photo",
             .photoHint: "Photographiez la nourriture pour détecter calories et macros",
+            .analyzing: "Analyse...",
+            .imageProcessingProgress: "Traitement de l'image... %d%%",
+            .photoSectionTitle: "Photographiez votre repas",
+            .photoSectionSubtitle: "Reconnaissance automatique des calories et macros",
+            .useCamera: "Utiliser la caméra",
+            .recognitionErrorTitle: "Erreur de reconnaissance",
+            .unknownError: "Erreur inconnue",
+            .enterMealName: "Entrez le nom du plat",
+            .addNotesOptional: "Ajouter des notes (optionnel)",
             .statisticsTitle: "Statistiques",
             .nutritionInsights: "Vos analyses nutritionnelles",
             .caloriesOverTime: "Calories dans le temps",

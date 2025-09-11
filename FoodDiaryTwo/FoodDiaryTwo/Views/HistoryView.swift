@@ -403,7 +403,7 @@ struct FoodEntryHistoryCard: View {
                     }
                     
                     // БЖУ компактно одной строкой, чтобы не обрезалось
-                    Text("P \(Int(entry.totalProtein))g • C \(Int(entry.totalCarbs))g • F \(Int(entry.totalFat))g")
+                    Text("\(LocalizationManager.shared.localizedString(.proteinShort)) \(Int(entry.totalProtein))g • \(LocalizationManager.shared.localizedString(.carbsShort)) \(Int(entry.totalCarbs))g • \(LocalizationManager.shared.localizedString(.fatShort)) \(Int(entry.totalFat))g")
                         .font(PlumpyTheme.Typography.caption2)
                         .foregroundColor(PlumpyTheme.textSecondary)
                         .lineLimit(1)

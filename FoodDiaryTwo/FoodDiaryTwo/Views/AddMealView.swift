@@ -90,10 +90,10 @@ struct AddMealView: View {
                 isImageLoading = false
             }
         }
-        .alert("Ошибка распознавания", isPresented: $showErrorAlert) {
-            Button("OK") { }
+        .alert(LocalizationManager.shared.localizedString(.recognitionErrorTitle), isPresented: $showErrorAlert) {
+            Button(LocalizationManager.shared.localizedString(.ok)) { }
         } message: {
-            Text(recognitionViewModel.errorMessage ?? "Неизвестная ошибка")
+            Text(recognitionViewModel.errorMessage ?? LocalizationManager.shared.localizedString(.unknownError))
         }
         .onReceive(recognitionViewModel.$showError) { showError in
             if showError {
@@ -158,12 +158,12 @@ struct AddMealView: View {
                             ProgressView()
                                 .progressViewStyle(CircularProgressViewStyle(tint: .white))
                                 .scaleEffect(0.8)
-                            Text("Анализируем...")
+                            Text(LocalizationManager.shared.localizedString(.analyzing))
                                 .fontWeight(.medium)
                         } else {
                             Image(systemName: "camera.viewfinder")
                                 .font(.title3)
-                            Text("Распознать калории")
+                            Text(LocalizationManager.shared.localizedString(.recognizeCalories))
                                 .fontWeight(.medium)
                         }
                     }
@@ -181,7 +181,7 @@ struct AddMealView: View {
                         ProgressView(value: recognitionViewModel.processingProgress)
                             .progressViewStyle(LinearProgressViewStyle(tint: PlumpyTheme.primaryAccent))
                         
-                        Text("Обработка изображения... \(Int(recognitionViewModel.processingProgress * 100))%")
+                        Text(String(format: LocalizationManager.shared.localizedString(.imageProcessingProgress), Int(recognitionViewModel.processingProgress * 100)))
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
@@ -201,12 +201,12 @@ struct AddMealView: View {
                                 .font(.system(size: 32))
                                 .foregroundColor(PlumpyTheme.primaryAccent)
                             
-                            Text("Сфотографируйте еду")
+                            Text(LocalizationManager.shared.localizedString(.photoSectionTitle))
                                 .font(.headline)
                                 .fontWeight(.semibold)
                                 .foregroundColor(PlumpyTheme.textPrimary)
                             
-                            Text("Автоматическое распознавание калорий и БЖУ")
+                            Text(LocalizationManager.shared.localizedString(.photoSectionSubtitle))
                                 .font(.subheadline)
                                 .foregroundColor(PlumpyTheme.textSecondary)
                                 .multilineTextAlignment(.center)
@@ -227,7 +227,7 @@ struct AddMealView: View {
                     }) {
                         HStack(spacing: 8) {
                             Image(systemName: "camera")
-                            Text("Использовать камеру")
+                            Text(LocalizationManager.shared.localizedString(.useCamera))
                                 .fontWeight(.medium)
                         }
                         .frame(maxWidth: .infinity)
@@ -253,19 +253,19 @@ struct AddMealView: View {
         VStack(spacing: 20) {
             // Название приема пищи
             VStack(alignment: .leading, spacing: 8) {
-                Text("Название")
+                Text(LocalizationManager.shared.localizedString(.mealName))
                     .font(.headline)
                     .fontWeight(.semibold)
                     .foregroundColor(PlumpyTheme.textPrimary)
                 
-                TextField("Введите название блюда", text: $mealName)
+                TextField(LocalizationManager.shared.localizedString(.enterMealName), text: $mealName)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .font(.body)
             }
             
             // Тип приема пищи
             VStack(alignment: .leading, spacing: 12) {
-                Text("Тип приема")
+                Text(LocalizationManager.shared.localizedString(.mealType))
                     .font(.headline)
                     .fontWeight(.semibold)
                     .foregroundColor(PlumpyTheme.textPrimary)
@@ -293,7 +293,7 @@ struct AddMealView: View {
             
             // Время приема пищи
             VStack(alignment: .leading, spacing: 8) {
-                Text("Время")
+                Text(LocalizationManager.shared.localizedString(.timeLabel))
                     .font(.headline)
                     .fontWeight(.semibold)
                     .foregroundColor(PlumpyTheme.textPrimary)
@@ -308,7 +308,7 @@ struct AddMealView: View {
             
             // Калории
             VStack(alignment: .leading, spacing: 8) {
-                Text("Калории")
+                Text(LocalizationManager.shared.localizedString(.calories))
                     .font(.headline)
                     .fontWeight(.semibold)
                     .foregroundColor(PlumpyTheme.textPrimary)
@@ -322,7 +322,7 @@ struct AddMealView: View {
             // БЖУ
             HStack(spacing: 12) {
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Белки")
+                    Text(LocalizationManager.shared.localizedString(.protein))
                         .font(.subheadline)
                         .fontWeight(.medium)
                         .foregroundColor(PlumpyTheme.textSecondary)
@@ -334,7 +334,7 @@ struct AddMealView: View {
                 }
                 
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Жиры")
+                    Text(LocalizationManager.shared.localizedString(.fat))
                         .font(.subheadline)
                         .fontWeight(.medium)
                         .foregroundColor(PlumpyTheme.textSecondary)
@@ -346,7 +346,7 @@ struct AddMealView: View {
                 }
                 
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Углеводы")
+                    Text(LocalizationManager.shared.localizedString(.carbs))
                         .font(.subheadline)
                         .fontWeight(.medium)
                         .foregroundColor(PlumpyTheme.textSecondary)
@@ -366,12 +366,12 @@ struct AddMealView: View {
     // MARK: - Секция заметок
     private var notesSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Заметки")
+            Text(LocalizationManager.shared.localizedString(.notes))
                 .font(.headline)
                 .fontWeight(.semibold)
                 .foregroundColor(PlumpyTheme.textPrimary)
             
-            TextField("Добавить заметки (необязательно)", text: $notes, axis: .vertical)
+            TextField(LocalizationManager.shared.localizedString(.addNotesOptional), text: $notes, axis: .vertical)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .lineLimit(3...6)
                 .font(.body)
