@@ -14,23 +14,24 @@ struct ActivityLevelView: View {
     @State private var isVisible = false
     
     var body: some View {
-        VStack(spacing: PlumpyTheme.Spacing.extraLarge) {
-            // Header
+        ScrollView {
             VStack(spacing: PlumpyTheme.Spacing.large) {
-                Text(LocalizationManager.shared.localizedString(.onboardingActivityTitle))
-                    .font(PlumpyTheme.Typography.title1)
-                    .fontWeight(.bold)
-                    .foregroundColor(PlumpyTheme.textPrimary)
-                    .multilineTextAlignment(.center)
-                    .opacity(isVisible ? 1 : 0)
-                    .offset(y: isVisible ? 0 : 20)
-                    .animation(.easeOut(duration: 0.6).delay(0.1), value: isVisible)
-            }
-            .padding(.horizontal, PlumpyTheme.Spacing.medium)
-            .padding(.top, PlumpyTheme.Spacing.large)
+                // Header
+                VStack(spacing: PlumpyTheme.Spacing.medium) {
+                    Text(LocalizationManager.shared.localizedString(.onboardingActivityTitle))
+                        .font(PlumpyTheme.Typography.title1)
+                        .fontWeight(.bold)
+                        .foregroundColor(PlumpyTheme.textPrimary)
+                        .multilineTextAlignment(.center)
+                        .opacity(isVisible ? 1 : 0)
+                        .offset(y: isVisible ? 0 : 20)
+                        .animation(.easeOut(duration: 0.6).delay(0.1), value: isVisible)
+                }
+                .padding(.horizontal, PlumpyTheme.Spacing.medium)
+                .padding(.top, PlumpyTheme.Spacing.medium)
             
-            // Activity Level Cards
-            VStack(spacing: PlumpyTheme.Spacing.medium) {
+                // Activity Level Cards
+                VStack(spacing: PlumpyTheme.Spacing.small) {
                 ForEach(Array(ActivityLevel.allCases.enumerated()), id: \.element) { index, activityLevel in
                     ActivityLevelCard(
                         activityLevel: activityLevel,
@@ -45,24 +46,24 @@ struct ActivityLevelView: View {
                     .offset(y: isVisible ? 0 : 30)
                     .animation(.easeOut(duration: 0.6).delay(0.3 + Double(index) * 0.1), value: isVisible)
                 }
+                }
+                .padding(.horizontal, PlumpyTheme.Spacing.medium)
+                
+                // Next Button
+                PlumpyButton(
+                    title: LocalizationManager.shared.localizedString(.onboardingContinue),
+                    icon: "arrow.right",
+                    style: selectedActivityLevel != nil ? .primary : .ghost,
+                    isEnabled: selectedActivityLevel != nil,
+                    action: onNext
+                )
+                .padding(.horizontal, PlumpyTheme.Spacing.medium)
+                .padding(.top, PlumpyTheme.Spacing.medium)
+                .padding(.bottom, PlumpyTheme.Spacing.large)
+                .opacity(isVisible ? 1 : 0)
+                .offset(y: isVisible ? 0 : 20)
+                .animation(.easeOut(duration: 0.6).delay(0.8), value: isVisible)
             }
-            .padding(.horizontal, PlumpyTheme.Spacing.medium)
-            
-            Spacer()
-            
-            // Next Button
-            PlumpyButton(
-                title: LocalizationManager.shared.localizedString(.onboardingContinue),
-                icon: "arrow.right",
-                style: selectedActivityLevel != nil ? .primary : .ghost,
-                isEnabled: selectedActivityLevel != nil,
-                action: onNext
-            )
-            .padding(.horizontal, PlumpyTheme.Spacing.medium)
-            .padding(.bottom, PlumpyTheme.Spacing.large)
-            .opacity(isVisible ? 1 : 0)
-            .offset(y: isVisible ? 0 : 20)
-            .animation(.easeOut(duration: 0.6).delay(0.8), value: isVisible)
         }
         .background(PlumpyTheme.background)
         .onAppear {

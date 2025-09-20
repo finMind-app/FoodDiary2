@@ -18,6 +18,19 @@ class LocalizationManager: ObservableObject {
         if let savedLanguage = UserDefaults.standard.string(forKey: "selectedLanguage"),
            let language = Language(rawValue: savedLanguage) {
             currentLanguage = language
+        } else {
+            // Автоматически определяем язык устройства
+            let deviceLanguage = Locale.current.language.languageCode?.identifier ?? "en"
+            switch deviceLanguage {
+            case "ru":
+                currentLanguage = .russian
+            case "es":
+                currentLanguage = .spanish
+            case "fr":
+                currentLanguage = .french
+            default:
+                currentLanguage = .english
+            }
         }
     }
     
@@ -342,6 +355,13 @@ enum LocalizationKey: String, CaseIterable {
     case goalLoseDescription = "goal_lose_description"
     case goalMaintainDescription = "goal_maintain_description"
     case goalGainDescription = "goal_gain_description"
+    
+    // Activity level descriptions
+    case activitySedentaryDescription = "activity_sedentary_description"
+    case activityLightDescription = "activity_light_description"
+    case activityModerateDescription = "activity_moderate_description"
+    case activityActiveDescription = "activity_active_description"
+    case activityVeryActiveDescription = "activity_very_active_description"
 
     // Achievements (titles and details)
     case achFirstMealTitle = "ach_first_meal_title"
@@ -699,7 +719,12 @@ enum LocalizationKey: String, CaseIterable {
             .onboardingMacroDistribution: "Macro distribution",
             .goalLoseDescription: "Create a calorie deficit for healthy weight loss",
             .goalMaintainDescription: "Maintain current weight with balanced nutrition",
-            .goalGainDescription: "Add calories for muscle mass gain"
+            .goalGainDescription: "Add calories for muscle mass gain",
+            .activitySedentaryDescription: "I sit almost all day",
+            .activityLightDescription: "I move sometimes",
+            .activityModerateDescription: "I train several times a week",
+            .activityActiveDescription: "Very active lifestyle",
+            .activityVeryActiveDescription: "Professional sports"
         ]
     }
     
@@ -982,7 +1007,12 @@ enum LocalizationKey: String, CaseIterable {
             .onboardingMacroDistribution: "Распределение БЖУ",
             .goalLoseDescription: "Создадим дефицит калорий для здорового похудения",
             .goalMaintainDescription: "Поддержим текущий вес сбалансированным питанием",
-            .goalGainDescription: "Добавим калории для набора мышечной массы"
+            .goalGainDescription: "Добавим калории для набора мышечной массы",
+            .activitySedentaryDescription: "Сижу почти весь день",
+            .activityLightDescription: "Иногда двигаюсь",
+            .activityModerateDescription: "Тренируюсь несколько раз в неделю",
+            .activityActiveDescription: "Очень активный образ жизни",
+            .activityVeryActiveDescription: "Профессиональный спорт"
         ]
     }
 

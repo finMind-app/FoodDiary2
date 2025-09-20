@@ -116,15 +116,15 @@ extension ActivityLevel {
     var onboardingDescription: String {
         switch self {
         case .sedentary:
-            return "Сижу почти весь день"
+            return LocalizationManager.shared.localizedString(.activitySedentaryDescription)
         case .light:
-            return "Иногда двигаюсь"
+            return LocalizationManager.shared.localizedString(.activityLightDescription)
         case .moderate:
-            return "Тренируюсь несколько раз в неделю"
+            return LocalizationManager.shared.localizedString(.activityModerateDescription)
         case .active:
-            return "Очень активный образ жизни"
+            return LocalizationManager.shared.localizedString(.activityActiveDescription)
         case .veryActive:
-            return "Профессиональный спорт"
+            return LocalizationManager.shared.localizedString(.activityVeryActiveDescription)
         }
     }
 }

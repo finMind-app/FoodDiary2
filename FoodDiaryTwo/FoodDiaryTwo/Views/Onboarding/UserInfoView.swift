@@ -22,23 +22,24 @@ struct UserInfoView: View {
     @State private var showSliders = false
     
     var body: some View {
-        VStack(spacing: PlumpyTheme.Spacing.extraLarge) {
-            // Header
+        ScrollView {
             VStack(spacing: PlumpyTheme.Spacing.large) {
-                Text(LocalizationManager.shared.localizedString(.onboardingUserInfoTitle))
-                    .font(PlumpyTheme.Typography.title1)
-                    .fontWeight(.bold)
-                    .foregroundColor(PlumpyTheme.textPrimary)
-                    .multilineTextAlignment(.center)
-                    .opacity(isVisible ? 1 : 0)
-                    .offset(y: isVisible ? 0 : 20)
-                    .animation(.easeOut(duration: 0.6).delay(0.1), value: isVisible)
-            }
-            .padding(.horizontal, PlumpyTheme.Spacing.medium)
-            .padding(.top, PlumpyTheme.Spacing.large)
+                // Header
+                VStack(spacing: PlumpyTheme.Spacing.medium) {
+                    Text(LocalizationManager.shared.localizedString(.onboardingUserInfoTitle))
+                        .font(PlumpyTheme.Typography.title1)
+                        .fontWeight(.bold)
+                        .foregroundColor(PlumpyTheme.textPrimary)
+                        .multilineTextAlignment(.center)
+                        .opacity(isVisible ? 1 : 0)
+                        .offset(y: isVisible ? 0 : 20)
+                        .animation(.easeOut(duration: 0.6).delay(0.1), value: isVisible)
+                }
+                .padding(.horizontal, PlumpyTheme.Spacing.medium)
+                .padding(.top, PlumpyTheme.Spacing.medium)
             
-            // Form Fields
-            VStack(spacing: PlumpyTheme.Spacing.large) {
+                // Form Fields
+                VStack(spacing: PlumpyTheme.Spacing.medium) {
                 // Gender Selection
                 VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.small) {
                     Text(LocalizationManager.shared.localizedString(.gender))
@@ -87,7 +88,10 @@ struct UserInfoView: View {
                         Slider(
                             value: Binding(
                                 get: { Double(age ?? 25) },
-                                set: { age = Int($0) }
+                                set: { 
+                                    age = Int($0)
+                                    ageText = String(Int($0))
+                                }
                             ),
                             in: 16...100,
                             step: 1
@@ -121,7 +125,10 @@ struct UserInfoView: View {
                         Slider(
                             value: Binding(
                                 get: { height ?? 175 },
-                                set: { height = $0 }
+                                set: { 
+                                    height = $0
+                                    heightText = String(Int($0))
+                                }
                             ),
                             in: 120...250,
                             step: 1
@@ -155,7 +162,10 @@ struct UserInfoView: View {
                         Slider(
                             value: Binding(
                                 get: { weight ?? 70 },
-                                set: { weight = $0 }
+                                set: { 
+                                    weight = $0
+                                    weightText = String(Int($0))
+                                }
                             ),
                             in: 30...200,
                             step: 1
@@ -167,24 +177,24 @@ struct UserInfoView: View {
                 .opacity(isVisible ? 1 : 0)
                 .offset(y: isVisible ? 0 : 20)
                 .animation(.easeOut(duration: 0.6).delay(0.6), value: isVisible)
+                }
+                .padding(.horizontal, PlumpyTheme.Spacing.medium)
+                
+                // Next Button
+                PlumpyButton(
+                    title: LocalizationManager.shared.localizedString(.onboardingContinue),
+                    icon: "arrow.right",
+                    style: isFormValid ? .primary : .ghost,
+                    isEnabled: isFormValid,
+                    action: onNext
+                )
+                .padding(.horizontal, PlumpyTheme.Spacing.medium)
+                .padding(.top, PlumpyTheme.Spacing.medium)
+                .padding(.bottom, PlumpyTheme.Spacing.large)
+                .opacity(isVisible ? 1 : 0)
+                .offset(y: isVisible ? 0 : 20)
+                .animation(.easeOut(duration: 0.6).delay(0.8), value: isVisible)
             }
-            .padding(.horizontal, PlumpyTheme.Spacing.medium)
-            
-            Spacer()
-            
-            // Next Button
-            PlumpyButton(
-                title: LocalizationManager.shared.localizedString(.onboardingContinue),
-                icon: "arrow.right",
-                style: isFormValid ? .primary : .ghost,
-                isEnabled: isFormValid,
-                action: onNext
-            )
-            .padding(.horizontal, PlumpyTheme.Spacing.medium)
-            .padding(.bottom, PlumpyTheme.Spacing.large)
-            .opacity(isVisible ? 1 : 0)
-            .offset(y: isVisible ? 0 : 20)
-            .animation(.easeOut(duration: 0.6).delay(0.8), value: isVisible)
         }
         .background(PlumpyTheme.background)
         .onAppear {
