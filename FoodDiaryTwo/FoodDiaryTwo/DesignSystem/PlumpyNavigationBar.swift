@@ -219,7 +219,7 @@ struct PlumpyBreadcrumb: View {
         .padding(.vertical, PlumpyTheme.Spacing.medium)
         .background(
             RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
-                .fill(PlumpyTheme.neutral50)
+                .fill(PlumpyTheme.background)
         )
     }
 }

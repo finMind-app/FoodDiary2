@@ -191,7 +191,7 @@ struct PlumpySearchField: View {
         .padding(.vertical, PlumpyTheme.Spacing.medium)
         .background(
             RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
-                .fill(Color(UIColor { tc in tc.userInterfaceStyle == .dark ? UIColor(PlumpyTheme.surfaceSecondary) : UIColor(PlumpyTheme.neutral50) }))
+                .fill(Color(UIColor { tc in tc.userInterfaceStyle == .dark ? UIColor(PlumpyTheme.surfaceSecondary) : UIColor(PlumpyTheme.background) }))
                 .overlay(
                     RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
                         .stroke(isFocused ? PlumpyTheme.primary : PlumpyTheme.neutral200, lineWidth: isFocused ? 1.5 : 1)
@@ -247,7 +247,7 @@ struct PlumpyTextArea: View {
                 .padding(.vertical, PlumpyTheme.Spacing.medium)
                 .background(
                     RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
-                        .fill(Color(UIColor { tc in tc.userInterfaceStyle == .dark ? UIColor(PlumpyTheme.surfaceSecondary) : UIColor(PlumpyTheme.neutral50) }))
+                        .fill(Color(UIColor { tc in tc.userInterfaceStyle == .dark ? UIColor(PlumpyTheme.surfaceSecondary) : UIColor(PlumpyTheme.background) }))
                         .overlay(
                             RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
                                 .stroke(isFocused ? PlumpyTheme.primary : PlumpyTheme.neutral200, lineWidth: isFocused ? 1.5 : 1)

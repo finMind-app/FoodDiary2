@@ -13,6 +13,8 @@ struct MainAppView: View {
     @State private var showingSplash = true
     @State private var splashOpacity = 1.0
     @State private var appSettingsManager: AppSettingsManager?
+    @State private var showingOnboarding = false
+    @State private var hasCheckedOnboarding = false
     
     // Переключение между версиями сплеш скрина (true = основная, false = простая)
     private let useAdvancedSplash = true
@@ -21,8 +23,20 @@ struct MainAppView: View {
         ZStack {
             // Основное приложение
             ContentView()
-                .opacity(showingSplash ? 0 : 1)
+                .opacity(showingSplash || showingOnboarding ? 0 : 1)
                 .animation(.easeInOut(duration: 0.5), value: showingSplash)
+                .animation(.easeInOut(duration: 0.5), value: showingOnboarding)
+            
+            // Онбординг
+            if showingOnboarding {
+                NewOnboardingFlowView(onComplete: {
+                    withAnimation(.easeInOut(duration: 0.5)) {
+                        showingOnboarding = false
+                    }
+                })
+                .transition(.opacity)
+                .animation(.easeInOut(duration: 0.5), value: showingOnboarding)
+            }
             
             // Сплеш скрин
             if showingSplash {
@@ -56,8 +70,42 @@ struct MainAppView: View {
                         // Скрываем сплеш скрин после анимации исчезновения
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                             showingSplash = false
+                            checkForOnboarding()
                         }
                     }
+                }
+            }
+        }
+    }
+    
+    // MARK: - Onboarding Check
+    private func checkForOnboarding() {
+        guard !hasCheckedOnboarding else { return }
+        hasCheckedOnboarding = true
+        
+        // Check if this is the first launch or if user profile doesn't exist
+        let userDescriptor = FetchDescriptor<UserProfile>()
+        let settingsDescriptor = FetchDescriptor<AppSettings>()
+        
+        do {
+            let users = try modelContext.fetch(userDescriptor)
+            let settings = try modelContext.fetch(settingsDescriptor)
+            
+            let shouldShowOnboarding = users.isEmpty || (settings.first?.isFirstLaunch ?? true)
+            
+            if shouldShowOnboarding {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    withAnimation(.easeInOut(duration: 0.5)) {
+                        showingOnboarding = true
+                    }
+                }
+            }
+        } catch {
+            print("Error checking onboarding status: \(error)")
+            // Show onboarding as fallback
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                withAnimation(.easeInOut(duration: 0.5)) {
+                    showingOnboarding = true
                 }
             }
         }

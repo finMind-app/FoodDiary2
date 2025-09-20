@@ -219,7 +219,7 @@ struct FoodEntryDetailView: View {
                             .padding(PlumpyTheme.Spacing.medium)
                             .background(
                                 RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
-                                    .fill(PlumpyTheme.neutral50)
+                                    .fill(PlumpyTheme.background)
                             )
                     }
                 }
@@ -277,7 +277,7 @@ struct FoodEntryDetailView: View {
                         .padding(PlumpyTheme.Spacing.medium)
                         .background(
                             RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
-                                .fill(PlumpyTheme.neutral50)
+                                .fill(PlumpyTheme.background)
                         )
                     } else {
                         HStack(spacing: PlumpyTheme.Spacing.small) {
@@ -295,7 +295,7 @@ struct FoodEntryDetailView: View {
                         .padding(PlumpyTheme.Spacing.medium)
                         .background(
                             RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
-                                .fill(PlumpyTheme.neutral50)
+                                .fill(PlumpyTheme.background)
                         )
                     }
                 }
@@ -393,7 +393,7 @@ struct FoodEntryDetailView: View {
                         .padding(PlumpyTheme.Spacing.medium)
                         .background(
                             RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
-                                .fill(PlumpyTheme.neutral50)
+                                .fill(PlumpyTheme.background)
                         )
                 } else {
                     Text(LocalizationManager.shared.localizedString(.notes))
@@ -403,7 +403,7 @@ struct FoodEntryDetailView: View {
                         .padding(PlumpyTheme.Spacing.medium)
                         .background(
                             RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
-                                .fill(PlumpyTheme.neutral50)
+                                .fill(PlumpyTheme.background)
                         )
                 }
             }
@@ -511,6 +511,56 @@ struct FoodEntryDetailView: View {
 }
 
 #Preview {
-    // Preview temporarily disabled due to SwiftData model initialization complexity
-    Text("FoodEntryDetailView Preview")
+    FoodEntryDetailView(foodEntry: .mock)
+        .modelContainer(for: [FoodEntry.self, FoodProduct.self], inMemory: true)
+}
+
+// MARK: - Preview Mocks
+extension FoodProduct {
+    static var mockApple: FoodProduct {
+        FoodProduct(
+            name: "Яблоко",
+            brand: "Голд",
+            servingSize: 100,
+            servingUnit: "g",
+            caloriesPerServing: 52,
+            protein: 0.3,
+            carbs: 14,
+            fat: 0.2,
+            fiber: 2.4,
+            sugar: 10,
+            sodium: 1,
+            category: .fruits
+        )
+    }
+
+    static var mockChicken: FoodProduct {
+        FoodProduct(
+            name: "Куриная грудка",
+            brand: "Петелинка",
+            servingSize: 100,
+            servingUnit: "g",
+            caloriesPerServing: 165,
+            protein: 31,
+            carbs: 0,
+            fat: 3.6,
+            category: .protein
+        )
+    }
+
+    static var mockList: [FoodProduct] {
+        [mockApple, mockChicken]
+    }
+}
+
+extension FoodEntry {
+    static var mock: FoodEntry {
+        FoodEntry(
+            name: "Обед",
+            date: Date(),
+            mealType: .lunch,
+            products: FoodProduct.mockList,
+            notes: "Лёгкий обед после тренировки 💪"
+        )
+    }
 }

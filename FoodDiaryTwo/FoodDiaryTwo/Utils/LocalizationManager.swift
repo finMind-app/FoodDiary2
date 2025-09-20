@@ -313,6 +313,30 @@ enum LocalizationKey: String, CaseIterable {
     case recipeModelNoAnswer = "recipe_model_no_answer"
     case recipeRateLimitError = "recipe_rate_limit_error"
     case recipeApiGenericError = "recipe_api_generic_error"
+    
+    // New Onboarding
+    case onboardingGoalTitle = "onboarding_goal_title"
+    case onboardingGoalSubtitle = "onboarding_goal_subtitle"
+    case onboardingUserInfoTitle = "onboarding_user_info_title"
+    case onboardingActivityTitle = "onboarding_activity_title"
+    case onboardingResultTitle = "onboarding_result_title"
+    case onboardingPaywallTitle = "onboarding_paywall_title"
+    case onboardingContinue = "onboarding_continue"
+    case onboardingUnlockPlan = "onboarding_unlock_plan"
+    case onboardingContinueFree = "onboarding_continue_free"
+    case onboardingBenefitPersonalPlan = "onboarding_benefit_personal_plan"
+    case onboardingBenefitPersonalPlanDesc = "onboarding_benefit_personal_plan_desc"
+    case onboardingBenefitProgressTracker = "onboarding_benefit_progress_tracker"
+    case onboardingBenefitProgressTrackerDesc = "onboarding_benefit_progress_tracker_desc"
+    case onboardingBenefitAIRecommendations = "onboarding_benefit_ai_recommendations"
+    case onboardingBenefitAIRecommendationsDesc = "onboarding_benefit_ai_recommendations_desc"
+    case onboardingBenefitNotifications = "onboarding_benefit_notifications"
+    case onboardingBenefitNotificationsDesc = "onboarding_benefit_notifications_desc"
+    case onboardingBenefitSync = "onboarding_benefit_sync"
+    case onboardingBenefitSyncDesc = "onboarding_benefit_sync_desc"
+    case onboardingWeightLossPrediction = "onboarding_weight_loss_prediction"
+    case onboardingCaloriesPerDay = "onboarding_calories_per_day"
+    case onboardingMacroDistribution = "onboarding_macro_distribution"
 
     // Achievements (titles and details)
     case achFirstMealTitle = "ach_first_meal_title"
@@ -644,7 +668,30 @@ enum LocalizationKey: String, CaseIterable {
             .recForecastGoalReached: "Goal reached! You can have a light snack",
             .recForecastEvening: "Day is ending. %d kcal remaining. Light dinner",
             .recForecastGreatDay: "Great day! You reached your goal",
-            .recForecastOverLimit: "Over the limit. Start fresh tomorrow"
+            .recForecastOverLimit: "Over the limit. Start fresh tomorrow",
+            // New Onboarding
+            .onboardingGoalTitle: "What's your goal?",
+            .onboardingGoalSubtitle: "Choose your main task, and we'll create a plan just for you",
+            .onboardingUserInfoTitle: "Tell us a bit about yourself",
+            .onboardingActivityTitle: "How does your day go?",
+            .onboardingResultTitle: "Your personal nutrition plan is ready!",
+            .onboardingPaywallTitle: "Unlock your personal plan",
+            .onboardingContinue: "Continue",
+            .onboardingUnlockPlan: "Unlock my plan",
+            .onboardingContinueFree: "Continue with free version",
+            .onboardingBenefitPersonalPlan: "Personal nutrition plan and recipes",
+            .onboardingBenefitPersonalPlanDesc: "Individual recommendations based on your goals",
+            .onboardingBenefitProgressTracker: "Progress tracker",
+            .onboardingBenefitProgressTrackerDesc: "Track your progress with detailed analytics",
+            .onboardingBenefitAIRecommendations: "AI recommendations",
+            .onboardingBenefitAIRecommendationsDesc: "Smart nutrition advice from artificial intelligence",
+            .onboardingBenefitNotifications: "Notifications and reminders",
+            .onboardingBenefitNotificationsDesc: "Never miss a meal again",
+            .onboardingBenefitSync: "Data synchronization",
+            .onboardingBenefitSyncDesc: "Your data is always with you on all devices",
+            .onboardingWeightLossPrediction: "In 6 weeks you can lose approximately",
+            .onboardingCaloriesPerDay: "kcal per day",
+            .onboardingMacroDistribution: "Macro distribution"
         ]
     }
     
@@ -901,7 +948,30 @@ enum LocalizationKey: String, CaseIterable {
             .recipeEmptyInputError: "Введите хотя бы один ингредиент",
             .recipeModelNoAnswer: "Модель не вернула ответ. Попробуйте снова.",
             .recipeRateLimitError: "Превышен лимит. Попробуйте позже.",
-            .recipeApiGenericError: "Что-то пошло не так. Попробуйте еще раз."
+            .recipeApiGenericError: "Что-то пошло не так. Попробуйте еще раз.",
+            // New Onboarding
+            .onboardingGoalTitle: "Какая у тебя цель?",
+            .onboardingGoalSubtitle: "Выбери главную задачу, и мы подберём план именно для тебя",
+            .onboardingUserInfoTitle: "Расскажи немного о себе",
+            .onboardingActivityTitle: "Как проходит твой день?",
+            .onboardingResultTitle: "Твой персональный план питания готов!",
+            .onboardingPaywallTitle: "Разблокируй свой персональный план",
+            .onboardingContinue: "Продолжить",
+            .onboardingUnlockPlan: "Разблокировать мой план",
+            .onboardingContinueFree: "Продолжить с бесплатной версией",
+            .onboardingBenefitPersonalPlan: "Персональный план питания и рецепты",
+            .onboardingBenefitPersonalPlanDesc: "Индивидуальные рекомендации на основе твоих целей",
+            .onboardingBenefitProgressTracker: "Трекер прогресса",
+            .onboardingBenefitProgressTrackerDesc: "Отслеживай свой прогресс с детальной аналитикой",
+            .onboardingBenefitAIRecommendations: "Рекомендации ИИ",
+            .onboardingBenefitAIRecommendationsDesc: "Умные советы по питанию от искусственного интеллекта",
+            .onboardingBenefitNotifications: "Уведомления и напоминания",
+            .onboardingBenefitNotificationsDesc: "Никогда не пропускай приемы пищи",
+            .onboardingBenefitSync: "Синхронизация данных",
+            .onboardingBenefitSyncDesc: "Твои данные всегда с тобой на всех устройствах",
+            .onboardingWeightLossPrediction: "Через 6 недель ты сможешь похудеть примерно на",
+            .onboardingCaloriesPerDay: "ккал в день",
+            .onboardingMacroDistribution: "Распределение БЖУ"
         ]
     }
 

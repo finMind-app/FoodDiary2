@@ -1,0 +1,131 @@
+//
+//  GoalSelectionView.swift
+//  FoodDiaryTwo
+//
+//  Created by AI Assistant
+//
+
+import SwiftUI
+
+struct GoalSelectionView: View {
+    @Binding var selectedGoal: UserGoal?
+    let onNext: () -> Void
+    
+    var body: some View {
+        VStack(spacing: PlumpyTheme.Spacing.extraLarge) {
+            // Header
+            VStack(spacing: PlumpyTheme.Spacing.medium) {
+                Text(LocalizationManager.shared.localizedString(.onboardingGoalTitle))
+                    .font(PlumpyTheme.Typography.title1)
+                    .fontWeight(.bold)
+                    .foregroundColor(PlumpyTheme.textPrimary)
+                    .multilineTextAlignment(.center)
+                
+                Text(LocalizationManager.shared.localizedString(.onboardingGoalSubtitle))
+                    .font(PlumpyTheme.Typography.body)
+                    .foregroundColor(PlumpyTheme.textSecondary)
+                    .multilineTextAlignment(.center)
+                    .lineLimit(3)
+            }
+            .padding(.horizontal, PlumpyTheme.Spacing.medium)
+            
+            // Goal Cards
+            VStack(spacing: PlumpyTheme.Spacing.medium) {
+                ForEach(UserGoal.allCases, id: \.self) { goal in
+                    GoalCard(
+                        goal: goal,
+                        isSelected: selectedGoal == goal,
+                        onTap: {
+                            withAnimation(PlumpyTheme.Animation.smooth) {
+                                selectedGoal = goal
+                            }
+                        }
+                    )
+                }
+            }
+            .padding(.horizontal, PlumpyTheme.Spacing.medium)
+            
+            Spacer()
+            
+            // Next Button
+            PlumpyButton(
+                title: LocalizationManager.shared.localizedString(.onboardingContinue),
+                icon: "arrow.right",
+                style: selectedGoal != nil ? .primary : .ghost,
+                isEnabled: selectedGoal != nil,
+                action: onNext
+            )
+            .padding(.horizontal, PlumpyTheme.Spacing.medium)
+            .padding(.bottom, PlumpyTheme.Spacing.large)
+        }
+        .background(PlumpyTheme.background)
+    }
+}
+
+struct GoalCard: View {
+    let goal: UserGoal
+    let isSelected: Bool
+    let onTap: () -> Void
+    
+    var body: some View {
+        Button(action: onTap) {
+            HStack(spacing: PlumpyTheme.Spacing.medium) {
+                // Emoji Icon
+                Text(goal.emoji)
+                    .font(.system(size: 32))
+                    .frame(width: 60, height: 60)
+                    .background(
+                        Circle()
+                            .fill(isSelected ? PlumpyTheme.primary.opacity(0.1) : PlumpyTheme.neutral100)
+                    )
+                
+                // Content
+                VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.tiny) {
+                    Text(goal.displayName)
+                        .font(PlumpyTheme.Typography.headline)
+                        .fontWeight(.semibold)
+                        .foregroundColor(PlumpyTheme.textPrimary)
+                    
+                    Text(goal.description)
+                        .font(PlumpyTheme.Typography.caption1)
+                        .foregroundColor(PlumpyTheme.textSecondary)
+                        .lineLimit(2)
+                }
+                
+                Spacer()
+                
+                // Selection Indicator
+                Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                    .font(.title2)
+                    .foregroundColor(isSelected ? PlumpyTheme.primary : PlumpyTheme.neutral300)
+            }
+            .padding(PlumpyTheme.Spacing.medium)
+            .background(
+                RoundedRectangle(cornerRadius: PlumpyTheme.Radius.large)
+                    .fill(isSelected ? PlumpyTheme.primary.opacity(0.05) : PlumpyTheme.surface)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: PlumpyTheme.Radius.large)
+                            .stroke(
+                                isSelected ? PlumpyTheme.primary : PlumpyTheme.border,
+                                lineWidth: isSelected ? 2 : 1
+                            )
+                    )
+            )
+            .scaleEffect(isSelected ? 1.02 : 1.0)
+            .shadow(
+                color: isSelected ? PlumpyTheme.primary.opacity(0.1) : PlumpyTheme.shadow.opacity(0.05),
+                radius: isSelected ? 8 : 4,
+                x: 0,
+                y: isSelected ? 4 : 2
+            )
+        }
+        .buttonStyle(PlainButtonStyle())
+        .animation(PlumpyTheme.Animation.spring, value: isSelected)
+    }
+}
+
+#Preview {
+    GoalSelectionView(selectedGoal: .constant(nil)) {
+        print("Next tapped")
+    }
+}

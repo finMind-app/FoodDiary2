@@ -428,7 +428,7 @@ struct QuickActionButton: View {
             .padding(.vertical, PlumpyTheme.Spacing.large)
             .plumpyCard(
                 cornerRadius: PlumpyTheme.Radius.medium,
-                backgroundColor: PlumpyTheme.neutral50
+                backgroundColor: PlumpyTheme.background
             )
         }
         .buttonStyle(PlainButtonStyle())
@@ -496,7 +496,7 @@ struct FoodEntryCard: View {
         .buttonStyle(PlainButtonStyle())
         .plumpyCard(
             cornerRadius: PlumpyTheme.Radius.medium,
-            backgroundColor: PlumpyTheme.neutral50
+            backgroundColor: PlumpyTheme.background
         )
         .sheet(isPresented: $showingDetail) {
             FoodEntryDetailView(foodEntry: entry)
