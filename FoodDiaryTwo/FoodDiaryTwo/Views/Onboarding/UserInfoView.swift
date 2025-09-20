@@ -18,18 +18,24 @@ struct UserInfoView: View {
     @State private var ageText: String = ""
     @State private var heightText: String = ""
     @State private var weightText: String = ""
+    @State private var isVisible = false
+    @State private var showSliders = false
     
     var body: some View {
         VStack(spacing: PlumpyTheme.Spacing.extraLarge) {
             // Header
-            VStack(spacing: PlumpyTheme.Spacing.medium) {
+            VStack(spacing: PlumpyTheme.Spacing.large) {
                 Text(LocalizationManager.shared.localizedString(.onboardingUserInfoTitle))
                     .font(PlumpyTheme.Typography.title1)
                     .fontWeight(.bold)
                     .foregroundColor(PlumpyTheme.textPrimary)
                     .multilineTextAlignment(.center)
+                    .opacity(isVisible ? 1 : 0)
+                    .offset(y: isVisible ? 0 : 20)
+                    .animation(.easeOut(duration: 0.6).delay(0.1), value: isVisible)
             }
             .padding(.horizontal, PlumpyTheme.Spacing.medium)
+            .padding(.top, PlumpyTheme.Spacing.large)
             
             // Form Fields
             VStack(spacing: PlumpyTheme.Spacing.large) {
@@ -40,7 +46,7 @@ struct UserInfoView: View {
                         .foregroundColor(PlumpyTheme.textPrimary)
                     
                     HStack(spacing: PlumpyTheme.Spacing.small) {
-                        ForEach(Gender.allCases, id: \.self) { genderOption in
+                        ForEach(Array(Gender.allCases.enumerated()), id: \.element) { index, genderOption in
                             GenderButton(
                                 gender: genderOption,
                                 isSelected: gender == genderOption,
@@ -50,45 +56,117 @@ struct UserInfoView: View {
                                     }
                                 }
                             )
+                            .opacity(isVisible ? 1 : 0)
+                            .offset(x: isVisible ? 0 : -20)
+                            .animation(.easeOut(duration: 0.5).delay(0.3 + Double(index) * 0.1), value: isVisible)
                         }
                     }
                 }
+                .opacity(isVisible ? 1 : 0)
+                .offset(y: isVisible ? 0 : 20)
+                .animation(.easeOut(duration: 0.6).delay(0.2), value: isVisible)
                 
                 // Age Input
-                UserInfoField(
-                    title: LocalizationManager.shared.localizedString(.ageLabel),
-                    icon: "calendar",
-                    placeholder: "25",
-                    text: $ageText,
-                    keyboardType: .numberPad,
-                    unit: LocalizationManager.shared.localizedString(.yearsSuffix)
-                ) { value in
-                    age = Int(value)
+                VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.small) {
+                    Text(LocalizationManager.shared.localizedString(.ageLabel))
+                        .font(PlumpyTheme.Typography.headline)
+                        .foregroundColor(PlumpyTheme.textPrimary)
+                    
+                    UserInfoField(
+                        title: LocalizationManager.shared.localizedString(.ageLabel),
+                        icon: "calendar",
+                        placeholder: "25",
+                        text: $ageText,
+                        keyboardType: .numberPad,
+                        unit: LocalizationManager.shared.localizedString(.yearsSuffix)
+                    ) { value in
+                        age = Int(value)
+                    }
+                    
+                    if showSliders {
+                        Slider(
+                            value: Binding(
+                                get: { Double(age ?? 25) },
+                                set: { age = Int($0) }
+                            ),
+                            in: 16...100,
+                            step: 1
+                        )
+                        .accentColor(PlumpyTheme.primary)
+                        .padding(.top, PlumpyTheme.Spacing.small)
+                    }
                 }
+                .opacity(isVisible ? 1 : 0)
+                .offset(y: isVisible ? 0 : 20)
+                .animation(.easeOut(duration: 0.6).delay(0.4), value: isVisible)
                 
                 // Height Input
-                UserInfoField(
-                    title: LocalizationManager.shared.localizedString(.heightLabel),
-                    icon: "ruler",
-                    placeholder: "175",
-                    text: $heightText,
-                    keyboardType: .decimalPad,
-                    unit: LocalizationManager.shared.localizedString(.cmUnit)
-                ) { value in
-                    height = Double(value)
+                VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.small) {
+                    Text(LocalizationManager.shared.localizedString(.heightLabel))
+                        .font(PlumpyTheme.Typography.headline)
+                        .foregroundColor(PlumpyTheme.textPrimary)
+                    
+                    UserInfoField(
+                        title: LocalizationManager.shared.localizedString(.heightLabel),
+                        icon: "ruler",
+                        placeholder: "175",
+                        text: $heightText,
+                        keyboardType: .decimalPad,
+                        unit: LocalizationManager.shared.localizedString(.cmUnit)
+                    ) { value in
+                        height = Double(value)
+                    }
+                    
+                    if showSliders {
+                        Slider(
+                            value: Binding(
+                                get: { height ?? 175 },
+                                set: { height = $0 }
+                            ),
+                            in: 120...250,
+                            step: 1
+                        )
+                        .accentColor(PlumpyTheme.primary)
+                        .padding(.top, PlumpyTheme.Spacing.small)
+                    }
                 }
+                .opacity(isVisible ? 1 : 0)
+                .offset(y: isVisible ? 0 : 20)
+                .animation(.easeOut(duration: 0.6).delay(0.5), value: isVisible)
                 
                 // Weight Input
-                UserInfoField(
-                    title: LocalizationManager.shared.localizedString(.weightLabel),
-                    icon: "scalemass",
-                    placeholder: "70",
-                    text: $weightText,
-                    keyboardType: .decimalPad,
-                    unit: LocalizationManager.shared.localizedString(.kgUnit)
-                ) { value in
-                    weight = Double(value)
+                VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.small) {
+                    Text(LocalizationManager.shared.localizedString(.weightLabel))
+                        .font(PlumpyTheme.Typography.headline)
+                        .foregroundColor(PlumpyTheme.textPrimary)
+                    
+                    UserInfoField(
+                        title: LocalizationManager.shared.localizedString(.weightLabel),
+                        icon: "scalemass",
+                        placeholder: "70",
+                        text: $weightText,
+                        keyboardType: .decimalPad,
+                        unit: LocalizationManager.shared.localizedString(.kgUnit)
+                    ) { value in
+                        weight = Double(value)
+                    }
+                    
+                    if showSliders {
+                        Slider(
+                            value: Binding(
+                                get: { weight ?? 70 },
+                                set: { weight = $0 }
+                            ),
+                            in: 30...200,
+                            step: 1
+                        )
+                        .accentColor(PlumpyTheme.primary)
+                        .padding(.top, PlumpyTheme.Spacing.small)
+                    }
                 }
+                .opacity(isVisible ? 1 : 0)
+                .offset(y: isVisible ? 0 : 20)
+                .animation(.easeOut(duration: 0.6).delay(0.6), value: isVisible)
             }
             .padding(.horizontal, PlumpyTheme.Spacing.medium)
             
@@ -104,6 +182,9 @@ struct UserInfoView: View {
             )
             .padding(.horizontal, PlumpyTheme.Spacing.medium)
             .padding(.bottom, PlumpyTheme.Spacing.large)
+            .opacity(isVisible ? 1 : 0)
+            .offset(y: isVisible ? 0 : 20)
+            .animation(.easeOut(duration: 0.6).delay(0.8), value: isVisible)
         }
         .background(PlumpyTheme.background)
         .onAppear {
@@ -116,6 +197,18 @@ struct UserInfoView: View {
             }
             if let weight = weight {
                 weightText = String(Int(weight))
+            }
+            
+            // Start animations
+            withAnimation {
+                isVisible = true
+            }
+            
+            // Show sliders after a delay
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                withAnimation(.easeInOut(duration: 0.5)) {
+                    showSliders = true
+                }
             }
         }
     }
@@ -178,43 +271,37 @@ struct UserInfoField: View {
     let onValueChanged: (String) -> Void
     
     var body: some View {
-        VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.small) {
-            Text(title)
-                .font(PlumpyTheme.Typography.headline)
-                .foregroundColor(PlumpyTheme.textPrimary)
+        HStack(spacing: PlumpyTheme.Spacing.medium) {
+            // Icon
+            Image(systemName: icon)
+                .font(.title3)
+                .foregroundColor(PlumpyTheme.primary)
+                .frame(width: 24, height: 24)
             
-            HStack(spacing: PlumpyTheme.Spacing.medium) {
-                // Icon
-                Image(systemName: icon)
-                    .font(.title3)
-                    .foregroundColor(PlumpyTheme.primary)
-                    .frame(width: 24, height: 24)
-                
-                // Text Field
-                TextField(placeholder, text: $text)
-                    .font(PlumpyTheme.Typography.body)
-                    .keyboardType(keyboardType)
-                    .textFieldStyle(PlainTextFieldStyle())
-                    .onChange(of: text) { _, newValue in
-                        onValueChanged(newValue)
-                    }
-                
-                // Unit
-                Text(unit)
-                    .font(PlumpyTheme.Typography.caption1)
-                    .foregroundColor(PlumpyTheme.textSecondary)
-                    .frame(minWidth: 30)
-            }
-            .padding(PlumpyTheme.Spacing.medium)
-            .background(
-                RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
-                    .fill(PlumpyTheme.surfaceSecondary)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
-                            .stroke(PlumpyTheme.border, lineWidth: 1)
-                    )
-            )
+            // Text Field
+            TextField(placeholder, text: $text)
+                .font(PlumpyTheme.Typography.body)
+                .keyboardType(keyboardType)
+                .textFieldStyle(PlainTextFieldStyle())
+                .onChange(of: text) { _, newValue in
+                    onValueChanged(newValue)
+                }
+            
+            // Unit
+            Text(unit)
+                .font(PlumpyTheme.Typography.caption1)
+                .foregroundColor(PlumpyTheme.textSecondary)
+                .frame(minWidth: 30)
         }
+        .padding(PlumpyTheme.Spacing.medium)
+        .background(
+            RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
+                .fill(PlumpyTheme.surfaceSecondary)
+                .overlay(
+                    RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
+                        .stroke(PlumpyTheme.border, lineWidth: 1)
+                )
+        )
     }
 }
 

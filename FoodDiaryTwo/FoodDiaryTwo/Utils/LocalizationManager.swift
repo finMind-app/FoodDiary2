@@ -337,6 +337,11 @@ enum LocalizationKey: String, CaseIterable {
     case onboardingWeightLossPrediction = "onboarding_weight_loss_prediction"
     case onboardingCaloriesPerDay = "onboarding_calories_per_day"
     case onboardingMacroDistribution = "onboarding_macro_distribution"
+    
+    // Goal descriptions
+    case goalLoseDescription = "goal_lose_description"
+    case goalMaintainDescription = "goal_maintain_description"
+    case goalGainDescription = "goal_gain_description"
 
     // Achievements (titles and details)
     case achFirstMealTitle = "ach_first_meal_title"
@@ -691,7 +696,10 @@ enum LocalizationKey: String, CaseIterable {
             .onboardingBenefitSyncDesc: "Your data is always with you on all devices",
             .onboardingWeightLossPrediction: "In 6 weeks you can lose approximately",
             .onboardingCaloriesPerDay: "kcal per day",
-            .onboardingMacroDistribution: "Macro distribution"
+            .onboardingMacroDistribution: "Macro distribution",
+            .goalLoseDescription: "Create a calorie deficit for healthy weight loss",
+            .goalMaintainDescription: "Maintain current weight with balanced nutrition",
+            .goalGainDescription: "Add calories for muscle mass gain"
         ]
     }
     
@@ -971,7 +979,10 @@ enum LocalizationKey: String, CaseIterable {
             .onboardingBenefitSyncDesc: "Твои данные всегда с тобой на всех устройствах",
             .onboardingWeightLossPrediction: "Через 6 недель ты сможешь похудеть примерно на",
             .onboardingCaloriesPerDay: "ккал в день",
-            .onboardingMacroDistribution: "Распределение БЖУ"
+            .onboardingMacroDistribution: "Распределение БЖУ",
+            .goalLoseDescription: "Создадим дефицит калорий для здорового похудения",
+            .goalMaintainDescription: "Поддержим текущий вес сбалансированным питанием",
+            .goalGainDescription: "Добавим калории для набора мышечной массы"
         ]
     }
 

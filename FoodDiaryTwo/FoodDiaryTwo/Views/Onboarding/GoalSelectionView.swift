@@ -11,27 +11,36 @@ struct GoalSelectionView: View {
     @Binding var selectedGoal: UserGoal?
     let onNext: () -> Void
     
+    @State private var isVisible = false
+    
     var body: some View {
         VStack(spacing: PlumpyTheme.Spacing.extraLarge) {
             // Header
-            VStack(spacing: PlumpyTheme.Spacing.medium) {
+            VStack(spacing: PlumpyTheme.Spacing.large) {
                 Text(LocalizationManager.shared.localizedString(.onboardingGoalTitle))
                     .font(PlumpyTheme.Typography.title1)
                     .fontWeight(.bold)
                     .foregroundColor(PlumpyTheme.textPrimary)
                     .multilineTextAlignment(.center)
+                    .opacity(isVisible ? 1 : 0)
+                    .offset(y: isVisible ? 0 : 20)
+                    .animation(.easeOut(duration: 0.6).delay(0.1), value: isVisible)
                 
                 Text(LocalizationManager.shared.localizedString(.onboardingGoalSubtitle))
                     .font(PlumpyTheme.Typography.body)
                     .foregroundColor(PlumpyTheme.textSecondary)
                     .multilineTextAlignment(.center)
-                    .lineLimit(3)
+                    .lineLimit(nil)
+                    .opacity(isVisible ? 1 : 0)
+                    .offset(y: isVisible ? 0 : 20)
+                    .animation(.easeOut(duration: 0.6).delay(0.3), value: isVisible)
             }
             .padding(.horizontal, PlumpyTheme.Spacing.medium)
+            .padding(.top, PlumpyTheme.Spacing.large)
             
             // Goal Cards
             VStack(spacing: PlumpyTheme.Spacing.medium) {
-                ForEach(UserGoal.allCases, id: \.self) { goal in
+                ForEach(Array(UserGoal.allCases.enumerated()), id: \.element) { index, goal in
                     GoalCard(
                         goal: goal,
                         isSelected: selectedGoal == goal,
@@ -41,6 +50,9 @@ struct GoalSelectionView: View {
                             }
                         }
                     )
+                    .opacity(isVisible ? 1 : 0)
+                    .offset(y: isVisible ? 0 : 30)
+                    .animation(.easeOut(duration: 0.6).delay(0.5 + Double(index) * 0.1), value: isVisible)
                 }
             }
             .padding(.horizontal, PlumpyTheme.Spacing.medium)
@@ -57,8 +69,16 @@ struct GoalSelectionView: View {
             )
             .padding(.horizontal, PlumpyTheme.Spacing.medium)
             .padding(.bottom, PlumpyTheme.Spacing.large)
+            .opacity(isVisible ? 1 : 0)
+            .offset(y: isVisible ? 0 : 20)
+            .animation(.easeOut(duration: 0.6).delay(0.8), value: isVisible)
         }
         .background(PlumpyTheme.background)
+        .onAppear {
+            withAnimation {
+                isVisible = true
+            }
+        }
     }
 }
 
@@ -80,16 +100,19 @@ struct GoalCard: View {
                     )
                 
                 // Content
-                VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.tiny) {
+                VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.small) {
                     Text(goal.displayName)
                         .font(PlumpyTheme.Typography.headline)
                         .fontWeight(.semibold)
                         .foregroundColor(PlumpyTheme.textPrimary)
+                        .multilineTextAlignment(.leading)
                     
                     Text(goal.description)
                         .font(PlumpyTheme.Typography.caption1)
                         .foregroundColor(PlumpyTheme.textSecondary)
-                        .lineLimit(2)
+                        .lineLimit(nil)
+                        .multilineTextAlignment(.leading)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
                 
                 Spacer()

@@ -71,11 +71,11 @@ enum UserGoal: String, CaseIterable, Codable {
     var description: String {
         switch self {
         case .lose:
-            return "Создадим дефицит калорий для здорового похудения"
+            return LocalizationManager.shared.localizedString(.goalLoseDescription)
         case .maintain:
-            return "Поддержим текущий вес сбалансированным питанием"
+            return LocalizationManager.shared.localizedString(.goalMaintainDescription)
         case .gain:
-            return "Добавим калории для набора мышечной массы"
+            return LocalizationManager.shared.localizedString(.goalGainDescription)
         }
     }
 }
