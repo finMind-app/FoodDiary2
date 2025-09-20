@@ -48,19 +48,23 @@ struct UserInfoView: View {
                         .foregroundColor(PlumpyTheme.textPrimary)
                     
                     HStack(spacing: PlumpyTheme.Spacing.small) {
-                        ForEach(Array(Gender.allCases.enumerated()), id: \.element) { index, genderOption in
-                            GenderButton(
-                                gender: genderOption,
-                                isSelected: gender == genderOption,
-                                onTap: {
-                                    withAnimation(PlumpyTheme.Animation.smooth) {
-                                        gender = genderOption
-                                    }
+                        ForEach(Gender.allCases, id: \.self) { genderOption in
+                            Button(action: {
+                                withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {
+                                    gender = genderOption
                                 }
-                            )
-                            .opacity(isVisible ? 1 : 0)
-                            .offset(x: isVisible ? 0 : -20)
-                            .animation(.easeOut(duration: 0.5).delay(0.3 + Double(index) * 0.1), value: isVisible)
+                            }) {
+                                Text(genderOption.displayName)
+                                    .font(PlumpyTheme.Typography.body)
+                                    .foregroundColor(gender == genderOption ? .white : PlumpyTheme.textPrimary)
+                                    .padding(.horizontal, PlumpyTheme.Spacing.medium)
+                                    .padding(.vertical, PlumpyTheme.Spacing.small)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
+                                            .fill(gender == genderOption ? PlumpyTheme.primary : PlumpyTheme.neutral100)
+                                    )
+                            }
+                            .buttonStyle(PlainButtonStyle())
                         }
                     }
                 }
@@ -68,18 +72,11 @@ struct UserInfoView: View {
                 .offset(y: isVisible ? 0 : 20)
                 .animation(.easeOut(duration: 0.6).delay(0.2), value: isVisible)
                 
-                // Age Input
+                // Age Field
                 VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.small) {
-                    Text(LocalizationManager.shared.localizedString(.ageLabel))
-                        .font(PlumpyTheme.Typography.headline)
-                        .foregroundColor(PlumpyTheme.textPrimary)
-                    
                     UserInfoField(
-                        title: LocalizationManager.shared.localizedString(.ageLabel),
-                        icon: "calendar",
-                        placeholder: "25",
+                        title: LocalizationManager.shared.localizedString(.age),
                         text: $ageText,
-                        keyboardType: .numberPad,
                         unit: LocalizationManager.shared.localizedString(.yearsSuffix)
                     ) { value in
                         age = Int(value)
@@ -108,18 +105,11 @@ struct UserInfoView: View {
                 .offset(y: isVisible ? 0 : 20)
                 .animation(.easeOut(duration: 0.6).delay(0.4), value: isVisible)
                 
-                // Height Input
+                // Height Field
                 VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.small) {
-                    Text(LocalizationManager.shared.localizedString(.heightLabel))
-                        .font(PlumpyTheme.Typography.headline)
-                        .foregroundColor(PlumpyTheme.textPrimary)
-                    
                     UserInfoField(
-                        title: LocalizationManager.shared.localizedString(.heightLabel),
-                        icon: "ruler",
-                        placeholder: "175",
+                        title: LocalizationManager.shared.localizedString(.height),
                         text: $heightText,
-                        keyboardType: .decimalPad,
                         unit: LocalizationManager.shared.localizedString(.cmUnit)
                     ) { value in
                         height = Double(value)
@@ -148,18 +138,11 @@ struct UserInfoView: View {
                 .offset(y: isVisible ? 0 : 20)
                 .animation(.easeOut(duration: 0.6).delay(0.5), value: isVisible)
                 
-                // Weight Input
+                // Weight Field
                 VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.small) {
-                    Text(LocalizationManager.shared.localizedString(.weightLabel))
-                        .font(PlumpyTheme.Typography.headline)
-                        .foregroundColor(PlumpyTheme.textPrimary)
-                    
                     UserInfoField(
-                        title: LocalizationManager.shared.localizedString(.weightLabel),
-                        icon: "scalemass",
-                        placeholder: "70",
+                        title: LocalizationManager.shared.localizedString(.weight),
                         text: $weightText,
-                        keyboardType: .decimalPad,
                         unit: LocalizationManager.shared.localizedString(.kgUnit)
                     ) { value in
                         weight = Double(value)
@@ -228,14 +211,13 @@ struct UserInfoView: View {
                 weightText = String(Int(weight))
             }
             
-            // Start animations
             withAnimation {
                 isVisible = true
             }
             
             // Show sliders after a delay
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                withAnimation(.easeInOut(duration: 0.5)) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                withAnimation {
                     showSliders = true
                 }
             }
@@ -243,94 +225,33 @@ struct UserInfoView: View {
     }
     
     private var isFormValid: Bool {
-        return gender != nil && 
-               age != nil && 
-               height != nil && 
-               weight != nil &&
-               age! >= 16 && age! <= 100 &&
-               height! >= 120 && height! <= 250 &&
-               weight! >= 30 && weight! <= 200
+        return gender != nil && age != nil && height != nil && weight != nil
     }
 }
 
-struct GenderButton: View {
-    let gender: Gender
-    let isSelected: Bool
-    let onTap: () -> Void
-    
-    var body: some View {
-        Button(action: onTap) {
-            HStack(spacing: PlumpyTheme.Spacing.small) {
-                Image(systemName: gender == .male ? "person.fill" : "person.fill")
-                    .font(.title3)
-                    .foregroundColor(isSelected ? PlumpyTheme.textInverse : PlumpyTheme.textPrimary)
-                
-                Text(gender.displayName)
-                    .font(PlumpyTheme.Typography.subheadline)
-                    .fontWeight(.medium)
-                    .foregroundColor(isSelected ? PlumpyTheme.textInverse : PlumpyTheme.textPrimary)
-            }
-            .padding(.horizontal, PlumpyTheme.Spacing.medium)
-            .padding(.vertical, PlumpyTheme.Spacing.small)
-            .frame(maxWidth: .infinity)
-            .background(
-                RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
-                    .fill(isSelected ? PlumpyTheme.primary : PlumpyTheme.surfaceSecondary)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
-                            .stroke(
-                                isSelected ? PlumpyTheme.primary : PlumpyTheme.border,
-                                lineWidth: isSelected ? 2 : 1
-                            )
-                    )
-            )
-        }
-        .buttonStyle(PlainButtonStyle())
-        .animation(PlumpyTheme.Animation.smooth, value: isSelected)
-    }
-}
+// MARK: - UserInfoField Component
 
 struct UserInfoField: View {
     let title: String
-    let icon: String
-    let placeholder: String
     @Binding var text: String
-    let keyboardType: UIKeyboardType
     let unit: String
-    let onValueChanged: (String) -> Void
+    let onValueChange: (String) -> Void
     
     var body: some View {
-        HStack(spacing: PlumpyTheme.Spacing.medium) {
-            // Icon
-            Image(systemName: icon)
-                .font(.title3)
-                .foregroundColor(PlumpyTheme.primary)
-                .frame(width: 24, height: 24)
-            
-            // Text Field
-            TextField(placeholder, text: $text)
-                .font(PlumpyTheme.Typography.body)
-                .keyboardType(keyboardType)
-                .textFieldStyle(PlainTextFieldStyle())
-                .onChange(of: text) { _, newValue in
-                    onValueChanged(newValue)
-                }
-            
-            // Unit
-            Text(unit)
-                .font(PlumpyTheme.Typography.caption1)
-                .foregroundColor(PlumpyTheme.textSecondary)
-                .frame(minWidth: 30)
+        VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.small) {
+            HStack {
+                TextField(title, text: $text)
+                    .textFieldStyle(PlumpyTextFieldStyle())
+                    .keyboardType(.numberPad)
+                    .onChange(of: text) { newValue in
+                        onValueChange(newValue)
+                    }
+                
+                Text(unit)
+                    .font(PlumpyTheme.Typography.body)
+                    .foregroundColor(PlumpyTheme.textSecondary)
+            }
         }
-        .padding(PlumpyTheme.Spacing.medium)
-        .background(
-            RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
-                .fill(PlumpyTheme.surfaceSecondary)
-                .overlay(
-                    RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium)
-                        .stroke(PlumpyTheme.border, lineWidth: 1)
-                )
-        )
     }
 }
 
@@ -341,6 +262,6 @@ struct UserInfoField: View {
         height: .constant(nil),
         weight: .constant(nil)
     ) {
-        print("Next tapped")
+        // Preview action
     }
 }

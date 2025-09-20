@@ -85,6 +85,8 @@ struct ActivityLevelView: View {
     }
 }
 
+// MARK: - ActivityLevelCard Component
+
 struct ActivityLevelCard: View {
     let activityLevel: ActivityLevel
     let isSelected: Bool
@@ -158,6 +160,6 @@ struct ActivityLevelCard: View {
 
 #Preview {
     ActivityLevelView(selectedActivityLevel: .constant(nil)) {
-        print("Next tapped")
+        // Preview action
     }
 }
