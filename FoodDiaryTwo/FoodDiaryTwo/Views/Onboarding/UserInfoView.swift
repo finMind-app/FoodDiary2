@@ -22,21 +22,22 @@ struct UserInfoView: View {
     @State private var showSliders = false
     
     var body: some View {
-        ScrollView {
-            VStack(spacing: PlumpyTheme.Spacing.large) {
-                // Header
-                VStack(spacing: PlumpyTheme.Spacing.medium) {
-                    Text(LocalizationManager.shared.localizedString(.onboardingUserInfoTitle))
-                        .font(PlumpyTheme.Typography.title1)
-                        .fontWeight(.bold)
-                        .foregroundColor(PlumpyTheme.textPrimary)
-                        .multilineTextAlignment(.center)
-                        .opacity(isVisible ? 1 : 0)
-                        .offset(y: isVisible ? 0 : 20)
-                        .animation(.easeOut(duration: 0.6).delay(0.1), value: isVisible)
-                }
-                .padding(.horizontal, PlumpyTheme.Spacing.medium)
-                .padding(.top, PlumpyTheme.Spacing.medium)
+        VStack(spacing: 0) {
+            ScrollView {
+                VStack(spacing: PlumpyTheme.Spacing.large) {
+                    // Header
+                    VStack(spacing: PlumpyTheme.Spacing.medium) {
+                        Text(LocalizationManager.shared.localizedString(.onboardingUserInfoTitle))
+                            .font(PlumpyTheme.Typography.title1)
+                            .fontWeight(.bold)
+                            .foregroundColor(PlumpyTheme.textPrimary)
+                            .multilineTextAlignment(.center)
+                            .opacity(isVisible ? 1 : 0)
+                            .offset(y: isVisible ? 0 : 20)
+                            .animation(.easeOut(duration: 0.6).delay(0.1), value: isVisible)
+                    }
+                    .padding(.horizontal, PlumpyTheme.Spacing.medium)
+                    .padding(.top, PlumpyTheme.Spacing.medium)
             
                 // Form Fields
                 VStack(spacing: PlumpyTheme.Spacing.medium) {
@@ -98,6 +99,9 @@ struct UserInfoView: View {
                         )
                         .accentColor(PlumpyTheme.primary)
                         .padding(.top, PlumpyTheme.Spacing.small)
+                        .opacity(showSliders ? 1 : 0)
+                        .offset(y: showSliders ? 0 : 10)
+                        .animation(.easeInOut(duration: 0.5), value: showSliders)
                     }
                 }
                 .opacity(isVisible ? 1 : 0)
@@ -135,6 +139,9 @@ struct UserInfoView: View {
                         )
                         .accentColor(PlumpyTheme.primary)
                         .padding(.top, PlumpyTheme.Spacing.small)
+                        .opacity(showSliders ? 1 : 0)
+                        .offset(y: showSliders ? 0 : 10)
+                        .animation(.easeInOut(duration: 0.5), value: showSliders)
                     }
                 }
                 .opacity(isVisible ? 1 : 0)
@@ -172,6 +179,9 @@ struct UserInfoView: View {
                         )
                         .accentColor(PlumpyTheme.primary)
                         .padding(.top, PlumpyTheme.Spacing.small)
+                        .opacity(showSliders ? 1 : 0)
+                        .offset(y: showSliders ? 0 : 10)
+                        .animation(.easeInOut(duration: 0.5), value: showSliders)
                     }
                 }
                 .opacity(isVisible ? 1 : 0)
@@ -179,8 +189,16 @@ struct UserInfoView: View {
                 .animation(.easeOut(duration: 0.6).delay(0.6), value: isVisible)
                 }
                 .padding(.horizontal, PlumpyTheme.Spacing.medium)
+                .padding(.bottom, PlumpyTheme.Spacing.large)
+            }
+            
+            // Next Button - прибита снизу
+            VStack {
+                Divider()
+                    .background(PlumpyTheme.border)
+                    .opacity(isVisible ? 1 : 0)
+                    .animation(.easeOut(duration: 0.3).delay(0.7), value: isVisible)
                 
-                // Next Button
                 PlumpyButton(
                     title: LocalizationManager.shared.localizedString(.onboardingContinue),
                     icon: "arrow.right",
@@ -189,12 +207,13 @@ struct UserInfoView: View {
                     action: onNext
                 )
                 .padding(.horizontal, PlumpyTheme.Spacing.medium)
-                .padding(.top, PlumpyTheme.Spacing.medium)
-                .padding(.bottom, PlumpyTheme.Spacing.large)
+                .padding(.vertical, PlumpyTheme.Spacing.medium)
                 .opacity(isVisible ? 1 : 0)
                 .offset(y: isVisible ? 0 : 20)
+                .scaleEffect(isVisible ? 1 : 0.9)
                 .animation(.easeOut(duration: 0.6).delay(0.8), value: isVisible)
             }
+            .background(PlumpyTheme.background)
         }
         .background(PlumpyTheme.background)
         .onAppear {
