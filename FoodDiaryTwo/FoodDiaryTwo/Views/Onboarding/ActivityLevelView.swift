@@ -1,10 +1,3 @@
-//
-//  ActivityLevelView.swift
-//  FoodDiaryTwo
-//
-//  Created by AI Assistant
-//
-
 import SwiftUI
 
 struct ActivityLevelView: View {
@@ -30,27 +23,28 @@ struct ActivityLevelView: View {
                     }
                     .padding(.horizontal, PlumpyTheme.Spacing.medium)
                     .padding(.top, PlumpyTheme.Spacing.medium)
-            
-                // Activity Level Cards
-                VStack(spacing: PlumpyTheme.Spacing.small) {
-                ForEach(Array(ActivityLevel.allCases.enumerated()), id: \.element) { index, activityLevel in
-                    ActivityLevelCard(
-                        activityLevel: activityLevel,
-                        isSelected: selectedActivityLevel == activityLevel,
-                        onTap: {
-                            withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {
-                                selectedActivityLevel = activityLevel
-                            }
+                    
+                    // Activity Level Cards
+                    VStack(spacing: PlumpyTheme.Spacing.small) {
+                        ForEach(Array(ActivityLevel.allCases.enumerated()), id: \.element) { index, activityLevel in
+                            ActivityLevelCard(
+                                activityLevel: activityLevel,
+                                isSelected: selectedActivityLevel == activityLevel,
+                                onTap: {
+                                    withAnimation(.spring(response: 0.5, dampingFraction: 0.7)) {
+                                        selectedActivityLevel = activityLevel
+                                    }
+                                }
+                            )
+                            .opacity(isVisible ? 1 : 0)
+                            .offset(y: isVisible ? 0 : 30)
+                            .scaleEffect(isVisible ? 1 : 0.8)
+                            .animation(.easeOut(duration: 0.6).delay(0.3 + Double(index) * 0.1), value: isVisible)
                         }
-                    )
-                    .opacity(isVisible ? 1 : 0)
-                    .offset(y: isVisible ? 0 : 30)
-                    .scaleEffect(isVisible ? 1 : 0.8)
-                    .animation(.easeOut(duration: 0.6).delay(0.3 + Double(index) * 0.1), value: isVisible)
+                    }
+                    .padding(.horizontal, PlumpyTheme.Spacing.medium)
+                    .padding(.bottom, PlumpyTheme.Spacing.large)
                 }
-                }
-                .padding(.horizontal, PlumpyTheme.Spacing.medium)
-                .padding(.bottom, PlumpyTheme.Spacing.large)
             }
             
             // Next Button - прибита снизу
@@ -84,8 +78,6 @@ struct ActivityLevelView: View {
         }
     }
 }
-
-// MARK: - ActivityLevelCard Component
 
 struct ActivityLevelCard: View {
     let activityLevel: ActivityLevel
@@ -155,11 +147,5 @@ struct ActivityLevelCard: View {
         }
         .buttonStyle(PlainButtonStyle())
         .animation(.spring(response: 0.5, dampingFraction: 0.7), value: isSelected)
-    }
-}
-
-#Preview {
-    ActivityLevelView(selectedActivityLevel: .constant(nil)) {
-        // Preview action
     }
 }
