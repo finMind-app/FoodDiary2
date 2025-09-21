@@ -89,6 +89,17 @@ struct ProfileView: View {
         .sheet(isPresented: $showingCalorieEditor) {
             CalorieGoalEditor()
         }
+        .sheet(isPresented: $showingRegistration) {
+            RegistrationView(
+                onRegistrationComplete: {
+                    showingRegistration = false
+                },
+                onSkip: {
+                    UserDefaults.standard.set(true, forKey: "registrationSkipped")
+                    showingRegistration = false
+                }
+            )
+        }
     }
     
     private var profileHeader: some View {
@@ -597,17 +608,6 @@ extension View {
                 .clipShape(RoundedRectangle(cornerRadius: PlumpyTheme.Radius.medium))
                 .padding(.top, 16)
             }
-        }
-        .sheet(isPresented: $showingRegistration) {
-            RegistrationView(
-                onRegistrationComplete: {
-                    showingRegistration = false
-                },
-                onSkip: {
-                    UserDefaults.standard.set(true, forKey: "registrationSkipped")
-                    showingRegistration = false
-                }
-            )
         }
     }
     
