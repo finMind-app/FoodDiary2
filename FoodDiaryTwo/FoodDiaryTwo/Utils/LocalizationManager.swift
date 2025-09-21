@@ -422,6 +422,16 @@ enum LocalizationKey: String, CaseIterable {
     case excellentConsumption = "excellent_consumption"
     case exceededConsumption = "exceeded_consumption"
     
+    // Registration
+    case registrationTitle = "registration_title"
+    case registrationSubtitle = "registration_subtitle"
+    case registerWithGoogle = "register_with_google"
+    case registerWithApple = "register_with_apple"
+    case skipRegistration = "skip_registration"
+    case pleaseRegister = "please_register"
+    case registerToSyncData = "register_to_sync_data"
+    case registerNow = "register_now"
+    
     func localizedString(for language: Language) -> String {
         switch language {
         case .english:
@@ -724,7 +734,17 @@ enum LocalizationKey: String, CaseIterable {
             .activityLightDescription: "I move sometimes",
             .activityModerateDescription: "I train several times a week",
             .activityActiveDescription: "Very active lifestyle",
-            .activityVeryActiveDescription: "Professional sports"
+            .activityVeryActiveDescription: "Professional sports",
+            
+            // Registration
+            .registrationTitle: "Create Your Account",
+            .registrationSubtitle: "Sign up to sync your data across devices and unlock personalized features",
+            .registerWithGoogle: "Continue with Google",
+            .registerWithApple: "Continue with Apple",
+            .skipRegistration: "Skip for now",
+            .pleaseRegister: "Please Register",
+            .registerToSyncData: "Register to sync your data and unlock all features",
+            .registerNow: "Register Now"
         ]
     }
     
@@ -1012,7 +1032,17 @@ enum LocalizationKey: String, CaseIterable {
             .activityLightDescription: "Иногда двигаюсь",
             .activityModerateDescription: "Тренируюсь несколько раз в неделю",
             .activityActiveDescription: "Очень активный образ жизни",
-            .activityVeryActiveDescription: "Профессиональный спорт"
+            .activityVeryActiveDescription: "Профессиональный спорт",
+            
+            // Registration
+            .registrationTitle: "Создай свой аккаунт",
+            .registrationSubtitle: "Зарегистрируйся, чтобы синхронизировать данные между устройствами и получить персональные функции",
+            .registerWithGoogle: "Продолжить с Google",
+            .registerWithApple: "Продолжить с Apple",
+            .skipRegistration: "Пропустить пока",
+            .pleaseRegister: "Пожалуйста, зарегистрируйтесь",
+            .registerToSyncData: "Зарегистрируйтесь для синхронизации данных и доступа ко всем функциям",
+            .registerNow: "Зарегистрироваться"
         ]
     }
 

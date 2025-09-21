@@ -20,6 +20,7 @@ struct ProfileView: View {
     @State private var selectedAchievement: Achievement?
     @State private var showAchievementToast = false
     @State private var toastText = ""
+    @State private var showingRegistration = false
     @Query private var achievementsQuery: [Achievement]
     
     @Query private var users: [UserProfile] // Using @Query to fetch user profiles
@@ -48,6 +49,11 @@ struct ProfileView: View {
                     VStack(spacing: PlumpyTheme.Spacing.medium) {
                         // Основная информация профиля
                         profileHeader
+                        
+                        // Registration status
+                        if !isUserRegistered {
+                            registrationPrompt
+                        }
                         
                         // Статистика (вся за все время, компактная)
                         profileStats
@@ -592,6 +598,77 @@ extension View {
                 .padding(.top, 16)
             }
         }
+        .sheet(isPresented: $showingRegistration) {
+            RegistrationView(
+                onRegistrationComplete: {
+                    showingRegistration = false
+                },
+                onSkip: {
+                    UserDefaults.standard.set(true, forKey: "registrationSkipped")
+                    showingRegistration = false
+                }
+            )
+        }
+    }
+    
+    // MARK: - Computed Properties
+    
+    private var isUserRegistered: Bool {
+        return UserDefaults.standard.bool(forKey: "isRegistered")
+    }
+    
+    private var isRegistrationSkipped: Bool {
+        return UserDefaults.standard.bool(forKey: "registrationSkipped")
+    }
+    
+    // MARK: - Registration Section
+    
+    private var registrationPrompt: some View {
+        VStack(spacing: PlumpyTheme.Spacing.medium) {
+            HStack {
+                Image(systemName: "person.crop.circle.badge.plus")
+                    .font(.title2)
+                    .foregroundColor(PlumpyTheme.primary)
+                
+                VStack(alignment: .leading, spacing: PlumpyTheme.Spacing.small) {
+                    Text(LocalizationManager.shared.localizedString(.pleaseRegister))
+                        .font(PlumpyTheme.Typography.headline)
+                        .fontWeight(.semibold)
+                        .foregroundColor(PlumpyTheme.textPrimary)
+                    
+                    Text(LocalizationManager.shared.localizedString(.registerToSyncData))
+                        .font(PlumpyTheme.Typography.caption1)
+                        .foregroundColor(PlumpyTheme.textSecondary)
+                        .lineLimit(nil)
+                }
+                
+                Spacer()
+            }
+            
+            PlumpyButton(
+                title: LocalizationManager.shared.localizedString(.registerNow),
+                icon: "arrow.right",
+                style: .primary,
+                size: .small
+            ) {
+                showingRegistration = true
+            }
+        }
+        .padding(PlumpyTheme.Spacing.medium)
+        .background(
+            RoundedRectangle(cornerRadius: PlumpyTheme.Radius.large)
+                .fill(PlumpyTheme.primary.opacity(0.05))
+                .overlay(
+                    RoundedRectangle(cornerRadius: PlumpyTheme.Radius.large)
+                        .stroke(PlumpyTheme.primary.opacity(0.2), lineWidth: 1)
+                )
+        )
+        .shadow(
+            color: PlumpyTheme.shadow.opacity(0.05),
+            radius: 8,
+            x: 0,
+            y: 4
+        )
     }
 }
 

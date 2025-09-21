@@ -30,6 +30,7 @@ struct AddMealView: View {
     
     // Состояния для ошибок
     @State private var showErrorAlert = false
+    @State private var showingRegistration = false
     
     init(mealType: MealType = .breakfast) {
         self._selectedMealType = State(initialValue: mealType)
@@ -77,6 +78,25 @@ struct AddMealView: View {
                     .padding(.top, 20)
                 }
             }
+        }
+        .sheet(isPresented: $showingRegistration) {
+            RegistrationView(
+                onRegistrationComplete: {
+                    showingRegistration = false
+                    // После успешной регистрации сохраняем прием пищи
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        saveMeal()
+                    }
+                },
+                onSkip: {
+                    UserDefaults.standard.set(true, forKey: "registrationSkipped")
+                    showingRegistration = false
+                    // После пропуска регистрации сохраняем прием пищи
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        saveMeal()
+                    }
+                }
+            )
         }
         .onChange(of: selectedPhotoItem) {
             Task {
@@ -382,6 +402,12 @@ struct AddMealView: View {
     }
     
     private func saveMeal() {
+        // Проверка регистрации - показываем экран регистрации при первой попытке сохранить прием пищи
+        if !isUserRegistered && !isRegistrationSkipped {
+            showingRegistration = true
+            return
+        }
+        
         // Валидация данных
         guard !mealName.isEmpty else {
             print("Meal name is required")
@@ -428,6 +454,16 @@ struct AddMealView: View {
         } catch {
             print("Error saving meal: \(error)")
         }
+    }
+    
+    // MARK: - Computed Properties
+    
+    private var isUserRegistered: Bool {
+        return UserDefaults.standard.bool(forKey: "isRegistered")
+    }
+    
+    private var isRegistrationSkipped: Bool {
+        return UserDefaults.standard.bool(forKey: "registrationSkipped")
     }
 }
 
