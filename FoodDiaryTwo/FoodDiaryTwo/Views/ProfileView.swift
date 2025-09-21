@@ -613,17 +613,17 @@ extension View {
     
     // MARK: - Computed Properties
     
-    private var isUserRegistered: Bool {
+    var isUserRegistered: Bool {
         return UserDefaults.standard.bool(forKey: "isRegistered")
     }
     
-    private var isRegistrationSkipped: Bool {
+    var isRegistrationSkipped: Bool {
         return UserDefaults.standard.bool(forKey: "registrationSkipped")
     }
     
     // MARK: - Registration Section
     
-    private var registrationPrompt: some View {
+    var registrationPrompt: some View {
         VStack(spacing: PlumpyTheme.Spacing.medium) {
             HStack {
                 Image(systemName: "person.crop.circle.badge.plus")
