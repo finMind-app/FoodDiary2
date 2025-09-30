@@ -12,12 +12,12 @@ struct ContentView: View {
     @EnvironmentObject private var i18n: LocalizationManager
     @State private var selectedTab = 0
     @State private var lastTabSwitchMark = ""
-    
+
     var body: some View {
         ZStack {
             PlumpyBackground(style: .primary)
                 .ignoresSafeArea()
-            
+
             VStack(spacing: 0) {
                 Group {
                     switch selectedTab {
@@ -42,13 +42,14 @@ struct ContentView: View {
                         PlumpyTabItem(icon: "house.fill", title: i18n.localizedString(.home), color: PlumpyTheme.primary),
                         PlumpyTabItem(icon: "clock.fill", title: i18n.localizedString(.history), color: PlumpyTheme.secondary),
                         PlumpyTabItem(icon: "chart.bar.fill", title: i18n.localizedString(.stats), color: PlumpyTheme.secondaryAccent),
-                        PlumpyTabItem(icon: "person.fill", title: i18n.localizedString(.profile), color: PlumpyTheme.tertiary)
+                        PlumpyTabItem(icon: "person.fill", title: i18n.localizedString(.profile), color: PlumpyTheme.tertiary),
                     ]
                 )
             }
         }
     }
 }
+
 
 #Preview {
     ContentView()

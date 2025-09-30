@@ -32,8 +32,7 @@ struct NewOnboardingFlowView: View {
                         totalSteps: totalSteps
                     )
                     .padding(.horizontal, PlumpyTheme.Spacing.medium)
-                    .padding(.top, PlumpyTheme.Spacing.large)
-                    .padding(.bottom, PlumpyTheme.Spacing.medium)
+                    .padding(.top, PlumpyTheme.Spacing.medium)
                 }
                 
                 // Content

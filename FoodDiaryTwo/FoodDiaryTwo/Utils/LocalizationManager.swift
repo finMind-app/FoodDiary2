@@ -18,19 +18,6 @@ class LocalizationManager: ObservableObject {
         if let savedLanguage = UserDefaults.standard.string(forKey: "selectedLanguage"),
            let language = Language(rawValue: savedLanguage) {
             currentLanguage = language
-        } else {
-            // Автоматически определяем язык устройства
-            let deviceLanguage = Locale.current.language.languageCode?.identifier ?? "en"
-            switch deviceLanguage {
-            case "ru":
-                currentLanguage = .russian
-            case "es":
-                currentLanguage = .spanish
-            case "fr":
-                currentLanguage = .french
-            default:
-                currentLanguage = .english
-            }
         }
     }
     
@@ -350,18 +337,6 @@ enum LocalizationKey: String, CaseIterable {
     case onboardingWeightLossPrediction = "onboarding_weight_loss_prediction"
     case onboardingCaloriesPerDay = "onboarding_calories_per_day"
     case onboardingMacroDistribution = "onboarding_macro_distribution"
-    
-    // Goal descriptions
-    case goalLoseDescription = "goal_lose_description"
-    case goalMaintainDescription = "goal_maintain_description"
-    case goalGainDescription = "goal_gain_description"
-    
-    // Activity level descriptions
-    case activitySedentaryDescription = "activity_sedentary_description"
-    case activityLightDescription = "activity_light_description"
-    case activityModerateDescription = "activity_moderate_description"
-    case activityActiveDescription = "activity_active_description"
-    case activityVeryActiveDescription = "activity_very_active_description"
 
     // Achievements (titles and details)
     case achFirstMealTitle = "ach_first_meal_title"
@@ -421,16 +396,6 @@ enum LocalizationKey: String, CaseIterable {
     case goodConsumption = "good_consumption"
     case excellentConsumption = "excellent_consumption"
     case exceededConsumption = "exceeded_consumption"
-    
-    // Registration
-    case registrationTitle = "registration_title"
-    case registrationSubtitle = "registration_subtitle"
-    case registerWithGoogle = "register_with_google"
-    case registerWithApple = "register_with_apple"
-    case skipRegistration = "skip_registration"
-    case pleaseRegister = "please_register"
-    case registerToSyncData = "register_to_sync_data"
-    case registerNow = "register_now"
     
     func localizedString(for language: Language) -> String {
         switch language {
@@ -726,25 +691,7 @@ enum LocalizationKey: String, CaseIterable {
             .onboardingBenefitSyncDesc: "Your data is always with you on all devices",
             .onboardingWeightLossPrediction: "In 6 weeks you can lose approximately",
             .onboardingCaloriesPerDay: "kcal per day",
-            .onboardingMacroDistribution: "Macro distribution",
-            .goalLoseDescription: "Create a calorie deficit for healthy weight loss",
-            .goalMaintainDescription: "Maintain current weight with balanced nutrition",
-            .goalGainDescription: "Add calories for muscle mass gain",
-            .activitySedentaryDescription: "I sit almost all day",
-            .activityLightDescription: "I move sometimes",
-            .activityModerateDescription: "I train several times a week",
-            .activityActiveDescription: "Very active lifestyle",
-            .activityVeryActiveDescription: "Professional sports",
-            
-            // Registration
-            .registrationTitle: "Create Your Account",
-            .registrationSubtitle: "Sign up to sync your data across devices and unlock personalized features",
-            .registerWithGoogle: "Continue with Google",
-            .registerWithApple: "Continue with Apple",
-            .skipRegistration: "Skip for now",
-            .pleaseRegister: "Please Register",
-            .registerToSyncData: "Register to sync your data and unlock all features",
-            .registerNow: "Register Now"
+            .onboardingMacroDistribution: "Macro distribution"
         ]
     }
     
@@ -1024,25 +971,7 @@ enum LocalizationKey: String, CaseIterable {
             .onboardingBenefitSyncDesc: "Твои данные всегда с тобой на всех устройствах",
             .onboardingWeightLossPrediction: "Через 6 недель ты сможешь похудеть примерно на",
             .onboardingCaloriesPerDay: "ккал в день",
-            .onboardingMacroDistribution: "Распределение БЖУ",
-            .goalLoseDescription: "Создадим дефицит калорий для здорового похудения",
-            .goalMaintainDescription: "Поддержим текущий вес сбалансированным питанием",
-            .goalGainDescription: "Добавим калории для набора мышечной массы",
-            .activitySedentaryDescription: "Сижу почти весь день",
-            .activityLightDescription: "Иногда двигаюсь",
-            .activityModerateDescription: "Тренируюсь несколько раз в неделю",
-            .activityActiveDescription: "Очень активный образ жизни",
-            .activityVeryActiveDescription: "Профессиональный спорт",
-            
-            // Registration
-            .registrationTitle: "Создай свой аккаунт",
-            .registrationSubtitle: "Зарегистрируйся, чтобы синхронизировать данные между устройствами и получить персональные функции",
-            .registerWithGoogle: "Продолжить с Google",
-            .registerWithApple: "Продолжить с Apple",
-            .skipRegistration: "Пропустить пока",
-            .pleaseRegister: "Пожалуйста, зарегистрируйтесь",
-            .registerToSyncData: "Зарегистрируйтесь для синхронизации данных и доступа ко всем функциям",
-            .registerNow: "Зарегистрироваться"
+            .onboardingMacroDistribution: "Распределение БЖУ"
         ]
     }
 

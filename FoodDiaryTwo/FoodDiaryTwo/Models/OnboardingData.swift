@@ -71,11 +71,11 @@ enum UserGoal: String, CaseIterable, Codable {
     var description: String {
         switch self {
         case .lose:
-            return LocalizationManager.shared.localizedString(.goalLoseDescription)
+            return "Создадим дефицит калорий для здорового похудения"
         case .maintain:
-            return LocalizationManager.shared.localizedString(.goalMaintainDescription)
+            return "Поддержим текущий вес сбалансированным питанием"
         case .gain:
-            return LocalizationManager.shared.localizedString(.goalGainDescription)
+            return "Добавим калории для набора мышечной массы"
         }
     }
 }
@@ -116,15 +116,15 @@ extension ActivityLevel {
     var onboardingDescription: String {
         switch self {
         case .sedentary:
-            return LocalizationManager.shared.localizedString(.activitySedentaryDescription)
+            return "Сижу почти весь день"
         case .light:
-            return LocalizationManager.shared.localizedString(.activityLightDescription)
+            return "Иногда двигаюсь"
         case .moderate:
-            return LocalizationManager.shared.localizedString(.activityModerateDescription)
+            return "Тренируюсь несколько раз в неделю"
         case .active:
-            return LocalizationManager.shared.localizedString(.activityActiveDescription)
+            return "Очень активный образ жизни"
         case .veryActive:
-            return LocalizationManager.shared.localizedString(.activityVeryActiveDescription)
+            return "Профессиональный спорт"
         }
     }
 }

@@ -143,3 +143,54 @@ struct RecipeFromFridgeView: View {
 }
 
 
+struct RecipeFromFridgeView_Previews: PreviewProvider {
+    static var previews: some View {
+        Group {
+            // Базовое состояние (пустое поле)
+            RecipeFromFridgeView()
+                .previewDisplayName("Empty Input")
+
+            // Ошибка при вводе
+            RecipeFromFridgeViewWrapper(
+                errorMessage: "Введите хотя бы один ингредиент"
+            )
+            .previewDisplayName("With Error")
+
+            // С готовым рецептом
+            RecipeFromFridgeViewWrapper(
+                suggestion: RecipeSuggestion(
+                    title: "Овощное рагу",
+                    ingredients: ["Картофель", "Морковь", "Кабачок", "Лук"],
+                    steps: [
+                        "Нарежьте овощи кубиками.",
+                        "Обжарьте лук до золотистого цвета.",
+                        "Добавьте остальные овощи и тушите 20 минут.",
+                        "Посолите и поперчите по вкусу."
+                    ],
+                    nutritionTip: "Блюдо богато клетчаткой и витаминами группы B."
+                )
+            )
+            .previewDisplayName("With Recipe")
+        }
+    }
+
+    private struct RecipeFromFridgeViewWrapper: View {
+        @State private var ingredientsText: String = ""
+        @State private var isLoading: Bool = false
+        @State private var errorMessage: String?
+        @State private var suggestion: RecipeSuggestion?
+
+        init(errorMessage: String? = nil, suggestion: RecipeSuggestion? = nil) {
+            _errorMessage = State(initialValue: errorMessage)
+            _suggestion = State(initialValue: suggestion)
+        }
+
+        var body: some View {
+            RecipeFromFridgeView()
+                .onAppear {
+                    self.errorMessage = errorMessage
+                    self.suggestion = suggestion
+                }
+        }
+    }
+}

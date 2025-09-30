@@ -651,7 +651,7 @@ extension View {
                 style: .primary,
                 size: .small
             ) {
-                showingRegistration = true
+//                showingRegistration = true
             }
         }
         .padding(PlumpyTheme.Spacing.medium)

@@ -12,7 +12,7 @@ import PhotosUI
 struct AddMealView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
-    
+
     @State private var mealName = ""
     @State private var selectedMealType: MealType
     @State private var selectedTime = Date()
@@ -24,54 +24,46 @@ struct AddMealView: View {
     @State private var selectedPhotoItem: PhotosPickerItem?
     @State private var selectedImage: UIImage? = nil
     @State private var isImageLoading = false
-    
-    // ViewModel для распознавания
+    @State private var showingCamera = false
+
     @StateObject private var recognitionViewModel = FoodRecognitionViewModel()
-    
-    // Состояния для ошибок
+
     @State private var showErrorAlert = false
     @State private var showingRegistration = false
-    
+
+    @State private var products: [FoodProduct] = []
+    @State private var showingSearch = false
+    @State private var productGrams: [UUID: Double] = [:]
+
     init(mealType: MealType = .breakfast) {
         self._selectedMealType = State(initialValue: mealType)
     }
-    
+
     var body: some View {
         ZStack {
             PlumpyBackground(style: .primary)
                 .ignoresSafeArea()
-            
+
             VStack(spacing: 0) {
-                // Navigation Bar
                 PlumpyNavigationBar(
                     title: LocalizationManager.shared.localizedString(.addMeal),
                     leftButton: PlumpyNavigationButton(
                         icon: "xmark",
                         title: LocalizationManager.shared.localizedString(.cancel),
                         style: .outline
-                    ) {
-                        dismiss()
-                    },
+                    ) { dismiss() },
                     rightButton: PlumpyNavigationButton(
                         icon: "checkmark",
                         title: LocalizationManager.shared.localizedString(.save),
                         style: .primary
-                    ) {
-                        saveMeal()
-                    }
+                    ) { saveMeal() }
                 )
-                
+
                 ScrollView {
                     VStack(spacing: 20) {
-                        // Секция фото с распознаванием
                         photoSection
-                        
-                        // Основная информация
                         basicInfoSection
-                        
-                        // Заметки
                         notesSection
-                        
                         Spacer(minLength: 100)
                     }
                     .padding(.horizontal, 20)
@@ -83,20 +75,17 @@ struct AddMealView: View {
             RegistrationView(
                 onRegistrationComplete: {
                     showingRegistration = false
-                    // После успешной регистрации сохраняем прием пищи
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                        saveMeal()
-                    }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { saveMeal() }
                 },
                 onSkip: {
                     UserDefaults.standard.set(true, forKey: "registrationSkipped")
                     showingRegistration = false
-                    // После пропуска регистрации сохраняем прием пищи
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                        saveMeal()
-                    }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { saveMeal() }
                 }
             )
+        }
+        .sheet(isPresented: $showingCamera) {
+            CameraPicker(image: $selectedImage)
         }
         .onChange(of: selectedPhotoItem) {
             Task {
@@ -116,13 +105,10 @@ struct AddMealView: View {
             Text(recognitionViewModel.errorMessage ?? LocalizationManager.shared.localizedString(.unknownError))
         }
         .onReceive(recognitionViewModel.$showError) { showError in
-            if showError {
-                showErrorAlert = true
-            }
+            if showError { showErrorAlert = true }
         }
         .onReceive(recognitionViewModel.$recognitionResult) { result in
             if let result = result {
-                // Автоматически заполняем поля результатами распознавания
                 mealName = result.name
                 calories = String(format: "%.0f", result.calories)
                 protein = String(format: "%.1f", result.protein)
@@ -131,12 +117,20 @@ struct AddMealView: View {
             }
         }
     }
-    
-    // MARK: - Секция фото с распознаванием
+
+    private func autoGenerateMealName() -> String {
+        if products.isEmpty { return "" }
+        if products.count == 1 {
+            return products[0].name
+        } else {
+            let names = products.prefix(2).map { $0.name }
+            return names.joined(separator: " + ") + "…"
+        }
+    }
+
     private var photoSection: some View {
         VStack(spacing: 16) {
             if let image = selectedImage {
-                // Показать выбранное изображение
                 GeometryReader { geometry in
                     ZStack(alignment: .topTrailing) {
                         Image(uiImage: image)
@@ -149,13 +143,12 @@ struct AddMealView: View {
                                 RoundedRectangle(cornerRadius: 16)
                                     .stroke(PlumpyTheme.border, lineWidth: 1)
                             )
-                        
-                        // Кнопка удаления
-                        Button(action: {
+
+                        Button {
                             selectedImage = nil
                             selectedPhotoItem = nil
                             recognitionViewModel.resetResults()
-                        }) {
+                        } label: {
                             Image(systemName: "xmark.circle.fill")
                                 .font(.title2)
                                 .foregroundColor(.white)
@@ -166,13 +159,10 @@ struct AddMealView: View {
                     }
                 }
                 .frame(height: 240)
-                
-                // Кнопка распознавания
-                Button(action: {
-                    Task {
-                        await recognitionViewModel.recognizeFood()
-                    }
-                }) {
+
+                Button {
+                    Task { await recognitionViewModel.recognizeFood() }
+                } label: {
                     HStack(spacing: 8) {
                         if recognitionViewModel.isProcessing {
                             ProgressView()
@@ -194,13 +184,11 @@ struct AddMealView: View {
                     .cornerRadius(12)
                 }
                 .disabled(recognitionViewModel.isProcessing || isImageLoading)
-                
-                // Прогресс распознавания
+
                 if recognitionViewModel.isProcessing {
                     VStack(spacing: 8) {
                         ProgressView(value: recognitionViewModel.processingProgress)
                             .progressViewStyle(LinearProgressViewStyle(tint: PlumpyTheme.primaryAccent))
-                        
                         Text(String(format: LocalizationManager.shared.localizedString(.imageProcessingProgress), Int(recognitionViewModel.processingProgress * 100)))
                             .font(.caption)
                             .foregroundColor(.secondary)
@@ -210,22 +198,18 @@ struct AddMealView: View {
                     .background(PlumpyTheme.surfaceSecondary)
                     .cornerRadius(8)
                 }
-                
+
             } else {
-                // Кнопки выбора фото
                 VStack(spacing: 16) {
-                    // Основная кнопка выбора фото
                     PhotosPicker(selection: $selectedPhotoItem, matching: .images) {
                         VStack(spacing: 12) {
-                            Image(systemName: "camera.fill")
+                            Image(systemName: "photo.on.rectangle.angled")
                                 .font(.system(size: 32))
                                 .foregroundColor(PlumpyTheme.primaryAccent)
-                            
-                            Text(LocalizationManager.shared.localizedString(.photoSectionTitle))
+                            Text(LocalizationManager.shared.localizedString(.selectFromGallery))
                                 .font(.headline)
                                 .fontWeight(.semibold)
                                 .foregroundColor(PlumpyTheme.textPrimary)
-                            
                             Text(LocalizationManager.shared.localizedString(.photoSectionSubtitle))
                                 .font(.subheadline)
                                 .foregroundColor(PlumpyTheme.textSecondary)
@@ -240,11 +224,10 @@ struct AddMealView: View {
                                 .stroke(PlumpyTheme.border, lineWidth: 1)
                         )
                     }
-                    
-                    // Альтернативная кнопка камеры
-                    Button(action: {
-                        // Здесь можно добавить вызов камеры
-                    }) {
+
+                    Button {
+                        showingCamera = true
+                    } label: {
                         HStack(spacing: 8) {
                             Image(systemName: "camera")
                             Text(LocalizationManager.shared.localizedString(.useCamera))
@@ -267,34 +250,30 @@ struct AddMealView: View {
         .background(PlumpyTheme.surface)
         .cornerRadius(20)
     }
-    
-    // MARK: - Секция основной информации
+
     private var basicInfoSection: some View {
         VStack(spacing: 20) {
-            // Название приема пищи
             VStack(alignment: .leading, spacing: 8) {
                 Text(LocalizationManager.shared.localizedString(.mealName))
                     .font(.headline)
                     .fontWeight(.semibold)
                     .foregroundColor(PlumpyTheme.textPrimary)
-                
                 TextField(LocalizationManager.shared.localizedString(.enterMealName), text: $mealName)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .font(.body)
             }
-            
-            // Тип приема пищи
+
             VStack(alignment: .leading, spacing: 12) {
                 Text(LocalizationManager.shared.localizedString(.mealType))
                     .font(.headline)
                     .fontWeight(.semibold)
                     .foregroundColor(PlumpyTheme.textPrimary)
-                
+
                 LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 2), spacing: 12) {
                     ForEach(MealType.allCases, id: \.self) { mealType in
-                        Button(action: {
+                        Button {
                             selectedMealType = mealType
-                        }) {
+                        } label: {
                             HStack(spacing: 8) {
                                 Image(systemName: mealType.icon)
                                     .font(.title3)
@@ -310,14 +289,12 @@ struct AddMealView: View {
                     }
                 }
             }
-            
-            // Время приема пищи
+
             VStack(alignment: .leading, spacing: 8) {
                 Text(LocalizationManager.shared.localizedString(.timeLabel))
                     .font(.headline)
                     .fontWeight(.semibold)
                     .foregroundColor(PlumpyTheme.textPrimary)
-                
                 DatePicker("", selection: $selectedTime, displayedComponents: [.date, .hourAndMinute])
                     .datePickerStyle(.compact)
                     .labelsHidden()
@@ -325,52 +302,48 @@ struct AddMealView: View {
                     .background(PlumpyTheme.surfaceSecondary)
                     .cornerRadius(12)
             }
-            
-            // Калории
+
+            productsSection
+
             VStack(alignment: .leading, spacing: 8) {
                 Text(LocalizationManager.shared.localizedString(.calories))
                     .font(.headline)
                     .fontWeight(.semibold)
                     .foregroundColor(PlumpyTheme.textPrimary)
-                
                 TextField("0", text: $calories)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .keyboardType(.numberPad)
                     .font(.body)
             }
-            
-            // БЖУ
+
             HStack(spacing: 12) {
                 VStack(alignment: .leading, spacing: 8) {
                     Text(LocalizationManager.shared.localizedString(.protein))
                         .font(.subheadline)
                         .fontWeight(.medium)
                         .foregroundColor(PlumpyTheme.textSecondary)
-                    
                     TextField("0", text: $protein)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         .keyboardType(.decimalPad)
                         .font(.body)
                 }
-                
+
                 VStack(alignment: .leading, spacing: 8) {
                     Text(LocalizationManager.shared.localizedString(.fat))
                         .font(.subheadline)
                         .fontWeight(.medium)
                         .foregroundColor(PlumpyTheme.textSecondary)
-                    
                     TextField("0", text: $fat)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         .keyboardType(.decimalPad)
                         .font(.body)
                 }
-                
+
                 VStack(alignment: .leading, spacing: 8) {
                     Text(LocalizationManager.shared.localizedString(.carbs))
                         .font(.subheadline)
                         .fontWeight(.medium)
                         .foregroundColor(PlumpyTheme.textSecondary)
-                    
                     TextField("0", text: $carbs)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         .keyboardType(.decimalPad)
@@ -381,16 +354,89 @@ struct AddMealView: View {
         .padding(20)
         .background(PlumpyTheme.surface)
         .cornerRadius(20)
+        .onChange(of: productGrams) { _ in
+            recalcTotals()
+        }
     }
-    
-    // MARK: - Секция заметок
+
+    private var productsSection: some View {
+        VStack(spacing: 12) {
+            HStack {
+                Text(LocalizationManager.shared.localizedString(.products))
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(PlumpyTheme.textPrimary)
+                Spacer()
+                Button {
+                    showingSearch = true
+                } label: {
+                    Image(systemName: "plus.circle.fill")
+                        .foregroundColor(PlumpyTheme.primaryAccent)
+                        .font(.title2)
+                }
+            }
+
+            ForEach(products.indices, id: \.self) { index in
+                let product = products[index]
+                let grams = productGrams[product.id] ?? 100
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        Text(product.name)
+                            .fontWeight(.medium)
+                        Spacer()
+                        Button {
+                            products.remove(at: index)
+                        } label: {
+                            Image(systemName: "trash")
+                                .foregroundColor(.red)
+                        }
+                    }
+                    Slider(value: Binding(
+                        get: { grams },
+                        set: { newVal in
+                            productGrams[product.id] = newVal
+                        }
+
+                    ), in: 10...500, step: 10)
+                    .accentColor(PlumpyTheme.primary)
+
+                    HStack {
+                        Text("\(Int(grams)) g")
+                        Spacer()
+                        Text("\(Int(Double(product.caloriesPerServing) / 100.0 * grams)) kcal")
+                    }
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                }
+                .padding(8)
+                .background(PlumpyTheme.surfaceSecondary)
+                .cornerRadius(12)
+            }
+        }
+        .background(PlumpyTheme.surface)
+        .cornerRadius(20)
+        .sheet(isPresented: $showingSearch) {
+            SearchProductsView { selected in
+                let newProduct = FoodProduct(
+                    name: selected.productName ?? "Unknown",
+                    caloriesPerServing: Int(selected.nutriments?["energy-kcal_100g"] as? Double ?? 0),
+                    protein: selected.nutriments?["proteins_100g"] as? Double ?? 0,
+                    carbs: selected.nutriments?["carbohydrates_100g"] as? Double ?? 0,
+                    fat: selected.nutriments?["fat_100g"] as? Double ?? 0
+                )
+                products.append(newProduct)
+                productGrams[newProduct.id] = 100
+                recalcTotals()
+            }
+        }
+    }
+
     private var notesSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text(LocalizationManager.shared.localizedString(.notes))
                 .font(.headline)
                 .fontWeight(.semibold)
                 .foregroundColor(PlumpyTheme.textPrimary)
-            
             TextField(LocalizationManager.shared.localizedString(.addNotesOptional), text: $notes, axis: .vertical)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .lineLimit(3...6)
@@ -400,70 +446,103 @@ struct AddMealView: View {
         .background(PlumpyTheme.surface)
         .cornerRadius(20)
     }
-    
+
+    private func recalcTotals() {
+        var totalCalories = 0.0
+        var totalProtein = 0.0
+        var totalCarbs = 0.0
+        var totalFat = 0.0
+
+        for product in products {
+            let grams = productGrams[product.id] ?? 100
+            totalCalories += Double(product.caloriesPerServing) / 100.0 * grams
+            totalProtein += product.protein / 100.0 * grams
+            totalCarbs += product.carbs / 100.0 * grams
+            totalFat += product.fat / 100.0 * grams
+        }
+
+        calories = String(format: "%.0f", totalCalories)
+        protein = String(format: "%.1f", totalProtein)
+        carbs = String(format: "%.1f", totalCarbs)
+        fat = String(format: "%.1f", totalFat)
+    }
+
     private func saveMeal() {
-        // Проверка регистрации - показываем экран регистрации при первой попытке сохранить прием пищи
         if !isUserRegistered && !isRegistrationSkipped {
             showingRegistration = true
             return
         }
-        
-        // Валидация данных
-        guard !mealName.isEmpty else {
-            print("Meal name is required")
-            return
+
+        let finalMealName = mealName.isEmpty ? autoGenerateMealName() : mealName
+        guard !finalMealName.isEmpty, let caloriesInt = Int(calories), caloriesInt > 0 else { return }
+
+        let photoData = selectedImage?.jpegData(compressionQuality: 0.8)
+
+        // Создаём продукты с учётом выбранного количества граммов
+        let adjustedProducts = products.map { product -> FoodProduct in
+            let grams = productGrams[product.id] ?? 100
+            return FoodProduct(
+                name: product.name,
+                caloriesPerServing: Int(Double(product.caloriesPerServing) / 100.0 * grams),
+                protein: product.protein / 100.0 * grams,
+                carbs: product.carbs / 100.0 * grams,
+                fat: product.fat / 100.0 * grams
+            )
         }
-        
-        guard let caloriesInt = Int(calories), caloriesInt > 0 else {
-            print("Valid calories are required")
-            return
-        }
-        
-        // Создаем продукт для приема пищи
-        let product = FoodProduct(
-            name: mealName,
-            caloriesPerServing: caloriesInt,
-            protein: Double(protein) ?? 0,
-            carbs: Double(carbs) ?? 0,
-            fat: Double(fat) ?? 0
-        )
-        
-        // Конвертируем изображение в Data для сохранения
-        var photoData: Data? = nil
-        if let image = selectedImage {
-            photoData = image.jpegData(compressionQuality: 0.8)
-        }
-        
-        // Создаем запись о приеме пищи
+
         let foodEntry = FoodEntry(
-            name: mealName,
+            name: finalMealName,
             date: selectedTime,
             mealType: selectedMealType,
-            products: [product],
+            products: adjustedProducts,
             notes: notes.isEmpty ? nil : notes,
             photoData: photoData
         )
-        
-        // Сохраняем в базу данных
+
         modelContext.insert(foodEntry)
-        
-        do {
-            try modelContext.save()
-            print("Meal saved successfully: \(foodEntry.displayName)")
-            dismiss()
-        } catch {
-            print("Error saving meal: \(error)")
-        }
+        try? modelContext.save()
+        dismiss()
     }
-    
-    // MARK: - Computed Properties
-    
+
     private var isUserRegistered: Bool {
-        return UserDefaults.standard.bool(forKey: "isRegistered")
+        UserDefaults.standard.bool(forKey: "isRegistered")
     }
-    
+
     private var isRegistrationSkipped: Bool {
-        return UserDefaults.standard.bool(forKey: "registrationSkipped")
+        UserDefaults.standard.bool(forKey: "registrationSkipped")
+    }
+}
+
+struct CameraPicker: UIViewControllerRepresentable {
+    @Binding var image: UIImage?
+    @Environment(\.dismiss) var dismiss
+
+    func makeUIViewController(context: Context) -> UIImagePickerController {
+        let picker = UIImagePickerController()
+        picker.delegate = context.coordinator
+        picker.sourceType = .camera
+        picker.allowsEditing = false
+        return picker
+    }
+
+    func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {}
+
+    func makeCoordinator() -> Coordinator { Coordinator(self) }
+
+    class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+        let parent: CameraPicker
+        init(_ parent: CameraPicker) { self.parent = parent }
+
+        func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+            if let uiImage = info[.originalImage] as? UIImage {
+                parent.image = uiImage
+            }
+            parent.dismiss()
+        }
+
+        func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+            parent.dismiss()
+        }
     }
 }
 
