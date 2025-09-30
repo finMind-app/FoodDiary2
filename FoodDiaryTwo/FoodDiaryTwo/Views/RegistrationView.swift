@@ -75,17 +75,12 @@ struct RegistrationView: View {
                 .scaleEffect(isVisible ? 1 : 0.8)
                 .animation(.easeOut(duration: 0.6).delay(0.5), value: isVisible)
                 
-                // Apple Registration
-                RegistrationButton(
-                    title: LocalizationManager.shared.localizedString(.registerWithApple),
-                    icon: "applelogo",
-                    backgroundColor: Color.black,
-                    textColor: Color.white,
-                    borderColor: Color.clear,
-                    isLoading: isRegistering
-                ) {
+                // Apple Registration (native button per Apple guidelines)
+                AppleSignInButton(type: .signUp, style: .black) {
                     registerWithApple()
                 }
+                .frame(height: 52)
+                .clipShape(RoundedRectangle(cornerRadius: PlumpyTheme.Radius.large))
                 .opacity(isVisible ? 1 : 0)
                 .offset(y: isVisible ? 0 : 30)
                 .scaleEffect(isVisible ? 1 : 0.8)
@@ -212,6 +207,25 @@ struct RegistrationButton: View {
 }
 
 // Removed mock user data. Real auth is used.
+
+// MARK: - Native Sign in with Apple button wrapper
+struct AppleSignInButton: UIViewRepresentable {
+    let type: ASAuthorizationAppleIDButton.ButtonType
+    let style: ASAuthorizationAppleIDButton.Style
+    let action: () -> Void
+
+    func makeUIView(context: Context) -> ASAuthorizationAppleIDButton {
+        let button = ASAuthorizationAppleIDButton(type: type, style: style)
+        button.addAction(UIAction { _ in
+            action()
+        }, for: .touchUpInside)
+        return button
+    }
+
+    func updateUIView(_ uiView: ASAuthorizationAppleIDButton, context: Context) {
+        // No dynamic updates required
+    }
+}
 
 #Preview {
     RegistrationView(
