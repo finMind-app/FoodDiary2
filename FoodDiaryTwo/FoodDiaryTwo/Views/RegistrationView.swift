@@ -1,4 +1,5 @@
 import SwiftUI
+import AuthenticationServices
 
 struct RegistrationView: View {
     @Environment(\.dismiss) private var dismiss
@@ -117,43 +118,43 @@ struct RegistrationView: View {
     
     private func registerWithGoogle() {
         isRegistering = true
-        
-        // Mock registration delay
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene else {
             isRegistering = false
-            
-            // Mock user data
-            let mockUser = MockUserData.googleUser
-            
-            // Save registration status
-            UserDefaults.standard.set(true, forKey: "isRegistered")
-            UserDefaults.standard.set("google", forKey: "registrationMethod")
-            UserDefaults.standard.set(mockUser.name, forKey: "userName")
-            UserDefaults.standard.set(mockUser.email, forKey: "userEmail")
-            UserDefaults.standard.set(mockUser.avatarURL, forKey: "userAvatarURL")
-            
-            onRegistrationComplete()
+            return
+        }
+        Task { @MainActor in
+            do {
+                let user = try await AuthService.shared.signInWithGoogle(presentingWindowScene: windowScene)
+                UserDefaults.standard.set(true, forKey: "isRegistered")
+                UserDefaults.standard.set(user.provider, forKey: "registrationMethod")
+                UserDefaults.standard.set(user.name, forKey: "userName")
+                UserDefaults.standard.set(user.email, forKey: "userEmail")
+                UserDefaults.standard.set(user.avatarURL?.absoluteString, forKey: "userAvatarURL")
+                isRegistering = false
+                onRegistrationComplete()
+            } catch {
+                isRegistering = false
+                print("Google Sign-In failed: \(error)")
+            }
         }
     }
     
     private func registerWithApple() {
         isRegistering = true
-        
-        // Mock registration delay
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-            isRegistering = false
-            
-            // Mock user data
-            let mockUser = MockUserData.appleUser
-            
-            // Save registration status
-            UserDefaults.standard.set(true, forKey: "isRegistered")
-            UserDefaults.standard.set("apple", forKey: "registrationMethod")
-            UserDefaults.standard.set(mockUser.name, forKey: "userName")
-            UserDefaults.standard.set(mockUser.email, forKey: "userEmail")
-            UserDefaults.standard.set(mockUser.avatarURL, forKey: "userAvatarURL")
-            
-            onRegistrationComplete()
+        Task { @MainActor in
+            do {
+                let user = try await AuthService.shared.signInWithApple()
+                UserDefaults.standard.set(true, forKey: "isRegistered")
+                UserDefaults.standard.set(user.provider, forKey: "registrationMethod")
+                UserDefaults.standard.set(user.name, forKey: "userName")
+                UserDefaults.standard.set(user.email, forKey: "userEmail")
+                UserDefaults.standard.set(user.avatarURL?.absoluteString, forKey: "userAvatarURL")
+                isRegistering = false
+                onRegistrationComplete()
+            } catch {
+                isRegistering = false
+                print("Apple Sign-In failed: \(error)")
+            }
         }
     }
 }
@@ -210,27 +211,7 @@ struct RegistrationButton: View {
     }
 }
 
-// MARK: - Mock User Data
-
-struct MockUserData {
-    static let googleUser = MockUser(
-        name: "Алексей Петров",
-        email: "alexey.petrov@gmail.com",
-        avatarURL: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face"
-    )
-    
-    static let appleUser = MockUser(
-        name: "Мария Иванова",
-        email: "maria.ivanova@icloud.com",
-        avatarURL: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face"
-    )
-}
-
-struct MockUser {
-    let name: String
-    let email: String
-    let avatarURL: String
-}
+// Removed mock user data. Real auth is used.
 
 #Preview {
     RegistrationView(
