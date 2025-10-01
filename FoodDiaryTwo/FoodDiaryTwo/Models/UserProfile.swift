@@ -235,6 +235,40 @@ enum ActivityLevel: String, CaseIterable, Codable {
             return LocalizationManager.shared.localizedString(.veryActive)
         }
     }
+
+    // MARK: - Onboarding Presentation Helpers
+    /// Emoji icon shown in onboarding cards
+    var onboardingEmoji: String {
+        switch self {
+        case .sedentary:
+            return "🛋️"
+        case .light:
+            return "🚶"
+        case .moderate:
+            return "🏃"
+        case .active:
+            return "🏋️"
+        case .veryActive:
+            return "🔥"
+        }
+    }
+
+    /// Descriptive text shown in onboarding cards
+    /// Kept inline to avoid adding new localization keys right now
+    var onboardingDescription: String {
+        switch self {
+        case .sedentary:
+            return "Малоподвижный образ жизни, минимум активности в течение дня."
+        case .light:
+            return "Лёгкая активность 1–3 раза в неделю или частые прогулки."
+        case .moderate:
+            return "Умеренные тренировки 3–5 раз в неделю или активные будни."
+        case .active:
+            return "Интенсивные тренировки 6–7 раз в неделю или физическая работа."
+        case .veryActive:
+            return "Очень высокая активность и/или две тренировки в день."
+        }
+    }
 }
 
 enum Goal: String, CaseIterable, Codable {
