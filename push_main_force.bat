@@ -3,12 +3,12 @@ setlocal enableextensions enabledelayedexpansion
 
 cd /d "%~dp0"
 
-echo WARNING: This will overwrite remote branch 'main' with local state.
+echo WARNING: This will overwrite remote branch 'feature' with local state.
 echo Repository: https://github.com/finMind-app/FoodDiary2.git
 echo.
 
 set "REMOTE=https://github.com/finMind-app/FoodDiary2.git"
-set "BRANCH=main"
+set "BRANCH=feature"
 
 rem Ensure repository and identity
 git rev-parse --is-inside-work-tree >nul 2>&1 || git init
